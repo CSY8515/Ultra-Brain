@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/schemas/decision.schema.json",
+  "title": "Ultra Brain Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "status",
+    "context",
+    "decision",
+    "consequences",
+    "owner_layer",
+    "decision_date",
+    "supersedes"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^decision-[0-9]{4}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "accepted",
+        "superseded",
+        "rejected"
+      ]
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "consequences": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "owner_layer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "supersedes": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^decision-[0-9]{4}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

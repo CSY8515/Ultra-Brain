@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/schemas/registry.schema.json",
+  "title": "Ultra Brain Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "schema_version",
+    "registry_id",
+    "registry_type",
+    "name",
+    "scope",
+    "status",
+    "owner_layer",
+    "repository",
+    "created_date",
+    "updated_date",
+    "entities"
+  ],
+  "properties": {
+    "registry_version": {
+      "$ref": "#/$defs/semanticVersion"
+    },
+    "schema_version": {
+      "$ref": "#/$defs/semanticVersion"
+    },
+    "registry_id": {
+      "$ref": "#/$defs/id"
+    },
+    "registry_type": {
+      "enum": [
+        "meta_os",
+        "ecosystem",
+        "capability",
+        "project",
+        "repository",
+        "rule",
+        "policy",
+        "standard",
+        "decision",
+        "release",
+        "interface",
+        "contract"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "active"
+    },
+    "owner_layer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "$ref": "#/$defs/repository"
+    },
+    "created_date": {
+      "$ref": "#/$defs/date"
+    },
+    "updated_date": {
+      "$ref": "#/$defs/date"
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entity"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "semanticVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "repository": {
+      "const": "https://github.com/CSY8515/Ultra-Brain.git"
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "entity_type",
+        "name",
+        "scope",
+        "status",
+        "owner_layer",
+        "parent",
+        "repository",
+        "path",
+        "interface",
+        "contract",
+        "current_version",
+        "created_date",
+        "updated_date"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "entity_type": {
+          "enum": [
+            "ultra_brain",
+            "meta_os",
+            "ecosystem",
+            "capability",
+            "project",
+            "module",
+            "repository",
+            "rule_set",
+            "policy_set",
+            "standard_set",
+            "decision",
+            "release",
+            "interface",
+            "contract"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "defined",
+            "active",
+            "deprecated",
+            "retired",
+            "released"
+          ]
+        },
+        "owner_layer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repository": {
+          "$ref": "#/$defs/repository"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interface": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "uniqueItems": true
+        },
+        "contract": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "uniqueItems": true
+        },
+        "current_version": {
+          "$ref": "#/$defs/semanticVersion"
+        },
+        "created_date": {
+          "$ref": "#/$defs/date"
+        },
+        "updated_date": {
+          "$ref": "#/$defs/date"
+        }
+      }
+    }
+  }
+}

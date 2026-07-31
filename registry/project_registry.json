@@ -1,0 +1,14 @@
+{
+  "registry_version": "0.1.0",
+  "schema_version": "1.0.0",
+  "registry_id": "project-registry",
+  "registry_type": "project",
+  "name": "Project Registry",
+  "scope": "Projects admitted under an approved capability boundary.",
+  "status": "active",
+  "owner_layer": "Ultra Brain",
+  "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+  "created_date": "2026-07-31",
+  "updated_date": "2026-07-31",
+  "entities": []
+}

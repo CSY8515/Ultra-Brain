@@ -1,0 +1,31 @@
+{
+  "registry_version": "0.1.0",
+  "schema_version": "1.0.0",
+  "registry_id": "policy-registry",
+  "registry_type": "policy",
+  "name": "Policy Registry",
+  "scope": "Ultra Brain decision-guidance baselines.",
+  "status": "active",
+  "owner_layer": "Ultra Brain",
+  "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+  "created_date": "2026-07-31",
+  "updated_date": "2026-07-31",
+  "entities": [
+    {
+      "id": "ultra-brain-foundation-policies",
+      "entity_type": "policy_set",
+      "name": "Ultra Brain Foundation Policies",
+      "scope": "v0.1 policies for governance, decisions, memory, knowledge, capability, ecosystem, security, change, and release.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "POLICIES.md",
+      "interface": [],
+      "contract": [],
+      "current_version": "0.1.0",
+      "created_date": "2026-07-31",
+      "updated_date": "2026-07-31"
+    }
+  ]
+}

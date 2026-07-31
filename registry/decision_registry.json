@@ -1,0 +1,63 @@
+{
+  "registry_version": "0.1.0",
+  "schema_version": "1.0.0",
+  "registry_id": "decision-registry",
+  "registry_type": "decision",
+  "name": "Decision Registry",
+  "scope": "Index of accepted Ultra Brain architecture and governance decisions.",
+  "status": "active",
+  "owner_layer": "Ultra Brain",
+  "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+  "created_date": "2026-07-31",
+  "updated_date": "2026-07-31",
+  "entities": [
+    {
+      "id": "decision-0001",
+      "entity_type": "decision",
+      "name": "Single Repository Strategy",
+      "scope": "Keep Ultra Brain governance and separately scoped Meta OS domains in one repository without nested Ultra Brain repositories.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [],
+      "contract": [],
+      "current_version": "0.1.0",
+      "created_date": "2026-07-31",
+      "updated_date": "2026-07-31"
+    },
+    {
+      "id": "decision-0002",
+      "entity_type": "decision",
+      "name": "Version-Bounded Development",
+      "scope": "Implement only the approved version while documenting later version boundaries without speculative runtime code.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [],
+      "contract": [],
+      "current_version": "0.1.0",
+      "created_date": "2026-07-31",
+      "updated_date": "2026-07-31"
+    },
+    {
+      "id": "decision-0003",
+      "entity_type": "decision",
+      "name": "Deferred Official UI and UX",
+      "scope": "Defer UI and UX implementation until the v0.7-v0.9 sequence after Core Meta OS foundations stabilize.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [],
+      "contract": [],
+      "current_version": "0.1.0",
+      "created_date": "2026-07-31",
+      "updated_date": "2026-07-31"
+    }
+  ]
+}
