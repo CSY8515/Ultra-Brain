@@ -6,6 +6,12 @@ This roadmap fixes the milestone sequence from the v0.1 Foundation through the
 v1.0 Core Stable release. A milestone may refine its internal design, but it may
 not silently absorb the implementation scope of a later milestone.
 
+## Current milestone
+
+v0.2 Safety is the current release milestone. The v0.1 Foundation remains the
+unchanged authority and architecture baseline; v0.3 and later capability
+milestones remain future scope.
+
 ## Milestone sequence
 
 | Version | Milestone | Committed outcome | Explicit boundary |

@@ -2,7 +2,11 @@
 
 ## Record policy
 
-This log records material v0.1 Foundation decisions. Entries are append-oriented. A later decision may supersede an earlier entry by ID, but the earlier entry MUST remain visible. Required fields are decision ID, date, status, decision, rationale, consequences, authority, and related artifacts.
+This log records material Ultra Brain decisions beginning with the v0.1
+Foundation. Entries are append-oriented. A later decision may supersede an
+earlier entry by ID, but the earlier entry MUST remain visible. Required fields
+are decision ID, date, status, decision, rationale, consequences, authority, and
+related artifacts.
 
 ## decision-0001 — Single Repository Strategy
 
@@ -33,6 +37,26 @@ This log records material v0.1 Foundation decisions. Entries are append-oriented
 - **Consequences:** v0.1 may document the roadmap boundary but cannot claim or contain UI/UX implementation.
 - **Authority:** User v0.1 Foundation mandate
 - **Related:** [ROADMAP.md](ROADMAP.md), [MASTER_DESIGN.md](MASTER_DESIGN.md), [COMPLETION_RULE.md](COMPLETION_RULE.md)
+
+## decision-0004 - Activate Safety Core Meta OS v0.2
+
+- **Date:** 2026-08-01
+- **Status:** `accepted`
+- **Decision:** Implement and release the existing `safety-core-meta-os` scope
+  as the v0.2 Safety control plane. Product implementation remains centered in
+  `Safety-Core-Meta-OS/`; root changes are limited to v0.2 version, changelog,
+  roadmap, status, decision, registry, validation, test, and release integration.
+- **Rationale:** Later milestones require enforceable, testable validation,
+  integrity, monitoring, risk, logging, audit, recovery, execution-safety, and
+  incident controls while the v0.1 Foundation remains unchanged.
+- **Consequences:** Safety decisions are fail-closed and separate from business
+  execution. Other Core Meta OSs, UI/UX, Streamlit, Core Capability, OS
+  Ecosystem, Living OS, ULE, and Ultra Brain-exclusive capabilities remain
+  outside scope.
+- **Authority:** Explicit User approval on 2026-08-01 after Architecture Review
+- **Related:** [Safety Architecture Review](Safety-Core-Meta-OS/ARCHITECTURE_REVIEW.md),
+  [Safety MASTER Design](Safety-Core-Meta-OS/MASTER_DESIGN.md),
+  [ROADMAP.md](ROADMAP.md)
 
 ## Adding a decision
 

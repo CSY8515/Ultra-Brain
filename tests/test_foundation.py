@@ -1,4 +1,4 @@
-"""Regression tests for the Ultra Brain v0.1 declarative foundation."""
+"""Regression tests for preserved Foundation and v0.2 Safety integration."""
 
 from __future__ import annotations
 
@@ -31,8 +31,35 @@ class FoundationTests(unittest.TestCase):
                 with path.open(encoding="utf-8") as stream:
                     self.assertIsInstance(json.load(stream), dict)
 
-    def test_version_is_v0_1(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.1")
+    def test_version_is_v0_2(self) -> None:
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.2")
+
+    def test_safety_registry_is_active_at_v0_2(self) -> None:
+        registry = json.loads(
+            (ROOT / "registry" / "meta_os_registry.json").read_text(encoding="utf-8")
+        )
+        safety = next(
+            entity
+            for entity in registry["entities"]
+            if entity["id"] == "safety-core-meta-os"
+        )
+        self.assertEqual(safety["status"], "active")
+        self.assertEqual(safety["current_version"], "0.2.0")
+
+    def test_other_core_meta_os_directories_remain_scope_only(self) -> None:
+        for directory_name in (
+            "Enhancement-Core-Meta-OS",
+            "Automation-Core-Meta-OS",
+            "Collaboration-Connectivity-Core-Meta-OS",
+            "Personal-Secretary-Core-Meta-OS",
+        ):
+            directory = ROOT / directory_name
+            files = sorted(
+                path.relative_to(directory).as_posix()
+                for path in directory.rglob("*")
+                if path.is_file()
+            )
+            self.assertEqual(files, ["README.md"], directory_name)
 
 
 if __name__ == "__main__":

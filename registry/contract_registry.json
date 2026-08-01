@@ -9,6 +9,25 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-07-31",
-  "entities": []
+  "updated_date": "2026-08-01",
+  "entities": [
+    {
+      "id": "safety-core-control-contract",
+      "entity_type": "contract",
+      "name": "Safety Core Control Contract",
+      "scope": "Versioned v0.2 obligations and fail-closed failure semantics between Safety Core Meta OS and governed callers.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "safety-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Safety-Core-Meta-OS/contracts/safety_core.contract.json",
+      "interface": [
+        "safety-core-control-interface"
+      ],
+      "contract": [],
+      "current_version": "0.2.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
+    }
+  ]
 }

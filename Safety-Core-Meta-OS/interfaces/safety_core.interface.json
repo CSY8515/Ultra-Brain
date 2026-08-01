@@ -1,0 +1,30 @@
+{
+  "id": "safety-core-control-interface",
+  "name": "Safety Core Control Interface",
+  "version": "0.2.0",
+  "status": "approved",
+  "owner_layer": "Meta OS",
+  "inputs": [
+    "ExecutionRequest JSON-compatible object",
+    "Safety policy version 0.2.0",
+    "Declared integrity, approval, incident, and recovery evidence",
+    "Explicit filesystem roots for backup or recovery",
+    "Caller-supplied monitoring observation"
+  ],
+  "outputs": [
+    "SafetyDecision with allow, deny, or review status",
+    "RiskAssessment and ordered reason codes",
+    "Hash-chained audit receipt when a ledger is configured",
+    "Integrity, monitoring, backup, recovery, or incident result"
+  ],
+  "errors": [
+    "validation-error",
+    "integrity-error",
+    "unsafe-path",
+    "ledger-error",
+    "policy-error",
+    "state-transition-error",
+    "recovery-error"
+  ],
+  "compatibility": "Local in-process Python and local CLI contract 0.2.x. It is not a network API. Breaking decision, field, or failure-semantic changes require a new governed contract version."
+}

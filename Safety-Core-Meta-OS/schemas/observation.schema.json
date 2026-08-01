@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/Safety-Core-Meta-OS/schemas/observation.schema.json",
+  "title": "Safety Core Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "metric",
+    "value",
+    "warning_at",
+    "critical_at",
+    "observed_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "metric": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "value": {
+      "type": "number"
+    },
+    "warning_at": {
+      "type": "number"
+    },
+    "critical_at": {
+      "type": "number"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

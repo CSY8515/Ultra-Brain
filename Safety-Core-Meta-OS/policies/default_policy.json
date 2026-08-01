@@ -1,0 +1,49 @@
+{
+  "id": "safety-core-default-policy",
+  "version": "0.2.0",
+  "status": "active",
+  "allowed_operations": [
+    "read",
+    "validate",
+    "write",
+    "update",
+    "backup",
+    "recover",
+    "release"
+  ],
+  "mutating_operations": [
+    "write",
+    "update",
+    "recover",
+    "release"
+  ],
+  "required_permissions": {
+    "read": "read",
+    "validate": "validate",
+    "write": "write",
+    "update": "write",
+    "backup": "backup",
+    "recover": "recover",
+    "release": "release"
+  },
+  "integrity_required": [
+    "write",
+    "update",
+    "recover",
+    "release"
+  ],
+  "recovery_required_for": [
+    "high",
+    "critical"
+  ],
+  "approval_required_for": [
+    "high",
+    "critical"
+  ],
+  "deny_risk_levels": [
+    "critical"
+  ],
+  "incident_block_levels": [
+    "critical"
+  ]
+}

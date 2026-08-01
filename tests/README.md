@@ -10,17 +10,17 @@ evidence for the applicable validation gate.
 Future suites should separate unit, contract, integration, safety, accessibility,
 and release verification concerns when those artifacts enter scope.
 
-## v0.1 boundary
+## v0.2 regression scope
 
-v0.1 includes `test_foundation.py`, a dependency-free standard-library
-regression suite for the Foundation validator, JSON parsing, and canonical
-version value. Run it from the repository root:
+`test_foundation.py` remains a dependency-free standard-library regression
+suite for the preserved Foundation, v0.2 version and registry integration, and
+the scope-only state of the four later Core Meta OS directories. Run it from
+the repository root:
 
 ```text
 python -m unittest discover -s tests -v
 ```
 
-No product runtime test, UI test, external dependency, feature fixture, or
-v0.2+ capability test is implemented. These executable checks concern only
-documents, structure, structured-data validity, repository integrity, and scope
-protection.
+Safety runtime and adversarial tests live inside
+`Safety-Core-Meta-OS/tests/`. No UI test, external dependency, later Core Meta
+OS feature fixture, or deployment test is included.

@@ -1,13 +1,15 @@
-"""Validate the Ultra Brain v0.1 declarative foundation.
+"""Validate the preserved v0.1 Foundation and v0.2 Safety integration.
 
 This validator intentionally uses only the Python standard library. It checks
-foundation structure and contracts; it is not an operational Meta OS runtime.
+Foundation structure, release integration, and the delegated Safety validator;
+it is not an operational Meta OS runtime.
 """
 
 from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -19,7 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
-MILESTONE_VERSION = "0.1"
+MILESTONE_VERSION = "0.2"
+SAFETY_VERSION = "0.2.0"
 
 REQUIRED_DOCUMENTS = (
     "README.md",
@@ -275,6 +278,21 @@ def validate_registries(errors: list[str]) -> None:
         actual_meta_ids = {entity.get("id") for entity in meta.get("entities", []) if isinstance(entity, dict)}
         if actual_meta_ids != META_OS_IDS:
             errors.append("meta_os_registry.json must contain exactly the five Core Meta OS IDs")
+        safety_entities = [
+            entity
+            for entity in meta.get("entities", [])
+            if isinstance(entity, dict) and entity.get("id") == "safety-core-meta-os"
+        ]
+        if len(safety_entities) != 1:
+            errors.append("meta_os_registry.json must contain one Safety Core entity")
+        else:
+            safety = safety_entities[0]
+            if safety.get("status") != "active" or safety.get("current_version") != SAFETY_VERSION:
+                errors.append("Safety Core registry state must be active at 0.2.0")
+            if safety.get("interface") != ["safety-core-control-interface"]:
+                errors.append("Safety Core registry interface reference is incorrect")
+            if safety.get("contract") != ["safety-core-control-contract"]:
+                errors.append("Safety Core registry contract reference is incorrect")
 
     repository_registry = loaded.get("repository_registry.json")
     if repository_registry:
@@ -285,8 +303,81 @@ def validate_registries(errors: list[str]) -> None:
     release_registry = loaded.get("release_registry.json")
     if release_registry:
         release_entities = release_registry.get("entities", [])
-        if len(release_entities) != 1 or release_entities[0].get("current_version") != REGISTRY_VERSION:
-            errors.append("release_registry.json must contain exactly the v0.1.0 Foundation release")
+        releases = {
+            entity.get("id"): entity
+            for entity in release_entities
+            if isinstance(entity, dict)
+        }
+        if set(releases) != {
+            "ultra-brain-v0-1-foundation",
+            "ultra-brain-v0-2-safety",
+        }:
+            errors.append("release_registry.json must contain exactly v0.1 and v0.2")
+        elif (
+            releases["ultra-brain-v0-1-foundation"].get("current_version")
+            != REGISTRY_VERSION
+            or releases["ultra-brain-v0-2-safety"].get("current_version")
+            != SAFETY_VERSION
+            or releases["ultra-brain-v0-2-safety"].get("status") != "released"
+        ):
+            errors.append("release registry versions or v0.2 status are incorrect")
+
+    expected_singletons = {
+        "interface_registry.json": ("safety-core-control-interface", SAFETY_VERSION),
+        "contract_registry.json": ("safety-core-control-contract", SAFETY_VERSION),
+    }
+    for filename, (expected_id, expected_version) in expected_singletons.items():
+        registry = loaded.get(filename)
+        if not registry:
+            continue
+        entities = registry.get("entities", [])
+        if (
+            len(entities) != 1
+            or entities[0].get("id") != expected_id
+            or entities[0].get("current_version") != expected_version
+            or entities[0].get("status") != "active"
+        ):
+            errors.append(f"{filename}: approved v0.2 Safety entry is incorrect")
+
+    decision_registry = loaded.get("decision_registry.json")
+    if decision_registry:
+        decision_ids = {
+            entity.get("id")
+            for entity in decision_registry.get("entities", [])
+            if isinstance(entity, dict)
+        }
+        if decision_ids != {
+            "decision-0001",
+            "decision-0002",
+            "decision-0003",
+            "decision-0004",
+        }:
+            errors.append("decision_registry.json must contain decisions 0001 through 0004")
+
+    interface_ids = {
+        entity.get("id")
+        for entity in loaded.get("interface_registry.json", {}).get("entities", [])
+        if isinstance(entity, dict)
+    }
+    contract_ids = {
+        entity.get("id")
+        for entity in loaded.get("contract_registry.json", {}).get("entities", [])
+        if isinstance(entity, dict)
+    }
+    for filename, registry in loaded.items():
+        for index, entity in enumerate(registry.get("entities", [])):
+            if not isinstance(entity, dict):
+                continue
+            for reference in entity.get("interface", []):
+                if reference not in interface_ids:
+                    errors.append(
+                        f"registry/{filename}.entities[{index}]: unknown interface {reference}"
+                    )
+            for reference in entity.get("contract", []):
+                if reference not in contract_ids:
+                    errors.append(
+                        f"registry/{filename}.entities[{index}]: unknown contract {reference}"
+                    )
 
 
 def validate_schemas(errors: list[str]) -> None:
@@ -337,18 +428,39 @@ def validate_scope_boundaries(errors: list[str]) -> None:
     forbidden_top_level = {"ui", "pages", "components", "styles", ".streamlit"}
     actual_top_level = {path.name.lower() for path in ROOT.iterdir() if path.name not in {".git", "OS Ecosystem"}}
     for forbidden in sorted(forbidden_top_level & actual_top_level):
-        errors.append(f"forbidden v0.1 UI/runtime path exists: {forbidden}")
+        errors.append(f"forbidden v0.2 UI/runtime path exists: {forbidden}")
 
     for directory_name in CORE_META_OS_DIRECTORIES:
         directory = ROOT / directory_name
         if not directory.is_dir():
             errors.append(f"missing Core Meta OS directory: {directory_name}")
             continue
-        files = sorted(path.relative_to(directory).as_posix() for path in directory.rglob("*") if path.is_file())
-        if files != ["README.md"]:
-            errors.append(f"{directory_name}: v0.1 permits only README.md, found {files}")
         if (directory / ".git").exists():
             errors.append(f"{directory_name}: nested Git repository is forbidden")
+        if directory_name == "Safety-Core-Meta-OS":
+            continue
+        files = sorted(path.relative_to(directory).as_posix() for path in directory.rglob("*") if path.is_file())
+        if files != ["README.md"]:
+            errors.append(
+                f"{directory_name}: v0.2 permits only the existing README.md, found {files}"
+            )
+
+
+def validate_safety_core(errors: list[str]) -> None:
+    validator = ROOT / "Safety-Core-Meta-OS" / "validation" / "validate_safety_core.py"
+    if not validator.is_file():
+        errors.append("missing Safety Core validator")
+        return
+    result = subprocess.run(
+        [sys.executable, "-B", str(validator)],
+        cwd=ROOT / "Safety-Core-Meta-OS",
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        summary = (result.stdout + result.stderr).strip()
+        errors.append(f"Safety Core validation failed: {summary}")
 
 
 def main() -> int:
@@ -358,18 +470,20 @@ def main() -> int:
     validate_schemas(errors)
     validate_markdown_links(errors)
     validate_scope_boundaries(errors)
+    validate_safety_core(errors)
 
     if errors:
-        print("Ultra Brain v0.1 Foundation validation: FAILED")
+        print("Ultra Brain v0.2 Foundation integration validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.1 Foundation validation: PASSED")
+    print("Ultra Brain v0.2 Foundation integration validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")
     print(f"- Core Meta OS scope directories: {len(CORE_META_OS_DIRECTORIES)}")
+    print("- Active implementation: Safety Core Meta OS 0.2.0")
     return 0
 
 

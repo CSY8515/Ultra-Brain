@@ -2,9 +2,17 @@
 
 Ultra Brain is the user's top-level Second Brain and governance layer. It defines how subordinate Meta OSs and OS ecosystems are identified, governed, connected, validated, and evolved without taking over the implementation responsibilities of those systems.
 
-## Foundation status
+## Release status
 
-This repository is at **v0.1 Foundation**. The release establishes architecture, authority, governance, contracts, registries, validation expectations, and release discipline. It does not implement a runtime, a decision engine, a Core Meta OS, or a user interface.
+The **v0.1 Foundation** remains the unchanged architecture, authority,
+governance, registry, validation, and release baseline. The current release is
+**v0.2 Safety**, which implements only the approved
+[Safety Core Meta OS](Safety-Core-Meta-OS/README.md) control plane.
+
+v0.2 provides explicit validation, integrity, monitoring, risk, safety logging,
+audit, backup, recovery, execution-safety, and incident-management controls. It
+does not implement a user interface, background automation, external
+connectivity, another Core Meta OS, or a lower-layer business executor.
 
 The canonical authority hierarchy is:
 
@@ -63,3 +71,11 @@ If documents conflict, apply the precedence rules in the [Constitution](CONSTITU
 The foundation MAY describe later versions so that present contracts remain forward-compatible. Such descriptions are roadmap intent, not implemented capability or authorization to implement it. In particular, v0.1 contains no UI/UX, automation, external AI integration, persistent application service, scheduler, monitoring agent, or Meta OS runtime.
 
 The repository root is the sole Ultra Brain repository root. A nested Ultra-Brain repository MUST NOT be created. Neighboring or pre-existing projects, including any OS Ecosystem workspace content, remain outside this foundation and MUST NOT be modified or silently adopted.
+
+## v0.2 boundary
+
+v0.2 activates only Safety Core Meta OS. Its executable reference controls are
+local, dependency-free, caller-driven, and fail-closed. They do not redesign the
+Foundation, perform governed business actions, schedule work, connect to
+external systems, or add UI/UX. Enhancement, Automation, Collaboration &
+Connectivity, and Personal Secretary remain scope-only future milestones.

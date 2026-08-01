@@ -1,0 +1,108 @@
+{
+  "registry_version": "0.2.0",
+  "schema_version": "0.2.0",
+  "registry_id": "safety-core-control-registry",
+  "registry_type": "safety_control",
+  "name": "Safety Core Control Registry",
+  "scope": "Executable safety controls owned by Safety Core Meta OS.",
+  "status": "active",
+  "owner_layer": "Meta OS",
+  "parent": "safety-core-meta-os",
+  "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+  "interface": "safety-core-control-interface",
+  "contract": "safety-core-control-contract",
+  "created_date": "2026-08-01",
+  "updated_date": "2026-08-01",
+  "entities": [
+    {
+      "id": "safety-control-validation",
+      "name": "Validation Control",
+      "responsibility": "Reject malformed, incomplete, ambiguous, or unsupported safety records.",
+      "status": "active",
+      "path": "safety_core/validation.py",
+      "required": true,
+      "order": 10
+    },
+    {
+      "id": "safety-control-integrity",
+      "name": "Integrity Control",
+      "responsibility": "Create and verify SHA-256 evidence for bounded files and records.",
+      "status": "active",
+      "path": "safety_core/integrity.py",
+      "required": true,
+      "order": 20
+    },
+    {
+      "id": "safety-control-risk",
+      "name": "Risk Control",
+      "responsibility": "Classify declared likelihood and impact deterministically.",
+      "status": "active",
+      "path": "safety_core/risk.py",
+      "required": true,
+      "order": 30
+    },
+    {
+      "id": "safety-control-monitoring",
+      "name": "Monitoring Control",
+      "responsibility": "Evaluate caller-supplied observations against explicit thresholds.",
+      "status": "active",
+      "path": "safety_core/monitoring.py",
+      "required": false,
+      "order": 40
+    },
+    {
+      "id": "safety-control-logging",
+      "name": "Safety Logging Control",
+      "responsibility": "Append minimized, hash-chained safety evidence.",
+      "status": "active",
+      "path": "safety_core/audit.py",
+      "required": true,
+      "order": 50
+    },
+    {
+      "id": "safety-control-audit",
+      "name": "Audit Control",
+      "responsibility": "Verify and query append-oriented safety evidence without mutation.",
+      "status": "active",
+      "path": "safety_core/audit.py",
+      "required": true,
+      "order": 60
+    },
+    {
+      "id": "safety-control-backup",
+      "name": "Backup Control",
+      "responsibility": "Create a verified archive from bounded regular files.",
+      "status": "active",
+      "path": "safety_core/backup.py",
+      "required": false,
+      "order": 70
+    },
+    {
+      "id": "safety-control-recovery",
+      "name": "Recovery Control",
+      "responsibility": "Recover verified archives without traversal, symlinks, or overwrite.",
+      "status": "active",
+      "path": "safety_core/recovery.py",
+      "required": false,
+      "order": 80
+    },
+    {
+      "id": "safety-control-execution",
+      "name": "Execution Safety Control",
+      "responsibility": "Return fail-closed allow, deny, or review decisions without executing actions.",
+      "status": "active",
+      "path": "safety_core/execution.py",
+      "required": true,
+      "order": 90
+    },
+    {
+      "id": "safety-control-incident",
+      "name": "Incident Management Control",
+      "responsibility": "Enforce incident states, transitions, containment, and recovery evidence.",
+      "status": "active",
+      "path": "safety_core/incident.py",
+      "required": true,
+      "order": 100
+    }
+  ]
+}

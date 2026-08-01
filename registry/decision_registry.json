@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-07-31",
+  "updated_date": "2026-08-01",
   "entities": [
     {
       "id": "decision-0001",
@@ -58,6 +58,26 @@
       "current_version": "0.1.0",
       "created_date": "2026-07-31",
       "updated_date": "2026-07-31"
+    },
+    {
+      "id": "decision-0004",
+      "entity_type": "decision",
+      "name": "Activate Safety Core Meta OS v0.2",
+      "scope": "Implement and release the approved v0.2 Safety control plane while preserving the v0.1 Foundation and all excluded domains.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [
+        "safety-core-control-interface"
+      ],
+      "contract": [
+        "safety-core-control-contract"
+      ],
+      "current_version": "0.2.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

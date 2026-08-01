@@ -9,23 +9,27 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-07-31",
+  "updated_date": "2026-08-01",
   "entities": [
     {
       "id": "safety-core-meta-os",
       "entity_type": "meta_os",
       "name": "Safety Core Meta OS",
-      "scope": "Future validation, integrity, monitoring, risk, backup, recovery, security, audit, and execution-safety authority.",
-      "status": "planned",
+      "scope": "Validation, integrity, monitoring, risk, safety logging, audit, backup, recovery, execution-safety, and incident-management authority.",
+      "status": "active",
       "owner_layer": "Meta OS",
       "parent": "ultra-brain",
       "repository": "https://github.com/CSY8515/Ultra-Brain.git",
       "path": "Safety-Core-Meta-OS",
-      "interface": [],
-      "contract": [],
-      "current_version": "0.1.0",
+      "interface": [
+        "safety-core-control-interface"
+      ],
+      "contract": [
+        "safety-core-control-contract"
+      ],
+      "current_version": "0.2.0",
       "created_date": "2026-07-31",
-      "updated_date": "2026-07-31"
+      "updated_date": "2026-08-01"
     },
     {
       "id": "enhancement-core-meta-os",

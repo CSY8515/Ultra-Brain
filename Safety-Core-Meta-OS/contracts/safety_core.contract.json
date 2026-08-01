@@ -1,0 +1,39 @@
+{
+  "id": "safety-core-control-contract",
+  "name": "Safety Core Control Contract",
+  "version": "0.2.0",
+  "status": "approved",
+  "owner_layer": "Meta OS",
+  "parties": [
+    "safety-core-meta-os",
+    "governed-caller"
+  ],
+  "preconditions": [
+    "The caller has authority to submit the bounded request but does not gain execution authority from submission.",
+    "Inputs use supported version 0.2.0 and contain no raw secret or credential payload.",
+    "Filesystem operations identify an explicit source or destination root.",
+    "The configured policy and any supplied evidence pass structural validation."
+  ],
+  "obligations": [
+    "Safety Core validates all mandatory fields before any filesystem side effect.",
+    "Safety Core computes risk deterministically and fails closed on missing or contradictory evidence.",
+    "Safety Core never executes the governed business action.",
+    "Safety Core records minimized decision evidence when an audit ledger is configured.",
+    "Reopening an existing audit ledger for append requires an independently retained expected record count and head hash.",
+    "The caller treats review as non-executable and remains accountable for authorization and execution.",
+    "Backup and recovery reject traversal, symlinks, unsafe members, and overwrite."
+  ],
+  "postconditions": [
+    "A decision contains request identity, policy version, risk evidence, status, and ordered reasons.",
+    "An allow result means only that declared Safety gates passed at evaluation time.",
+    "A recovery result identifies only newly created, hash-verified files.",
+    "Incident transitions retain prior history and revision."
+  ],
+  "failure_semantics": [
+    "Malformed or unsupported input is rejected explicitly.",
+    "Missing mandatory evidence yields deny or review, never allow.",
+    "Ledger corruption or append failure prevents a recorded allow result.",
+    "Unsafe archive or path input stops before destination writes.",
+    "An invalid incident transition leaves the prior incident unchanged."
+  ]
+}
