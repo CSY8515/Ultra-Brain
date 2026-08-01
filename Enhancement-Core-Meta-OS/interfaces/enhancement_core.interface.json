@@ -1,0 +1,21 @@
+{
+  "id": "enhancement-core-analysis-interface",
+  "version": "0.3.0",
+  "status": "active",
+  "owner": "enhancement-core-meta-os",
+  "transport": "local-python",
+  "operations": [
+    "analyze",
+    "fit-baseline",
+    "detect-patterns",
+    "build-knowledge-candidates",
+    "rank-options",
+    "generate-draft-rules",
+    "predict",
+    "explain-insights",
+    "advise"
+  ],
+  "side_effects": "none",
+  "execution_authority": false,
+  "safety_inheritance": "v0.2 controls remain independently mandatory"
+}

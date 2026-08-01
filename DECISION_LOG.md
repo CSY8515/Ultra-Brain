@@ -58,6 +58,26 @@ related artifacts.
   [Safety MASTER Design](Safety-Core-Meta-OS/MASTER_DESIGN.md),
   [ROADMAP.md](ROADMAP.md)
 
+## decision-0005 - Activate Enhancement Core Meta OS v0.3
+
+- **Date:** 2026-08-01
+- **Status:** `accepted`
+- **Decision:** Implement and release the existing `enhancement-core-meta-os`
+  scope as the v0.3 governed assistance plane. Product implementation remains
+  inside `Enhancement-Core-Meta-OS/`; root changes are limited to v0.3 release
+  registration, validation, tests, and documentation status.
+- **Rationale:** Ultra Brain requires evidence-linked analytics, bounded learning,
+  patterns, knowledge candidates, optimization, draft rules, predictions,
+  insights, and advisory decision support without granting execution authority.
+- **Consequences:** v0.2 Safety remains cumulative. Outputs are deterministic and
+  non-executing; knowledge and rules remain candidates; decisions remain human-
+  owned. Automation, external connectivity, Personal Secretary, UI/UX, Streamlit,
+  Core Capability, OS Ecosystem, Living OS, and ULE remain outside scope.
+- **Authority:** Explicit User mandate on 2026-08-01
+- **Related:** [Enhancement Architecture Review](Enhancement-Core-Meta-OS/ARCHITECTURE_REVIEW.md),
+  [Enhancement MASTER Design](Enhancement-Core-Meta-OS/MASTER_DESIGN.md),
+  [ROADMAP.md](ROADMAP.md)
+
 ## Adding a decision
 
 New entries MUST use the next unused `decision-####` identifier, be added to the decision registry, and include the fields above. A superseding entry MUST identify every superseded decision and explain migration or compatibility consequences.

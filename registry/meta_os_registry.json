@@ -35,17 +35,21 @@
       "id": "enhancement-core-meta-os",
       "entity_type": "meta_os",
       "name": "Enhancement Core Meta OS",
-      "scope": "Future analytics, learning, pattern analysis, knowledge integration, optimization, prediction, insight, and rule-generation authority.",
-      "status": "planned",
+      "scope": "Analytics, bounded learning, pattern analysis, knowledge candidates, transparent optimization, draft rule generation, prediction, insight, and advisory decision-support authority.",
+      "status": "active",
       "owner_layer": "Meta OS",
       "parent": "ultra-brain",
       "repository": "https://github.com/CSY8515/Ultra-Brain.git",
       "path": "Enhancement-Core-Meta-OS",
-      "interface": [],
-      "contract": [],
-      "current_version": "0.1.0",
+      "interface": [
+        "enhancement-core-analysis-interface"
+      ],
+      "contract": [
+        "enhancement-core-analysis-contract"
+      ],
+      "current_version": "0.3.0",
       "created_date": "2026-07-31",
-      "updated_date": "2026-07-31"
+      "updated_date": "2026-08-01"
     },
     {
       "id": "automation-core-meta-os",

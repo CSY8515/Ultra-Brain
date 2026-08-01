@@ -1,0 +1,18 @@
+{
+  "id": "enhancement-core-analysis-contract",
+  "version": "0.3.0",
+  "status": "active",
+  "interface": "enhancement-core-analysis-interface",
+  "input": "analysis_request.schema.json",
+  "output": "enhancement_result.schema.json",
+  "obligations": [
+    "accept only explicit bounded consent-declared evidence",
+    "preserve evidence identifiers in derived outputs",
+    "state confidence and limitations",
+    "keep knowledge and rules as unapproved candidates",
+    "keep decision support advisory",
+    "perform no governed action"
+  ],
+  "failure_semantics": "reject invalid input before analysis",
+  "compatibility": "additive changes only within 0.3.x"
+}

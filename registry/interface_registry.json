@@ -28,6 +28,24 @@
       "current_version": "0.2.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "enhancement-core-analysis-interface",
+      "entity_type": "interface",
+      "name": "Enhancement Core Analysis Interface",
+      "scope": "Local v0.3 interface for evidence-bounded analytics, learning, patterns, knowledge candidates, optimization, draft rules, prediction, insight, and advisory decision support.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "enhancement-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Enhancement-Core-Meta-OS/interfaces/enhancement_core.interface.json",
+      "interface": [],
+      "contract": [
+        "enhancement-core-analysis-contract"
+      ],
+      "current_version": "0.3.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

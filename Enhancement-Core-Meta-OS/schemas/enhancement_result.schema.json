@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "enhancement_result.schema.json",
+  "title": "Enhancement Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "version", "analytics", "learning", "patterns", "knowledge", "prediction", "rules", "insights", "decision_support", "limitations"],
+  "properties": {
+    "request_id": {"type": "string"}, "version": {"const": "0.3.0"},
+    "analytics": {"type": "object"}, "learning": {"type": "object"},
+    "patterns": {"type": "array"}, "knowledge": {"type": "array"},
+    "prediction": {"type": "object"}, "rules": {"type": "array"},
+    "insights": {"type": "array"},
+    "decision_support": {"type": ["object", "null"]},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  }
+}

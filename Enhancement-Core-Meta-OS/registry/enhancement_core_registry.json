@@ -1,0 +1,19 @@
+{
+  "id": "enhancement-core-registry",
+  "version": "0.3.0",
+  "status": "active",
+  "owner": "enhancement-core-meta-os",
+  "interface": "enhancement-core-analysis-interface",
+  "contract": "enhancement-core-analysis-contract",
+  "entities": [
+    {"id": "enhancement-analytics", "responsibility": "descriptive analytics", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-learning", "responsibility": "bounded baseline learning", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-pattern-analysis", "responsibility": "supported pattern detection", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-knowledge", "responsibility": "provenance-bearing knowledge candidates", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-optimization", "responsibility": "transparent option ranking", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-rule-generation", "responsibility": "draft advisory rule candidates", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-prediction", "responsibility": "bounded explainable prediction", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-insight", "responsibility": "evidence-linked insight", "path": "enhancement_core/core.py"},
+    {"id": "enhancement-decision-support", "responsibility": "non-executing advisory decision support", "path": "enhancement_core/core.py"}
+  ]
+}

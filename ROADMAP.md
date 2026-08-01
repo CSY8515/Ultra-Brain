@@ -8,9 +8,9 @@ not silently absorb the implementation scope of a later milestone.
 
 ## Current milestone
 
-v0.2 Safety is the current release milestone. The v0.1 Foundation remains the
-unchanged authority and architecture baseline; v0.3 and later capability
-milestones remain future scope.
+v0.3 Enhancement is the current release milestone. The v0.1 Foundation and v0.2
+Safety controls remain cumulative; v0.4 and later capability milestones remain
+future scope.
 
 ## Milestone sequence
 
