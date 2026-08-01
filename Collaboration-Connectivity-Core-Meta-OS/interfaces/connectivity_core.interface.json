@@ -1,0 +1,25 @@
+{
+  "id": "collaboration-connectivity-core-exchange-interface",
+  "name": "Collaboration & Connectivity Core Exchange Interface",
+  "version": "0.5.0",
+  "status": "approved",
+  "owner_layer": "Meta OS",
+  "inputs": [
+    "ConnectorSpec and caller-supplied transport",
+    "OperationRequest and current ConnectionGrant",
+    "Optional caller-supplied credential resolver",
+    "Bounded import/export text or synchronization snapshots"
+  ],
+  "outputs": [
+    "OperationResult with sanitized events",
+    "ImportResult or exported text",
+    "SyncResult with explicit conflict resolutions"
+  ],
+  "errors": [
+    "ValidationError",
+    "AuthorizationError",
+    "ConnectorError",
+    "ConflictError"
+  ],
+  "compatibility": "Compatible within 0.5.x while credential isolation, caller control, bounded exchange, and fail-closed authorization remain invariant."
+}

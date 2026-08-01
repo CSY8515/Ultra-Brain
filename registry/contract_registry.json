@@ -64,6 +64,24 @@
       "current_version": "0.4.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "collaboration-connectivity-core-exchange-contract",
+      "entity_type": "contract",
+      "name": "Collaboration & Connectivity Core Exchange Contract",
+      "scope": "Versioned v0.5 obligations for explicit authorization, credential isolation, bounded exchange, deterministic synchronization, and external failure containment.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "collaboration-connectivity-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Collaboration-Connectivity-Core-Meta-OS/contracts/connectivity_core.contract.json",
+      "interface": [
+        "collaboration-connectivity-core-exchange-interface"
+      ],
+      "contract": [],
+      "current_version": "0.5.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

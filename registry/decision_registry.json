@@ -118,6 +118,26 @@
       "current_version": "0.4.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "decision-0007",
+      "entity_type": "decision",
+      "name": "Activate Collaboration and Connectivity Core Meta OS v0.5",
+      "scope": "Implement and release the caller-driven, Safety-grant-gated v0.5 exchange plane while preserving the cumulative v0.1-v0.4 baselines and excluded domains.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [
+        "collaboration-connectivity-core-exchange-interface"
+      ],
+      "contract": [
+        "collaboration-connectivity-core-exchange-contract"
+      ],
+      "current_version": "0.5.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

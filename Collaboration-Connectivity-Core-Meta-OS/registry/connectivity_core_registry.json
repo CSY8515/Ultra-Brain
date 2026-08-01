@@ -1,0 +1,20 @@
+{
+  "id": "collaboration-connectivity-core-registry",
+  "version": "0.5.0",
+  "status": "active",
+  "owner": "collaboration-connectivity-core-meta-os",
+  "interface": "collaboration-connectivity-core-exchange-interface",
+  "contract": "collaboration-connectivity-core-exchange-contract",
+  "entities": [
+    {"id": "connectivity-api-management", "responsibility": "connector operation authorization and request budgets", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-connector", "responsibility": "caller-registered connector specification and transport boundary", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-credential-reference", "responsibility": "opaque caller-resolved credential identity without secret storage", "path": "connectivity_core/models.py"},
+    {"id": "connectivity-import-export", "responsibility": "bounded JSON JSONL and scalar CSV portability", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-synchronization", "responsibility": "deterministic snapshot reconciliation and conflict evidence", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-cross-platform", "responsibility": "validated platform-neutral JSON exchange", "path": "connectivity_core/models.py"},
+    {"id": "connectivity-external-ai", "responsibility": "separately authorized external AI connector boundary", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-repository", "responsibility": "separately authorized repository write boundary", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-communication", "responsibility": "separately authorized communication boundary", "path": "connectivity_core/core.py"},
+    {"id": "connectivity-ecosystem", "responsibility": "contracted ecosystem exchange without ecosystem implementation", "path": "connectivity_core/core.py"}
+  ]
+}

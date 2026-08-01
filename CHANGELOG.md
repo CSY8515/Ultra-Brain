@@ -3,6 +3,30 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.5] - 2026-08-01
+
+### Added
+
+- Collaboration & Connectivity Core Meta OS architecture, MASTER Design,
+  immutable records, validation, interface, contract, schemas, and registry.
+- Governed registered connectors, API request budgets, caller-resolved
+  credential references, bounded JSON/JSONL/CSV import/export, deterministic
+  snapshot synchronization, idempotency, and sanitized lifecycle evidence.
+- Explicit external-AI, repository-write, communication, cross-platform, and
+  ecosystem connector boundaries with separate permissions.
+
+### Preserved
+
+- v0.1 Foundation, v0.2 Safety, v0.3 Enhancement, and v0.4 Automation
+  implementation and authority.
+- Personal Secretary remains scope-only and unmodified.
+
+### Boundary
+
+- No stored secrets, provider SDK, daemon, polling, background sync, UI/UX,
+  Streamlit, Core Capability, OS Ecosystem, Living OS, ULE, Ultra Brain-
+  exclusive capability, or deployment.
+
 ## [v0.4] - 2026-08-01
 
 ### Added

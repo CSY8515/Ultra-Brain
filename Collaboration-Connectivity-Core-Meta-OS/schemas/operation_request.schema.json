@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/Collaboration-Connectivity-Core-Meta-OS/schemas/operation_request.schema.json",
+  "title": "Connectivity Operation Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "connector_id", "operation", "payload", "idempotency_key"],
+  "properties": {
+    "id": {"type": "string"}, "connector_id": {"type": "string"},
+    "operation": {"type": "string"}, "payload": {"type": "object"},
+    "idempotency_key": {"type": "string", "maxLength": 128}
+  }
+}

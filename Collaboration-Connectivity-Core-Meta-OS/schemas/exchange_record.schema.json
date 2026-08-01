@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/Collaboration-Connectivity-Core-Meta-OS/schemas/exchange_record.schema.json",
+  "title": "Exchange Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "revision", "modified_at", "data", "deleted", "source"],
+  "properties": {
+    "id": {"type": "string"}, "revision": {"type": "integer", "minimum": 0},
+    "modified_at": {"type": "string", "format": "date-time"}, "data": {"type": "object"},
+    "deleted": {"type": "boolean"}, "source": {"type": "string"}
+  }
+}

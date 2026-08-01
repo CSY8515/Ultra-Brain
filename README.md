@@ -4,17 +4,17 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 
 ## Release status
 
-The **v0.1 Foundation**, **v0.2 Safety**, and **v0.3 Enhancement** baselines
-remain cumulative. The current release is **v0.4 Automation**, which implements
-only the approved [Automation Core Meta OS](Automation-Core-Meta-OS/README.md)
-execution plane.
+The **v0.1 Foundation** through **v0.4 Automation** baselines remain cumulative.
+The current release is **v0.5 Collaboration & Connectivity**, which implements
+only the approved [Collaboration & Connectivity Core Meta OS](Collaboration-Connectivity-Core-Meta-OS/README.md)
+exchange plane.
 
-v0.4 adds bounded workflows, explicit triggers and interval schedules,
-caller-driven routines, deterministic decisions, registered local action
-execution, dependency pipelines, batches, idempotency, retries, compensation,
-audit events, and local notifications. It does not implement a user interface,
-background service, external connectivity, another Core Meta OS, or a
-lower-layer business product.
+v0.5 adds governed registered connectors, API request budgets, caller-resolved
+credential references, bounded import/export, deterministic synchronization,
+cross-platform exchange, and explicit external-AI, repository, communication,
+and ecosystem connector boundaries. It does not bundle provider SDKs, store
+secrets, implement a user interface, run a background service, or implement a
+lower-layer product.
 
 The canonical authority hierarchy is:
 
@@ -74,11 +74,12 @@ The foundation MAY describe later versions so that present contracts remain forw
 
 The repository root is the sole Ultra Brain repository root. A nested Ultra-Brain repository MUST NOT be created. Neighboring or pre-existing projects, including any OS Ecosystem workspace content, remain outside this foundation and MUST NOT be modified or silently adopted.
 
-## v0.4 boundary
+## v0.5 boundary
 
-v0.4 activates only Automation Core Meta OS while preserving Safety Core v0.2
-and Enhancement Core v0.3. Its reference runtime is local, dependency-free,
-caller-driven, bounded, Safety-grant-gated, and observable. It has no daemon,
-external event collection, dynamic code loading, network delivery, or hidden
-background loop. Collaboration & Connectivity and Personal Secretary remain
-scope-only future milestones; UI/UX, Streamlit, and deployment remain absent.
+v0.5 activates only Collaboration & Connectivity Core Meta OS while preserving
+the cumulative v0.1-v0.4 baselines. Its reference runtime is dependency-free,
+caller-driven, bounded, Safety-grant-gated, and transport-injected. It stores no
+credential values and has no daemon, provider SDK, connector discovery,
+filesystem watcher, continuous synchronization, or hidden background loop.
+Personal Secretary remains scope-only; UI/UX, Streamlit, and deployment remain
+absent.

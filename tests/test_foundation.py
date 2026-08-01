@@ -1,4 +1,4 @@
-"""Regression tests for Foundation and cumulative v0.2-v0.4 integrations."""
+"""Regression tests for Foundation and cumulative v0.2-v0.5 integrations."""
 
 from __future__ import annotations
 
@@ -31,8 +31,8 @@ class FoundationTests(unittest.TestCase):
                 with path.open(encoding="utf-8") as stream:
                     self.assertIsInstance(json.load(stream), dict)
 
-    def test_version_is_v0_4(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.4")
+    def test_version_is_v0_5(self) -> None:
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.5")
 
     def test_safety_registry_is_active_at_v0_2(self) -> None:
         registry = json.loads(
@@ -58,11 +58,14 @@ class FoundationTests(unittest.TestCase):
         self.assertEqual(automation["status"], "active")
         self.assertEqual(automation["current_version"], "0.4.0")
 
+    def test_connectivity_registry_is_active_at_v0_5(self) -> None:
+        registry = json.loads((ROOT / "registry" / "meta_os_registry.json").read_text(encoding="utf-8"))
+        connectivity = next(entity for entity in registry["entities"] if entity["id"] == "collaboration-connectivity-core-meta-os")
+        self.assertEqual(connectivity["status"], "active")
+        self.assertEqual(connectivity["current_version"], "0.5.0")
+
     def test_other_core_meta_os_directories_remain_scope_only(self) -> None:
-        for directory_name in (
-            "Collaboration-Connectivity-Core-Meta-OS",
-            "Personal-Secretary-Core-Meta-OS",
-        ):
+        for directory_name in ("Personal-Secretary-Core-Meta-OS",):
             directory = ROOT / directory_name
             files = sorted(
                 path.relative_to(directory).as_posix()

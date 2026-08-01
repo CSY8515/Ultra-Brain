@@ -1,0 +1,34 @@
+{
+  "id": "collaboration-connectivity-core-exchange-contract",
+  "name": "Collaboration & Connectivity Core Exchange Contract",
+  "version": "0.5.0",
+  "status": "approved",
+  "owner_layer": "Meta OS",
+  "parties": [
+    "Collaboration & Connectivity Core Meta OS",
+    "governed caller",
+    "caller-registered connector transport"
+  ],
+  "preconditions": [
+    "The connector specification and transport are registered locally.",
+    "The request and payload validate within declared bounds.",
+    "A current approved Safety-referenced grant authorizes the connector and operation."
+  ],
+  "obligations": [
+    "The Core must enforce request, record, payload, connector, operation, and sensitive-domain limits.",
+    "Credential values must be resolved only for a call and must never be stored, logged, serialized, or returned.",
+    "External output must validate before it is returned.",
+    "Synchronization conflicts must follow an explicit deterministic policy.",
+    "Transport exception text must not cross the public boundary."
+  ],
+  "postconditions": [
+    "The caller receives an immutable result or a stable typed error.",
+    "Audit events disclose lifecycle state without credential or exception content.",
+    "No background activity remains after the call returns."
+  ],
+  "failure_semantics": [
+    "Invalid, expired, unauthorized, oversized, ambiguous, or unregistered exchanges fail closed.",
+    "Transport failures are contained as sanitized failed results.",
+    "Conflicting idempotency-key reuse and unresolved synchronization conflicts are rejected."
+  ]
+}

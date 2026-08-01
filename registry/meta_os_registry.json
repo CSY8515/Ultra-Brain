@@ -75,17 +75,21 @@
       "id": "collaboration-connectivity-core-meta-os",
       "entity_type": "meta_os",
       "name": "Collaboration & Connectivity Core Meta OS",
-      "scope": "Future API, BYOK, connector, import/export, synchronization, cross-platform, repository, external-AI, and collaboration authority.",
-      "status": "planned",
+      "scope": "Governed API management, caller-resolved credentials, connectors, import/export, synchronization, cross-platform exchange, repository, external-AI, communication, and ecosystem-connectivity authority.",
+      "status": "active",
       "owner_layer": "Meta OS",
       "parent": "ultra-brain",
       "repository": "https://github.com/CSY8515/Ultra-Brain.git",
       "path": "Collaboration-Connectivity-Core-Meta-OS",
-      "interface": [],
-      "contract": [],
-      "current_version": "0.1.0",
+      "interface": [
+        "collaboration-connectivity-core-exchange-interface"
+      ],
+      "contract": [
+        "collaboration-connectivity-core-exchange-contract"
+      ],
+      "current_version": "0.5.0",
       "created_date": "2026-07-31",
-      "updated_date": "2026-07-31"
+      "updated_date": "2026-08-01"
     },
     {
       "id": "personal-secretary-core-meta-os",

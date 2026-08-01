@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/Collaboration-Connectivity-Core-Meta-OS/schemas/connector_spec.schema.json",
+  "title": "Connector Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "platform", "api_version", "operations", "credential", "max_payload_bytes"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"},
+    "kind": {"enum": ["api", "platform", "external_ai", "repository", "communication", "ecosystem"]},
+    "platform": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"},
+    "api_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+(?:\\.[0-9]+)?$"},
+    "operations": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"}},
+    "credential": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["id", "provider", "scopes"],
+          "properties": {
+            "id": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"},
+            "provider": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"},
+            "scopes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"}}
+          }
+        }
+      ]
+    },
+    "max_payload_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576}
+  }
+}

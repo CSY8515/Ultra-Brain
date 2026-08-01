@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/Collaboration-Connectivity-Core-Meta-OS/schemas/operation_result.schema.json",
+  "title": "Connectivity Operation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "connector_id", "operation", "status", "input_digest", "output", "error", "started_at", "finished_at", "events"],
+  "properties": {
+    "request_id": {"type": "string"}, "connector_id": {"type": "string"},
+    "operation": {"type": "string"}, "status": {"enum": ["completed", "failed"]},
+    "input_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "output": {},
+    "error": {"type": ["string", "null"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"},
+    "events": {"type": "array", "items": {"type": "object"}}
+  }
+}

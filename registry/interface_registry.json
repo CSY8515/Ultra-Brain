@@ -64,6 +64,24 @@
       "current_version": "0.4.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "collaboration-connectivity-core-exchange-interface",
+      "entity_type": "interface",
+      "name": "Collaboration & Connectivity Core Exchange Interface",
+      "scope": "Local v0.5 interface for governed connectors, API budgets, credential references, data portability, synchronization, external AI, repositories, communication, and ecosystem exchange.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "collaboration-connectivity-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Collaboration-Connectivity-Core-Meta-OS/interfaces/connectivity_core.interface.json",
+      "interface": [],
+      "contract": [
+        "collaboration-connectivity-core-exchange-contract"
+      ],
+      "current_version": "0.5.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

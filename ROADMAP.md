@@ -8,8 +8,8 @@ not silently absorb the implementation scope of a later milestone.
 
 ## Current milestone
 
-v0.4 Automation is the current release milestone. The v0.1 Foundation, v0.2
-Safety controls, and v0.3 Enhancement baseline remain cumulative; v0.5 and later
+v0.5 Collaboration & Connectivity is the current release milestone. The v0.1
+Foundation through v0.4 Automation baselines remain cumulative; v0.6 and later
 capability milestones remain future scope.
 
 ## Milestone sequence

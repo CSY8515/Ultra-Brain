@@ -100,6 +100,29 @@ related artifacts.
   [Automation MASTER Design](Automation-Core-Meta-OS/MASTER_DESIGN.md),
   [ROADMAP.md](ROADMAP.md)
 
+## decision-0007 - Activate Collaboration & Connectivity Core Meta OS v0.5
+
+- **Date:** 2026-08-01
+- **Status:** `accepted`
+- **Decision:** Implement and release the existing
+  `collaboration-connectivity-core-meta-os` scope as the v0.5 governed exchange
+  plane. Product implementation remains inside
+  `Collaboration-Connectivity-Core-Meta-OS/`; root changes are limited to v0.5
+  release registration, validation, tests, and documentation status.
+- **Rationale:** Ultra Brain requires bounded APIs, connectors, portable data,
+  synchronization, cross-platform exchange, repository access, external AI,
+  communication, and ecosystem connectivity without storing credentials or
+  granting implicit external authority.
+- **Consequences:** v0.1-v0.4 remain cumulative. Every external operation uses a
+  registered caller-supplied transport and a current Safety-referenced grant.
+  Personal Secretary, UI/UX, Streamlit, Core Capability, OS Ecosystem
+  implementation, Living OS, ULE, Ultra Brain-exclusive capability, and
+  deployment remain outside scope.
+- **Authority:** Explicit User mandate on 2026-08-01
+- **Related:** [Connectivity Architecture Review](Collaboration-Connectivity-Core-Meta-OS/ARCHITECTURE_REVIEW.md),
+  [Connectivity MASTER Design](Collaboration-Connectivity-Core-Meta-OS/MASTER_DESIGN.md),
+  [ROADMAP.md](ROADMAP.md)
+
 ## Adding a decision
 
 New entries MUST use the next unused `decision-####` identifier, be added to the decision registry, and include the fields above. A superseding entry MUST identify every superseded decision and explain migration or compatibility consequences.
