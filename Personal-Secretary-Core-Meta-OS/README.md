@@ -1,23 +1,40 @@
 # Personal Secretary Core Meta OS
 
-## Future scope
+Personal Secretary Core Meta OS is the consent-aware, person-directed assistance
+plane introduced by Ultra Brain v0.6. It prepares daily briefings, weekly and
+monthly reviews, reminder views, recommendations, priority plans, decision
+support, assistance plans, context retrieval, and scheduling proposals from
+bounded caller-supplied records.
 
-Personal Secretary Core Meta OS is planned for v0.6 to provide consent-aware,
-person-centered coordination built on the prior four Core Meta OS baselines. Its
-future scope may include:
+The reference implementation is local, deterministic, dependency-free, and
+non-executing. It does not read calendars, messages, files, contacts, or accounts;
+store a profile or memory; send reminders; book time; contact people; invoke
+Automation or Connectivity; or make decisions for the user.
 
-- user-directed task, time, communication, and information coordination;
-- preference and context handling with explicit control and provenance;
-- prioritization, reminders, preparation, follow-up, and review workflows;
-- confirmation and escalation for sensitive or consequential actions; and
-- privacy, reversibility, transparency, accessibility, and outcome feedback.
+## Authority boundary
 
-The person remains the authority. Detailed assistant behavior, data use, and
-service boundaries require the v0.6 governed design process.
+Every operation requires a current approved `SecretaryGrant` with a Safety
+decision reference, explicit operation and context-category allowlists, and item
+and time-horizon limits. Sensitive context requires a separate grant flag. All
+recommendations cite caller-provided evidence. Priority and option rankings are
+advisory; the person remains the decision and action authority.
 
-## v0.1 non-implementation boundary
+## Package
 
-v0.1 initializes this scope with documentation only. It implements no assistant,
-calendar or message access, profile or memory store, reminder service, workflow,
-runtime, UI/UX, dependency, or v0.6 behavior. No personal data is collected and
-no external action is authorized by this directory.
+The `personal_secretary_core` package exposes immutable records and
+`PersonalSecretaryCore`. See [Requirements](REQUIREMENTS.md), [Architecture
+Review](ARCHITECTURE_REVIEW.md), and [MASTER Design](MASTER_DESIGN.md) for the
+governed v0.6 contract.
+
+Run validation from this directory:
+
+```text
+python validation/validate_personal_secretary_core.py
+```
+
+## Explicit exclusions
+
+No UI/UX, dashboard UI, Streamlit, deployment, background scheduler, autonomous
+agent, personal-data persistence, provider SDK, network or filesystem I/O, Core
+Capability, OS Ecosystem, Living OS, ULE, or Ultra Brain-exclusive capability is
+implemented.

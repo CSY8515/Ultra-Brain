@@ -3,6 +3,29 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.6] - 2026-08-01
+
+### Added
+
+- Personal Secretary Core Meta OS architecture, MASTER Design, immutable
+  records, validation, interface, contract, schemas, and registry.
+- Daily Briefing, Weekly Review, Monthly Review, reminder views,
+  evidence-linked recommendations, transparent priority management, advisory
+  decision support, assistance plans, context support, and scheduling proposals.
+- Safety-referenced consent grants with operation, context-category,
+  sensitivity, item, and horizon controls.
+
+### Preserved
+
+- v0.1 Foundation through v0.5 Collaboration & Connectivity implementation and
+  authority remain cumulative and unchanged.
+
+### Boundary
+
+- No personal-data persistence, behavioral profiling, external I/O, autonomous
+  action, reminder delivery, calendar write, UI/UX, Streamlit, Core Capability,
+  OS Ecosystem, Living OS, ULE, Ultra Brain-exclusive capability, or deployment.
+
 ## [v0.5] - 2026-08-01
 
 ### Added

@@ -138,6 +138,26 @@
       "current_version": "0.5.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "decision-0008",
+      "entity_type": "decision",
+      "name": "Activate Personal Secretary Core Meta OS v0.6",
+      "scope": "Implement and release the consent-aware, Safety-grant-gated, caller-data-only v0.6 personal assistance plane while preserving cumulative baselines and excluded domains.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [
+        "personal-secretary-core-assistance-interface"
+      ],
+      "contract": [
+        "personal-secretary-core-assistance-contract"
+      ],
+      "current_version": "0.6.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

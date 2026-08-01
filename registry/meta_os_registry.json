@@ -95,17 +95,21 @@
       "id": "personal-secretary-core-meta-os",
       "entity_type": "meta_os",
       "name": "Personal Secretary Core Meta OS",
-      "scope": "Future briefing, review, goal, reminder, recommendation, priority, decision-support, and personal-dashboard authority.",
-      "status": "planned",
+      "scope": "Consent-aware daily briefing, weekly and monthly review, reminder, recommendation, priority, advisory decision-support, personal assistance, context-support, and scheduling-proposal authority.",
+      "status": "active",
       "owner_layer": "Meta OS",
       "parent": "ultra-brain",
       "repository": "https://github.com/CSY8515/Ultra-Brain.git",
       "path": "Personal-Secretary-Core-Meta-OS",
-      "interface": [],
-      "contract": [],
-      "current_version": "0.1.0",
+      "interface": [
+        "personal-secretary-core-assistance-interface"
+      ],
+      "contract": [
+        "personal-secretary-core-assistance-contract"
+      ],
+      "current_version": "0.6.0",
       "created_date": "2026-07-31",
-      "updated_date": "2026-07-31"
+      "updated_date": "2026-08-01"
     }
   ]
 }

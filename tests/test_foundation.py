@@ -1,4 +1,4 @@
-"""Regression tests for Foundation and cumulative v0.2-v0.5 integrations."""
+"""Regression tests for Foundation and cumulative v0.2-v0.6 integrations."""
 
 from __future__ import annotations
 
@@ -31,8 +31,8 @@ class FoundationTests(unittest.TestCase):
                 with path.open(encoding="utf-8") as stream:
                     self.assertIsInstance(json.load(stream), dict)
 
-    def test_version_is_v0_5(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.5")
+    def test_version_is_v0_6(self) -> None:
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.6")
 
     def test_safety_registry_is_active_at_v0_2(self) -> None:
         registry = json.loads(
@@ -64,15 +64,11 @@ class FoundationTests(unittest.TestCase):
         self.assertEqual(connectivity["status"], "active")
         self.assertEqual(connectivity["current_version"], "0.5.0")
 
-    def test_other_core_meta_os_directories_remain_scope_only(self) -> None:
-        for directory_name in ("Personal-Secretary-Core-Meta-OS",):
-            directory = ROOT / directory_name
-            files = sorted(
-                path.relative_to(directory).as_posix()
-                for path in directory.rglob("*")
-                if path.is_file()
-            )
-            self.assertEqual(files, ["README.md"], directory_name)
+    def test_personal_secretary_registry_is_active_at_v0_6(self) -> None:
+        registry = json.loads((ROOT / "registry" / "meta_os_registry.json").read_text(encoding="utf-8"))
+        secretary = next(entity for entity in registry["entities"] if entity["id"] == "personal-secretary-core-meta-os")
+        self.assertEqual(secretary["status"], "active")
+        self.assertEqual(secretary["current_version"], "0.6.0")
 
 
 if __name__ == "__main__":

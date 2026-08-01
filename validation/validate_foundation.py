@@ -1,4 +1,4 @@
-"""Validate Foundation and cumulative v0.2-v0.5 integration.
+"""Validate Foundation and cumulative v0.2-v0.6 integration.
 
 This validator intentionally uses only the Python standard library. It checks
 Foundation structure, release integration, and delegated Core validators; it is
@@ -21,11 +21,12 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
-MILESTONE_VERSION = "0.5"
+MILESTONE_VERSION = "0.6"
 SAFETY_VERSION = "0.2.0"
 ENHANCEMENT_VERSION = "0.3.0"
 AUTOMATION_VERSION = "0.4.0"
 CONNECTIVITY_VERSION = "0.5.0"
+SECRETARY_VERSION = "0.6.0"
 
 REQUIRED_DOCUMENTS = (
     "README.md",
@@ -311,6 +312,11 @@ def validate_registries(errors: list[str]) -> None:
             errors.append("Collaboration & Connectivity Core registry state must be active at 0.5.0")
         elif connectivity.get("interface") != ["collaboration-connectivity-core-exchange-interface"] or connectivity.get("contract") != ["collaboration-connectivity-core-exchange-contract"]:
             errors.append("Collaboration & Connectivity Core registry references are incorrect")
+        secretary = next((entity for entity in meta.get("entities", []) if entity.get("id") == "personal-secretary-core-meta-os"), None)
+        if not secretary or secretary.get("status") != "active" or secretary.get("current_version") != SECRETARY_VERSION:
+            errors.append("Personal Secretary Core registry state must be active at 0.6.0")
+        elif secretary.get("interface") != ["personal-secretary-core-assistance-interface"] or secretary.get("contract") != ["personal-secretary-core-assistance-contract"]:
+            errors.append("Personal Secretary Core registry references are incorrect")
 
     repository_registry = loaded.get("repository_registry.json")
     if repository_registry:
@@ -332,8 +338,9 @@ def validate_registries(errors: list[str]) -> None:
             "ultra-brain-v0-3-enhancement",
             "ultra-brain-v0-4-automation",
             "ultra-brain-v0-5-collaboration-connectivity",
+            "ultra-brain-v0-6-personal-secretary",
         }:
-            errors.append("release_registry.json must contain exactly v0.1 through v0.4")
+            errors.append("release_registry.json must contain exactly v0.1 through v0.6")
         elif (
             releases["ultra-brain-v0-1-foundation"].get("current_version")
             != REGISTRY_VERSION
@@ -346,6 +353,8 @@ def validate_registries(errors: list[str]) -> None:
             or releases["ultra-brain-v0-4-automation"].get("status") != "released"
             or releases["ultra-brain-v0-5-collaboration-connectivity"].get("current_version") != CONNECTIVITY_VERSION
             or releases["ultra-brain-v0-5-collaboration-connectivity"].get("status") != "released"
+            or releases["ultra-brain-v0-6-personal-secretary"].get("current_version") != SECRETARY_VERSION
+            or releases["ultra-brain-v0-6-personal-secretary"].get("status") != "released"
         ):
             errors.append("release registry versions or release states are incorrect")
 
@@ -355,12 +364,14 @@ def validate_registries(errors: list[str]) -> None:
             "enhancement-core-analysis-interface": ENHANCEMENT_VERSION,
             "automation-core-execution-interface": AUTOMATION_VERSION,
             "collaboration-connectivity-core-exchange-interface": CONNECTIVITY_VERSION,
+            "personal-secretary-core-assistance-interface": SECRETARY_VERSION,
         },
         "contract_registry.json": {
             "safety-core-control-contract": SAFETY_VERSION,
             "enhancement-core-analysis-contract": ENHANCEMENT_VERSION,
             "automation-core-execution-contract": AUTOMATION_VERSION,
             "collaboration-connectivity-core-exchange-contract": CONNECTIVITY_VERSION,
+            "personal-secretary-core-assistance-contract": SECRETARY_VERSION,
         },
     }
     for filename, expected in expected_entries.items():
@@ -386,8 +397,9 @@ def validate_registries(errors: list[str]) -> None:
             "decision-0005",
             "decision-0006",
             "decision-0007",
+            "decision-0008",
         }:
-            errors.append("decision_registry.json must contain decisions 0001 through 0006")
+            errors.append("decision_registry.json must contain decisions 0001 through 0008")
 
     interface_ids = {
         entity.get("id")
@@ -463,7 +475,7 @@ def validate_scope_boundaries(errors: list[str]) -> None:
     forbidden_top_level = {"ui", "pages", "components", "styles", ".streamlit"}
     actual_top_level = {path.name.lower() for path in ROOT.iterdir() if path.name not in {".git", "OS Ecosystem"}}
     for forbidden in sorted(forbidden_top_level & actual_top_level):
-        errors.append(f"forbidden v0.5 UI/runtime path exists: {forbidden}")
+        errors.append(f"forbidden v0.6 UI/runtime path exists: {forbidden}")
 
     for directory_name in CORE_META_OS_DIRECTORIES:
         directory = ROOT / directory_name
@@ -472,13 +484,10 @@ def validate_scope_boundaries(errors: list[str]) -> None:
             continue
         if (directory / ".git").exists():
             errors.append(f"{directory_name}: nested Git repository is forbidden")
-        if directory_name in {"Safety-Core-Meta-OS", "Enhancement-Core-Meta-OS", "Automation-Core-Meta-OS", "Collaboration-Connectivity-Core-Meta-OS"}:
-            continue
-        files = sorted(path.relative_to(directory).as_posix() for path in directory.rglob("*") if path.is_file())
-        if files != ["README.md"]:
-            errors.append(
-                f"{directory_name}: v0.5 permits only the existing README.md, found {files}"
-            )
+    protected = ["Safety-Core-Meta-OS", "Enhancement-Core-Meta-OS", "Automation-Core-Meta-OS", "Collaboration-Connectivity-Core-Meta-OS", "OS Ecosystem"]
+    result = subprocess.run(["git", "diff", "--exit-code", "v0.5", "--", *protected], cwd=ROOT, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        errors.append("prior Core domains or OS Ecosystem differ from v0.5")
 
 
 def validate_safety_core(errors: list[str]) -> None:
@@ -528,13 +537,26 @@ def validate_automation_core(errors: list[str]) -> None:
 
 
 def validate_connectivity_core(errors: list[str]) -> None:
-    validator = ROOT / "Collaboration-Connectivity-Core-Meta-OS" / "validation" / "validate_connectivity_core.py"
-    if not validator.is_file():
-        errors.append("missing Collaboration & Connectivity Core validator")
+    test_file = ROOT / "Collaboration-Connectivity-Core-Meta-OS" / "tests" / "test_connectivity_core.py"
+    if not test_file.is_file():
+        errors.append("missing Collaboration & Connectivity Core functional tests")
         return
-    result = subprocess.run([sys.executable, "-B", str(validator)], cwd=ROOT / "Collaboration-Connectivity-Core-Meta-OS", capture_output=True, text=True, check=False)
+    result = subprocess.run([sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests", "-p", "test_connectivity_core.py"], cwd=ROOT / "Collaboration-Connectivity-Core-Meta-OS", capture_output=True, text=True, check=False)
     if result.returncode != 0:
-        errors.append(f"Collaboration & Connectivity Core validation failed: {(result.stdout + result.stderr).strip()}")
+        errors.append(f"Collaboration & Connectivity Core functional regression failed: {(result.stdout + result.stderr).strip()}")
+    scope = subprocess.run(["git", "diff", "--exit-code", "v0.5", "--", "Collaboration-Connectivity-Core-Meta-OS"], cwd=ROOT, capture_output=True, text=True, check=False)
+    if scope.returncode != 0:
+        errors.append("Collaboration & Connectivity Core differs from the v0.5 baseline")
+
+
+def validate_personal_secretary_core(errors: list[str]) -> None:
+    validator = ROOT / "Personal-Secretary-Core-Meta-OS" / "validation" / "validate_personal_secretary_core.py"
+    if not validator.is_file():
+        errors.append("missing Personal Secretary Core validator")
+        return
+    result = subprocess.run([sys.executable, "-B", str(validator)], cwd=ROOT / "Personal-Secretary-Core-Meta-OS", capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        errors.append(f"Personal Secretary Core validation failed: {(result.stdout + result.stderr).strip()}")
 
 
 def main() -> int:
@@ -548,19 +570,20 @@ def main() -> int:
     validate_enhancement_core(errors)
     validate_automation_core(errors)
     validate_connectivity_core(errors)
+    validate_personal_secretary_core(errors)
 
     if errors:
-        print("Ultra Brain v0.5 integration validation: FAILED")
+        print("Ultra Brain v0.6 integration validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.5 integration validation: PASSED")
+    print("Ultra Brain v0.6 integration validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")
     print(f"- Core Meta OS scope directories: {len(CORE_META_OS_DIRECTORIES)}")
-    print("- Active implementations: Safety Core 0.2.0, Enhancement Core 0.3.0, Automation Core 0.4.0, Collaboration & Connectivity Core 0.5.0")
+    print("- Active implementations: Safety Core 0.2.0, Enhancement Core 0.3.0, Automation Core 0.4.0, Collaboration & Connectivity Core 0.5.0, Personal Secretary Core 0.6.0")
     return 0
 
 

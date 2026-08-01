@@ -8,9 +8,9 @@ not silently absorb the implementation scope of a later milestone.
 
 ## Current milestone
 
-v0.5 Collaboration & Connectivity is the current release milestone. The v0.1
-Foundation through v0.4 Automation baselines remain cumulative; v0.6 and later
-capability milestones remain future scope.
+v0.6 Personal Secretary is the current release milestone. The v0.1 Foundation
+through v0.5 Collaboration & Connectivity baselines remain cumulative; v0.7
+and later milestones remain future scope.
 
 ## Milestone sequence
 

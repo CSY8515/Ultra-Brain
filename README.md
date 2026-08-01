@@ -4,17 +4,16 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 
 ## Release status
 
-The **v0.1 Foundation** through **v0.4 Automation** baselines remain cumulative.
-The current release is **v0.5 Collaboration & Connectivity**, which implements
-only the approved [Collaboration & Connectivity Core Meta OS](Collaboration-Connectivity-Core-Meta-OS/README.md)
-exchange plane.
+The **v0.1 Foundation** through **v0.5 Collaboration & Connectivity** baselines
+remain cumulative. The current release is **v0.6 Personal Secretary**, which
+implements only the approved [Personal Secretary Core Meta OS](Personal-Secretary-Core-Meta-OS/README.md)
+assistance plane.
 
-v0.5 adds governed registered connectors, API request budgets, caller-resolved
-credential references, bounded import/export, deterministic synchronization,
-cross-platform exchange, and explicit external-AI, repository, communication,
-and ecosystem connector boundaries. It does not bundle provider SDKs, store
-secrets, implement a user interface, run a background service, or implement a
-lower-layer product.
+v0.6 adds consent-aware daily briefings, weekly and monthly reviews, reminder
+views, evidence-linked recommendations, transparent priorities, advisory
+decision support, assistance plans, context support, and scheduling proposals.
+It stores no personal data, performs no external action, sends no reminder,
+books no time, implements no user interface, and runs no background service.
 
 The canonical authority hierarchy is:
 
@@ -74,12 +73,11 @@ The foundation MAY describe later versions so that present contracts remain forw
 
 The repository root is the sole Ultra Brain repository root. A nested Ultra-Brain repository MUST NOT be created. Neighboring or pre-existing projects, including any OS Ecosystem workspace content, remain outside this foundation and MUST NOT be modified or silently adopted.
 
-## v0.5 boundary
+## v0.6 boundary
 
-v0.5 activates only Collaboration & Connectivity Core Meta OS while preserving
-the cumulative v0.1-v0.4 baselines. Its reference runtime is dependency-free,
-caller-driven, bounded, Safety-grant-gated, and transport-injected. It stores no
-credential values and has no daemon, provider SDK, connector discovery,
-filesystem watcher, continuous synchronization, or hidden background loop.
-Personal Secretary remains scope-only; UI/UX, Streamlit, and deployment remain
-absent.
+v0.6 activates only Personal Secretary Core Meta OS while preserving the
+cumulative v0.1-v0.5 baselines. Its reference runtime is dependency-free,
+caller-driven, bounded, Safety-grant-gated, ephemeral, and non-executing. It
+has no personal store, memory service, behavioral profile, daemon, timer,
+calendar write, message delivery, external I/O, or hidden background loop.
+UI/UX, Streamlit, and deployment remain absent.

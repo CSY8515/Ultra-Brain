@@ -123,6 +123,29 @@ related artifacts.
   [Connectivity MASTER Design](Collaboration-Connectivity-Core-Meta-OS/MASTER_DESIGN.md),
   [ROADMAP.md](ROADMAP.md)
 
+## decision-0008 - Activate Personal Secretary Core Meta OS v0.6
+
+- **Date:** 2026-08-01
+- **Status:** `accepted`
+- **Decision:** Implement and release the existing
+  `personal-secretary-core-meta-os` scope as the v0.6 consent-aware personal
+  assistance plane. Product implementation remains inside
+  `Personal-Secretary-Core-Meta-OS/`; root changes are limited to v0.6 release
+  registration, validation, tests, and documentation status.
+- **Rationale:** Ultra Brain requires bounded daily and periodic preparation,
+  reminders, priorities, recommendations, decision support, context support,
+  personal assistance, and scheduling proposals without retaining personal
+  data or granting action authority.
+- **Consequences:** v0.1-v0.5 remain cumulative. Every operation requires a
+  current Safety-referenced grant. Outputs are caller-data-only, provenance-
+  preserving, advisory, ephemeral, and non-executing. UI/UX, Streamlit, Core
+  Capability, OS Ecosystem implementation, Living OS, ULE, Ultra Brain-
+  exclusive capability, autonomous action, and deployment remain outside scope.
+- **Authority:** Explicit User mandate on 2026-08-01
+- **Related:** [Personal Secretary Architecture Review](Personal-Secretary-Core-Meta-OS/ARCHITECTURE_REVIEW.md),
+  [Personal Secretary MASTER Design](Personal-Secretary-Core-Meta-OS/MASTER_DESIGN.md),
+  [ROADMAP.md](ROADMAP.md)
+
 ## Adding a decision
 
 New entries MUST use the next unused `decision-####` identifier, be added to the decision registry, and include the fields above. A superseding entry MUST identify every superseded decision and explain migration or compatibility consequences.
