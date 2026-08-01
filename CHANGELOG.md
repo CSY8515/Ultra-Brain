@@ -3,6 +3,32 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.4] - 2026-08-01
+
+### Added
+
+- Automation Core Meta OS architecture, MASTER Design, immutable records,
+  validation, interface, contract, schemas, and registry.
+- Caller-driven workflows, schedules, triggers, routines, registered local
+  action execution, typed decisions, DAG pipelines, bounded batches, and local
+  notifications.
+- Safety-referenced grants, allowlists, budgets, idempotency, bounded retries,
+  cancellation, reverse compensation, sanitized audit events, validator, and
+  automatic tests.
+
+### Preserved
+
+- v0.1 Foundation, v0.2 Safety Core, and v0.3 Enhancement Core implementation
+  and authority.
+- Collaboration & Connectivity and Personal Secretary remain scope-only and
+  unmodified.
+
+### Boundary
+
+- No UI/UX, Streamlit, background service, external connectivity, Core
+  Capability, OS Ecosystem, Living OS, ULE, Ultra Brain-exclusive capability,
+  or deployment.
+
 ## [v0.3] - 2026-08-01
 
 ### Added

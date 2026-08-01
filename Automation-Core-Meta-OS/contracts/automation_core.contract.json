@@ -1,0 +1,20 @@
+{
+  "id": "automation-core-execution-contract",
+  "version": "0.4.0",
+  "status": "active",
+  "interface": "automation-core-execution-interface",
+  "input": "workflow_definition.schema.json",
+  "output": "execution_result.schema.json",
+  "obligations": [
+    "validate complete bounded input before execution",
+    "require an approved current Safety-referenced authorization grant",
+    "invoke only registered and allowlisted local action handlers",
+    "preserve idempotency and reject conflicting key reuse",
+    "bound retries steps schedules batches and output size",
+    "record sanitized lifecycle and compensation evidence",
+    "emit notifications as local records only",
+    "perform no background polling network connection or external delivery"
+  ],
+  "failure_semantics": "fail closed before execution; contain handler failure and compensate when configured",
+  "compatibility": "additive changes only within 0.4.x"
+}

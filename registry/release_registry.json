@@ -66,6 +66,26 @@
       "current_version": "0.3.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "ultra-brain-v0-4-automation",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.4 Automation",
+      "scope": "Automation Core Meta OS controlled workflows, triggers, scheduling, routines, registered local execution, typed decisions, pipelines, bounded batches, and local notification baseline.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "VERSION",
+      "interface": [
+        "automation-core-execution-interface"
+      ],
+      "contract": [
+        "automation-core-execution-contract"
+      ],
+      "current_version": "0.4.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

@@ -4,16 +4,17 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 
 ## Release status
 
-The **v0.1 Foundation** remains the unchanged architecture and authority
-baseline, and **v0.2 Safety** remains cumulative. The current release is
-**v0.3 Enhancement**, which implements only the approved
-[Enhancement Core Meta OS](Enhancement-Core-Meta-OS/README.md) assistance plane.
+The **v0.1 Foundation**, **v0.2 Safety**, and **v0.3 Enhancement** baselines
+remain cumulative. The current release is **v0.4 Automation**, which implements
+only the approved [Automation Core Meta OS](Automation-Core-Meta-OS/README.md)
+execution plane.
 
-v0.3 adds deterministic analytics, bounded learning, pattern analysis,
-provenance-bearing knowledge candidates, transparent optimization, draft-rule
-generation, bounded prediction, insight, and advisory decision support. It does
-not implement a user interface, background automation, external connectivity,
-another Core Meta OS, or a lower-layer business executor.
+v0.4 adds bounded workflows, explicit triggers and interval schedules,
+caller-driven routines, deterministic decisions, registered local action
+execution, dependency pipelines, batches, idempotency, retries, compensation,
+audit events, and local notifications. It does not implement a user interface,
+background service, external connectivity, another Core Meta OS, or a
+lower-layer business product.
 
 The canonical authority hierarchy is:
 
@@ -73,11 +74,11 @@ The foundation MAY describe later versions so that present contracts remain forw
 
 The repository root is the sole Ultra Brain repository root. A nested Ultra-Brain repository MUST NOT be created. Neighboring or pre-existing projects, including any OS Ecosystem workspace content, remain outside this foundation and MUST NOT be modified or silently adopted.
 
-## v0.3 boundary
+## v0.4 boundary
 
-v0.3 activates only Enhancement Core Meta OS while preserving Safety Core v0.2.
-Its reference engine is local, dependency-free, caller-driven, evidence-linked,
-and non-executing. Learning is never autonomous, knowledge and rules remain
-candidates, predictions expose uncertainty, and decisions remain human-owned.
-Automation, Collaboration & Connectivity, and Personal Secretary remain
-scope-only future milestones; UI/UX and Streamlit remain absent.
+v0.4 activates only Automation Core Meta OS while preserving Safety Core v0.2
+and Enhancement Core v0.3. Its reference runtime is local, dependency-free,
+caller-driven, bounded, Safety-grant-gated, and observable. It has no daemon,
+external event collection, dynamic code loading, network delivery, or hidden
+background loop. Collaboration & Connectivity and Personal Secretary remain
+scope-only future milestones; UI/UX, Streamlit, and deployment remain absent.

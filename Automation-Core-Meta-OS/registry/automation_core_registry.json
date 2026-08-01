@@ -1,0 +1,19 @@
+{
+  "id": "automation-core-registry",
+  "version": "0.4.0",
+  "status": "active",
+  "owner": "automation-core-meta-os",
+  "interface": "automation-core-execution-interface",
+  "contract": "automation-core-execution-contract",
+  "entities": [
+    {"id": "automation-workflow", "responsibility": "bounded workflow lifecycle", "path": "automation_core/core.py"},
+    {"id": "automation-scheduler", "responsibility": "caller-driven schedule calculation", "path": "automation_core/core.py"},
+    {"id": "automation-trigger", "responsibility": "explicit event trigger matching", "path": "automation_core/core.py"},
+    {"id": "automation-routine", "responsibility": "scheduled workflow binding", "path": "automation_core/core.py"},
+    {"id": "automation-execution", "responsibility": "authorized local action execution", "path": "automation_core/core.py"},
+    {"id": "automation-decision", "responsibility": "typed automatic decision rules", "path": "automation_core/core.py"},
+    {"id": "automation-pipeline", "responsibility": "acyclic dependency ordering", "path": "automation_core/core.py"},
+    {"id": "automation-batch", "responsibility": "bounded isolated batch execution", "path": "automation_core/core.py"},
+    {"id": "automation-notification", "responsibility": "structured local lifecycle notices", "path": "automation_core/models.py"}
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "automation-core-execution-interface",
+  "version": "0.4.0",
+  "status": "active",
+  "owner": "automation-core-meta-os",
+  "transport": "local-python",
+  "operations": [
+    "register-action",
+    "evaluate-decision",
+    "execute-workflow",
+    "handle-event",
+    "evaluate-schedule",
+    "run-routine",
+    "run-batch"
+  ],
+  "side_effects": "registered local handlers only",
+  "background_execution": false,
+  "external_delivery": false,
+  "authorization_required": true,
+  "safety_inheritance": "a current explicit Safety-referenced grant remains independently mandatory"
+}

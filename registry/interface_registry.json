@@ -46,6 +46,24 @@
       "current_version": "0.3.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "automation-core-execution-interface",
+      "entity_type": "interface",
+      "name": "Automation Core Execution Interface",
+      "scope": "Local v0.4 interface for authorized workflows, triggers, schedules, routines, typed decisions, pipelines, batches, registered action execution, and local notifications.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "automation-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Automation-Core-Meta-OS/interfaces/automation_core.interface.json",
+      "interface": [],
+      "contract": [
+        "automation-core-execution-contract"
+      ],
+      "current_version": "0.4.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }

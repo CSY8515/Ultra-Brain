@@ -78,6 +78,28 @@ related artifacts.
   [Enhancement MASTER Design](Enhancement-Core-Meta-OS/MASTER_DESIGN.md),
   [ROADMAP.md](ROADMAP.md)
 
+## decision-0006 - Activate Automation Core Meta OS v0.4
+
+- **Date:** 2026-08-01
+- **Status:** `accepted`
+- **Decision:** Implement and release the existing `automation-core-meta-os`
+  scope as the v0.4 controlled local execution plane. Product implementation
+  remains inside `Automation-Core-Meta-OS/`; root changes are limited to v0.4
+  release registration, validation, tests, and documentation status.
+- **Rationale:** Ultra Brain requires governed workflows, schedules, triggers,
+  routines, registered local action execution, typed automatic decisions,
+  pipelines, batches, and notifications with bounded, observable, recoverable
+  behavior.
+- **Consequences:** v0.2 Safety and v0.3 Enhancement remain cumulative. Every
+  execution requires a caller-supplied Safety-referenced grant and registered
+  allowlisted handler. Background services, external connectivity,
+  Collaboration & Connectivity, Personal Secretary, UI/UX, Streamlit, Core
+  Capability, OS Ecosystem, Living OS, ULE, and deployment remain outside scope.
+- **Authority:** Explicit User mandate on 2026-08-01
+- **Related:** [Automation Architecture Review](Automation-Core-Meta-OS/ARCHITECTURE_REVIEW.md),
+  [Automation MASTER Design](Automation-Core-Meta-OS/MASTER_DESIGN.md),
+  [ROADMAP.md](ROADMAP.md)
+
 ## Adding a decision
 
 New entries MUST use the next unused `decision-####` identifier, be added to the decision registry, and include the fields above. A superseding entry MUST identify every superseded decision and explain migration or compatibility consequences.

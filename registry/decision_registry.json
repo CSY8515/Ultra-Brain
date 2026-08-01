@@ -98,6 +98,26 @@
       "current_version": "0.3.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "decision-0006",
+      "entity_type": "decision",
+      "name": "Activate Automation Core Meta OS v0.4",
+      "scope": "Implement and release the bounded, Safety-grant-gated, caller-driven v0.4 Automation execution plane while preserving Foundation, Safety, Enhancement, and excluded domains.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [
+        "automation-core-execution-interface"
+      ],
+      "contract": [
+        "automation-core-execution-contract"
+      ],
+      "current_version": "0.4.0",
+      "created_date": "2026-08-01",
+      "updated_date": "2026-08-01"
     }
   ]
 }
