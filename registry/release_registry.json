@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-01",
+  "updated_date": "2026-08-03",
   "entities": [
     {
       "id": "ultra-brain-v0-1-foundation",
@@ -126,6 +126,28 @@
       "current_version": "0.6.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "ultra-brain-v0-61-personal-secretary-architecture-hotfix",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.61 Personal Secretary Architecture Hotfix",
+      "scope": "Architecture recovery for operational reporting, Database Reports, OS Ecosystem support, approval and outcome flow, and failure/recovery/rollback support without runtime change.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "VERSION",
+      "interface": [
+        "personal-secretary-core-assistance-interface",
+        "personal-secretary-operational-reporting-interface"
+      ],
+      "contract": [
+        "personal-secretary-core-assistance-contract",
+        "personal-secretary-operational-reporting-contract"
+      ],
+      "current_version": "0.61.0",
+      "created_date": "2026-08-03",
+      "updated_date": "2026-08-03"
     }
   ]
 }

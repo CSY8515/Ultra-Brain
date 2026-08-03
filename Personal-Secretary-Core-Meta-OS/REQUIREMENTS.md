@@ -14,3 +14,8 @@
 | SEC-SCH-001 | Detect conflicts and propose open time without booking. | Scheduling tests |
 | SEC-PRV-001 | Reject unapproved sensitive context and retain no personal store. | Privacy/adversarial tests |
 | SEC-SCP-001 | Prior Core Meta OSs, excluded domains, UI/UX, Streamlit, and deployment remain unchanged. | Frozen-scope tests |
+| SEC-OPS-001 | Define bounded status reporting for Ultra Brain, Core Meta OS, Registry, Validation, Release, OS Ecosystem, project, and database domains. | Operational interface/schema tests |
+| SEC-DBR-001 | Map verified Living OS and ULE Database Manager summaries into the registered Personal Secretary report port. | Architecture audit and external regression evidence |
+| SEC-APR-001 | Separate recommendation, approval request, optional Automation handoff, and outcome reporting authority. | Operational brief schema tests |
+| SEC-FAL-001 | Preserve error, failure, incident, warning, recovery, and rollback evidence without source-history mutation. | Failure lifecycle tests |
+| SEC-HFX-001 | Keep the v0.6 Python runtime unchanged during v0.61 Architecture recovery. | v0.6 runtime diff test |

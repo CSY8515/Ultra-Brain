@@ -1,0 +1,20 @@
+{
+  "id": "personal-secretary-operational-reporting-contract",
+  "version": "0.61.0",
+  "interface": "personal-secretary-operational-reporting-interface",
+  "provider": "personal-secretary-core-meta-os",
+  "obligations": [
+    "Accept only registered, identified, versioned operational summary envelopes.",
+    "Preserve source report identifiers, project identity, producer identity, timestamps, and evidence references.",
+    "Never ingest raw databases, raw business records, credentials, secrets, or unbounded payloads.",
+    "Support Ultra Brain, Core Meta OS, Registry, Validation, Release, OS Ecosystem, project, and database status domains.",
+    "Support error, failure, incident, warning, recovery, and rollback findings without rewriting source history.",
+    "Rank recommendations transparently and mark consequential actions as approval required.",
+    "Treat approval, Automation execution, recovery, rollback, and outcome reporting as separate authority transitions.",
+    "Return advisory briefs and result reports without autonomous execution."
+  ],
+  "source_ownership": {"living_os": "Living OS", "universal_learning_engine": "Universal Learning Engine", "os_ecosystem": "OS Ecosystem", "ultra_brain": "Ultra Brain"},
+  "approval_flow": ["recommendation", "approval_request", "user_disposition", "optional_automation_handoff", "outcome_report"],
+  "failure_semantics": "Unknown source, missing identity, missing evidence, malformed summary, secret-bearing data, or authority ambiguity fails closed.",
+  "runtime_change": false
+}

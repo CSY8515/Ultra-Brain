@@ -21,6 +21,10 @@ non-execution.
 9. Context matches preserve category, source, and observed time.
 10. Scheduling support returns open slots/conflicts and never books time.
 11. No external I/O, persistence, daemon, UI, deployment, or hidden inference exists.
+12. Operational summaries preserve source ownership, report identity, status
+    domain, evidence, and advisory-only state.
+13. Recommendation, approval, execution handoff, and outcome report are
+    separate authority transitions.
 
 ## Component topology
 
@@ -29,6 +33,11 @@ services: briefing/review, reminder support, priority management,
 recommendation, decision/assistance support, and context/scheduling support.
 Immutable public records cross the boundary. The clock is caller-injectable for
 reproducible time behavior.
+
+The v0.61 operational-reporting port sits outside the unchanged Python runtime.
+Registered adapters normalize source summaries and project them into the
+existing context, priority, recommendation, decision, and assistance services.
+It neither polls sources nor imports their runtimes.
 
 ## Information model
 
@@ -51,9 +60,21 @@ reproducible time behavior.
 4. Preserve source IDs and produce score/evidence explanations.
 5. Return an immutable result without retaining input or output.
 
+## Operational reporting lifecycle
+
+1. A source-owned Database Manager or status producer creates a bounded summary.
+2. A registered adapter validates identity, contract version, and source.
+3. The port preserves report ID, status domain, findings, recommendations, and
+   recovery or rollback evidence.
+4. Existing Core services prepare an evidence-linked advisory brief.
+5. Consequential recommendations become approval requests.
+6. Only an approved request may cross the separate Automation boundary.
+7. Completed, failed, recovered, or rolled-back outcomes return as reports.
+
 ## Compatibility
 
-The Python and JSON contract version is `0.6.0`. Additive changes may remain in
-`0.6.x`. Persistence, autonomous action, background reminders, calendar writes,
+The unchanged Python assistance contract version is 0.6.0; the recovered
+operational Architecture contract version is 0.61.0. Persistence, autonomous
+action, background reminders, calendar writes,
 external services, behavioral profiling, or inferred sensitive data require a
 new architecture and contract review.

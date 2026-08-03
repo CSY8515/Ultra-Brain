@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/Personal-Secretary-Core-Meta-OS/schemas/operational_report.schema.json",
+  "title": "Personal Secretary Operational Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["report_id", "source_id", "project", "producer", "generated_at", "status_domain", "priority", "summary", "findings", "recommendations", "contract_version"],
+  "properties": {
+    "report_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "source_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "project": {"type": "string", "minLength": 1, "maxLength": 160},
+    "producer": {"type": "string", "minLength": 1, "maxLength": 160},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "status_domain": {"enum": ["ultra_brain", "core_meta_os", "registry", "validation", "release", "os_ecosystem", "project", "database"]},
+    "priority": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+    "summary": {"type": "object", "maxProperties": 50},
+    "findings": {"type": "array", "maxItems": 1000, "items": {"type": "object", "additionalProperties": false, "required": ["finding_id", "category", "status", "evidence_ids"], "properties": {"finding_id": {"type": "string", "minLength": 1, "maxLength": 160}, "category": {"enum": ["error", "failure", "incident", "warning", "recovery", "rollback", "validation_failure", "execution_failure", "invalid_data", "rejected_decision", "unresolved_issue"]}, "status": {"enum": ["observed", "open", "resolved"]}, "evidence_ids": {"type": "array", "maxItems": 100, "uniqueItems": true, "items": {"type": "string"}}}}},
+    "recommendations": {"type": "array", "maxItems": 100, "items": {"type": "string", "maxLength": 1000}},
+    "contract_version": {"const": "0.61.0"}
+  }
+}

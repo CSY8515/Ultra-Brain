@@ -146,6 +146,27 @@ related artifacts.
   [Personal Secretary MASTER Design](Personal-Secretary-Core-Meta-OS/MASTER_DESIGN.md),
   [ROADMAP.md](ROADMAP.md)
 
+## decision-0009 - Recover Personal Secretary Operational Architecture v0.61
+
+- **Date:** 2026-08-03
+- **Status:** accepted
+- **Decision:** Release v0.61 as an Architecture hotfix that restores the
+  Personal Secretary operational-reporting port, Database Report and advisory
+  brief schemas, OS Ecosystem and project ownership mappings, recommendation
+  approval lifecycle, outcome reporting, and failure/recovery/rollback support.
+- **Rationale:** The v0.6 runtime implemented personal assistance services, but
+  its Core Architecture did not register the existing Living OS, Universal
+  Learning Engine, and OS Ecosystem operational-report relationships or define
+  Ultra Brain and ecosystem status-report domains.
+- **Consequences:** The v0.6 Python runtime remains unchanged. Living OS, ULE,
+  OS Ecosystem, and source databases retain ownership and execution authority.
+  The recovered Core port is advisory, summary-only, evidence-linked, and
+  requires explicit user approval before any separate Automation handoff.
+- **Authority:** Explicit User v0.61 hotfix mandate on 2026-08-03
+- **Related:** [v0.61 Architecture Audit](Personal-Secretary-Core-Meta-OS/ARCHITECTURE_AUDIT_v0.61.md),
+  [Operational Reporting Architecture](Personal-Secretary-Core-Meta-OS/OPERATIONAL_REPORTING.md),
+  [ROADMAP.md](ROADMAP.md)
+
 ## Adding a decision
 
 New entries MUST use the next unused `decision-####` identifier, be added to the decision registry, and include the fields above. A superseding entry MUST identify every superseded decision and explain migration or compatibility consequences.

@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-01",
+  "updated_date": "2026-08-03",
   "entities": [
     {
       "id": "safety-core-meta-os",
@@ -102,14 +102,16 @@
       "repository": "https://github.com/CSY8515/Ultra-Brain.git",
       "path": "Personal-Secretary-Core-Meta-OS",
       "interface": [
-        "personal-secretary-core-assistance-interface"
+        "personal-secretary-core-assistance-interface",
+        "personal-secretary-operational-reporting-interface"
       ],
       "contract": [
-        "personal-secretary-core-assistance-contract"
+        "personal-secretary-core-assistance-contract",
+        "personal-secretary-operational-reporting-contract"
       ],
-      "current_version": "0.6.0",
+      "current_version": "0.61.0",
       "created_date": "2026-07-31",
-      "updated_date": "2026-08-01"
+      "updated_date": "2026-08-03"
     }
   ]
 }

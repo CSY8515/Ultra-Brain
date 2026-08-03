@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-01",
+  "updated_date": "2026-08-03",
   "entities": [
     {
       "id": "decision-0001",
@@ -158,6 +158,26 @@
       "current_version": "0.6.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "decision-0009",
+      "entity_type": "decision",
+      "name": "Recover Personal Secretary Operational Architecture v0.61",
+      "scope": "Restore omitted Personal Secretary operational reporting, Database Report, OS Ecosystem, approval, outcome, and failure-support architecture without changing runtime.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "DECISION_LOG.md",
+      "interface": [
+        "personal-secretary-operational-reporting-interface"
+      ],
+      "contract": [
+        "personal-secretary-operational-reporting-contract"
+      ],
+      "current_version": "0.61.0",
+      "created_date": "2026-08-03",
+      "updated_date": "2026-08-03"
     }
   ]
 }

@@ -8,9 +8,11 @@ not silently absorb the implementation scope of a later milestone.
 
 ## Current milestone
 
-v0.6 Personal Secretary is the current release milestone. The v0.1 Foundation
-through v0.5 Collaboration & Connectivity baselines remain cumulative; v0.7
-and later milestones remain future scope.
+v0.61 Personal Secretary Architecture Hotfix is the current release. It restores
+operational reporting, Database Report, OS Ecosystem support, approval, outcome,
+and failure-support architecture omitted from v0.6 without changing the v0.6
+runtime or milestone sequence. The v0.1 through v0.6 baselines remain
+cumulative; v0.7 and later milestones remain future scope.
 
 ## Milestone sequence
 

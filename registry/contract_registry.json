@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-01",
+  "updated_date": "2026-08-03",
   "entities": [
     {
       "id": "safety-core-control-contract",
@@ -100,6 +100,24 @@
       "current_version": "0.6.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "personal-secretary-operational-reporting-contract",
+      "entity_type": "contract",
+      "name": "Personal Secretary Operational Reporting Contract",
+      "scope": "v0.61 obligations for registered summary intake, evidence-linked briefs, approval boundaries, outcome reports, and failure/recovery/rollback support.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "personal-secretary-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Personal-Secretary-Core-Meta-OS/contracts/operational_reporting.contract.json",
+      "interface": [
+        "personal-secretary-operational-reporting-interface"
+      ],
+      "contract": [],
+      "current_version": "0.61.0",
+      "created_date": "2026-08-03",
+      "updated_date": "2026-08-03"
     }
   ]
 }

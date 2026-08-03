@@ -4,16 +4,22 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 
 ## Release status
 
-The **v0.1 Foundation** through **v0.5 Collaboration & Connectivity** baselines
-remain cumulative. The current release is **v0.6 Personal Secretary**, which
-implements only the approved [Personal Secretary Core Meta OS](Personal-Secretary-Core-Meta-OS/README.md)
-assistance plane.
+The **v0.1 Foundation** through **v0.6 Personal Secretary** baselines remain
+cumulative. The current release is **v0.61 Personal Secretary Architecture
+Hotfix**, which restores the omitted operational-reporting architecture in the
+approved [Personal Secretary Core Meta OS](Personal-Secretary-Core-Meta-OS/README.md)
+without changing its runtime.
 
-v0.6 adds consent-aware daily briefings, weekly and monthly reviews, reminder
+The v0.6 runtime provides consent-aware daily briefings, weekly and monthly reviews, reminder
 views, evidence-linked recommendations, transparent priorities, advisory
 decision support, assistance plans, context support, and scheduling proposals.
 It stores no personal data, performs no external action, sends no reminder,
 books no time, implements no user interface, and runs no background service.
+
+v0.61 adds the Architecture Audit, registered operational-reporting port,
+Database Report and operational brief schemas, verified Living OS and ULE
+bindings, OS Ecosystem support boundaries, approval flow, outcome reporting,
+and failure/recovery/rollback support contracts. It adds no new execution path.
 
 The canonical authority hierarchy is:
 
@@ -73,10 +79,10 @@ The foundation MAY describe later versions so that present contracts remain forw
 
 The repository root is the sole Ultra Brain repository root. A nested Ultra-Brain repository MUST NOT be created. Neighboring or pre-existing projects, including any OS Ecosystem workspace content, remain outside this foundation and MUST NOT be modified or silently adopted.
 
-## v0.6 boundary
+## v0.61 boundary
 
-v0.6 activates only Personal Secretary Core Meta OS while preserving the
-cumulative v0.1-v0.5 baselines. Its reference runtime is dependency-free,
+v0.61 repairs only Personal Secretary Core Meta OS architecture while preserving the
+cumulative v0.1-v0.6 baselines. Its reference runtime is dependency-free,
 caller-driven, bounded, Safety-grant-gated, ephemeral, and non-executing. It
 has no personal store, memory service, behavioral profile, daemon, timer,
 calendar write, message delivery, external I/O, or hidden background loop.

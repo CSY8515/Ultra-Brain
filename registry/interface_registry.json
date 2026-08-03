@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-01",
+  "updated_date": "2026-08-03",
   "entities": [
     {
       "id": "safety-core-control-interface",
@@ -100,6 +100,24 @@
       "current_version": "0.6.0",
       "created_date": "2026-08-01",
       "updated_date": "2026-08-01"
+    },
+    {
+      "id": "personal-secretary-operational-reporting-interface",
+      "entity_type": "interface",
+      "name": "Personal Secretary Operational Reporting Interface",
+      "scope": "v0.61 architecture port for registered Ultra Brain, Core Meta OS, Registry, Validation, Release, OS Ecosystem, project, and database operational summaries.",
+      "status": "active",
+      "owner_layer": "Meta OS",
+      "parent": "personal-secretary-core-meta-os",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "Personal-Secretary-Core-Meta-OS/interfaces/operational_reporting.interface.json",
+      "interface": [],
+      "contract": [
+        "personal-secretary-operational-reporting-contract"
+      ],
+      "current_version": "0.61.0",
+      "created_date": "2026-08-03",
+      "updated_date": "2026-08-03"
     }
   ]
 }

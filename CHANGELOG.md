@@ -3,6 +3,28 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.61] - 2026-08-03
+
+### Recovered
+
+- Personal Secretary Core Meta OS Architecture Audit and Operational Reporting
+  Architecture omitted from v0.6.
+- Canonical operational-report and advisory-brief port, contract, schemas, and
+  Registry entries.
+- Ultra Brain, Core Meta OS, Registry, Validation, Release, OS Ecosystem,
+  project, and database status-report domains.
+- Verified Living OS v2.095 and Universal Learning Engine v1.08 Database Manager
+  report mappings through OS Ecosystem Personal Secretary Capability v1.0.
+- Recommendation, approval request, optional Automation handoff, outcome
+  reporting, and failure/recovery/rollback support boundaries.
+
+### Preserved
+
+- The v0.6 Personal Secretary Python runtime and 0.6.0 assistance contract are
+  unchanged.
+- No Core Meta OS redesign, new feature, UI, Runtime, OS Ecosystem, Living OS,
+  ULE, Streamlit, or deployment change.
+
 ## [v0.6] - 2026-08-01
 
 ### Added

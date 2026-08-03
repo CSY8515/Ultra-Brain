@@ -1,4 +1,4 @@
-"""Validate Foundation and cumulative v0.2-v0.6 integration.
+"""Validate Foundation and cumulative v0.2-v0.61 integration.
 
 This validator intentionally uses only the Python standard library. It checks
 Foundation structure, release integration, and delegated Core validators; it is
@@ -21,12 +21,13 @@ ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
-MILESTONE_VERSION = "0.6"
+MILESTONE_VERSION = "0.61"
 SAFETY_VERSION = "0.2.0"
 ENHANCEMENT_VERSION = "0.3.0"
 AUTOMATION_VERSION = "0.4.0"
 CONNECTIVITY_VERSION = "0.5.0"
-SECRETARY_VERSION = "0.6.0"
+SECRETARY_RUNTIME_VERSION = "0.6.0"
+SECRETARY_VERSION = "0.61.0"
 
 REQUIRED_DOCUMENTS = (
     "README.md",
@@ -66,6 +67,8 @@ REQUIRED_DOCUMENTS = (
     "Automation-Core-Meta-OS/README.md",
     "Collaboration-Connectivity-Core-Meta-OS/README.md",
     "Personal-Secretary-Core-Meta-OS/README.md",
+    "Personal-Secretary-Core-Meta-OS/ARCHITECTURE_AUDIT_v0.61.md",
+    "Personal-Secretary-Core-Meta-OS/OPERATIONAL_REPORTING.md",
 )
 
 REGISTRY_FILES = (
@@ -314,8 +317,8 @@ def validate_registries(errors: list[str]) -> None:
             errors.append("Collaboration & Connectivity Core registry references are incorrect")
         secretary = next((entity for entity in meta.get("entities", []) if entity.get("id") == "personal-secretary-core-meta-os"), None)
         if not secretary or secretary.get("status") != "active" or secretary.get("current_version") != SECRETARY_VERSION:
-            errors.append("Personal Secretary Core registry state must be active at 0.6.0")
-        elif secretary.get("interface") != ["personal-secretary-core-assistance-interface"] or secretary.get("contract") != ["personal-secretary-core-assistance-contract"]:
+            errors.append("Personal Secretary Core registry state must be active at 0.61.0")
+        elif secretary.get("interface") != ["personal-secretary-core-assistance-interface", "personal-secretary-operational-reporting-interface"] or secretary.get("contract") != ["personal-secretary-core-assistance-contract", "personal-secretary-operational-reporting-contract"]:
             errors.append("Personal Secretary Core registry references are incorrect")
 
     repository_registry = loaded.get("repository_registry.json")
@@ -339,8 +342,9 @@ def validate_registries(errors: list[str]) -> None:
             "ultra-brain-v0-4-automation",
             "ultra-brain-v0-5-collaboration-connectivity",
             "ultra-brain-v0-6-personal-secretary",
+            "ultra-brain-v0-61-personal-secretary-architecture-hotfix",
         }:
-            errors.append("release_registry.json must contain exactly v0.1 through v0.6")
+            errors.append("release_registry.json must contain exactly v0.1 through v0.61")
         elif (
             releases["ultra-brain-v0-1-foundation"].get("current_version")
             != REGISTRY_VERSION
@@ -353,8 +357,10 @@ def validate_registries(errors: list[str]) -> None:
             or releases["ultra-brain-v0-4-automation"].get("status") != "released"
             or releases["ultra-brain-v0-5-collaboration-connectivity"].get("current_version") != CONNECTIVITY_VERSION
             or releases["ultra-brain-v0-5-collaboration-connectivity"].get("status") != "released"
-            or releases["ultra-brain-v0-6-personal-secretary"].get("current_version") != SECRETARY_VERSION
+            or releases["ultra-brain-v0-6-personal-secretary"].get("current_version") != SECRETARY_RUNTIME_VERSION
             or releases["ultra-brain-v0-6-personal-secretary"].get("status") != "released"
+            or releases["ultra-brain-v0-61-personal-secretary-architecture-hotfix"].get("current_version") != SECRETARY_VERSION
+            or releases["ultra-brain-v0-61-personal-secretary-architecture-hotfix"].get("status") != "released"
         ):
             errors.append("release registry versions or release states are incorrect")
 
@@ -364,14 +370,16 @@ def validate_registries(errors: list[str]) -> None:
             "enhancement-core-analysis-interface": ENHANCEMENT_VERSION,
             "automation-core-execution-interface": AUTOMATION_VERSION,
             "collaboration-connectivity-core-exchange-interface": CONNECTIVITY_VERSION,
-            "personal-secretary-core-assistance-interface": SECRETARY_VERSION,
+            "personal-secretary-core-assistance-interface": SECRETARY_RUNTIME_VERSION,
+            "personal-secretary-operational-reporting-interface": SECRETARY_VERSION,
         },
         "contract_registry.json": {
             "safety-core-control-contract": SAFETY_VERSION,
             "enhancement-core-analysis-contract": ENHANCEMENT_VERSION,
             "automation-core-execution-contract": AUTOMATION_VERSION,
             "collaboration-connectivity-core-exchange-contract": CONNECTIVITY_VERSION,
-            "personal-secretary-core-assistance-contract": SECRETARY_VERSION,
+            "personal-secretary-core-assistance-contract": SECRETARY_RUNTIME_VERSION,
+            "personal-secretary-operational-reporting-contract": SECRETARY_VERSION,
         },
     }
     for filename, expected in expected_entries.items():
@@ -398,6 +406,7 @@ def validate_registries(errors: list[str]) -> None:
             "decision-0006",
             "decision-0007",
             "decision-0008",
+            "decision-0009",
         }:
             errors.append("decision_registry.json must contain decisions 0001 through 0008")
 
@@ -475,7 +484,7 @@ def validate_scope_boundaries(errors: list[str]) -> None:
     forbidden_top_level = {"ui", "pages", "components", "styles", ".streamlit"}
     actual_top_level = {path.name.lower() for path in ROOT.iterdir() if path.name not in {".git", "OS Ecosystem"}}
     for forbidden in sorted(forbidden_top_level & actual_top_level):
-        errors.append(f"forbidden v0.6 UI/runtime path exists: {forbidden}")
+        errors.append(f"forbidden v0.61 UI/runtime path exists: {forbidden}")
 
     for directory_name in CORE_META_OS_DIRECTORIES:
         directory = ROOT / directory_name
@@ -573,17 +582,18 @@ def main() -> int:
     validate_personal_secretary_core(errors)
 
     if errors:
-        print("Ultra Brain v0.6 integration validation: FAILED")
+        print("Ultra Brain v0.61 integration validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.6 integration validation: PASSED")
+    print("Ultra Brain v0.61 integration validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")
     print(f"- Core Meta OS scope directories: {len(CORE_META_OS_DIRECTORIES)}")
-    print("- Active implementations: Safety Core 0.2.0, Enhancement Core 0.3.0, Automation Core 0.4.0, Collaboration & Connectivity Core 0.5.0, Personal Secretary Core 0.6.0")
+    print("- Active implementations: Safety Core 0.2.0, Enhancement Core 0.3.0, Automation Core 0.4.0, Collaboration & Connectivity Core 0.5.0, Personal Secretary Runtime 0.6.0")
+    print("- Recovered architecture: Personal Secretary Operational Reporting 0.61.0")
     return 0
 
 

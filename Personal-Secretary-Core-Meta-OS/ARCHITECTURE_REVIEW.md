@@ -46,3 +46,13 @@ Architecture Review: approved for the bounded v0.6 implementation under the
 explicit User mandate dated 2026-08-01. Release remains conditional on complete
 validation, automatic tests, protected-scope review, version and registry
 coherence, commit, push, tag, and GitHub Release verification.
+
+## v0.61 audit recovery
+
+The 2026-08-03 Architecture Audit found that v0.6 omitted the Core-level
+operational-reporting relationship even though Living OS v2.095, Universal
+Learning Engine v1.08, and OS Ecosystem Personal Secretary Capability v1.0
+already implement compatible report production, delivery, normalization, and
+aggregation. v0.61 restores the missing port, contract, schemas, ownership map,
+approval lifecycle, and failure-support categories. It does not redesign the
+Core or modify any runtime.

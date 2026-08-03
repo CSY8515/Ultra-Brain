@@ -1,0 +1,13 @@
+{
+  "id": "personal-secretary-operational-reporting-interface",
+  "version": "0.61.0",
+  "owner": "personal-secretary-core-meta-os",
+  "type": "architecture_port",
+  "purpose": "Receive registered operational summaries and return evidence-linked advisory briefs without changing runtime or source ownership.",
+  "operations": ["receive_operational_report", "prepare_operational_brief", "prepare_approval_request", "accept_outcome_report"],
+  "status_domains": ["ultra_brain", "core_meta_os", "registry", "validation", "release", "os_ecosystem", "project", "database"],
+  "verified_bindings": ["living-os.database-management", "universal-learning-engine.operational-reporting", "os-ecosystem.personal-secretary-capability"],
+  "core_projection": ["context_support", "priority_management", "recommendation", "decision_support", "personal_assistance"],
+  "authority": {"advisory_only": true, "user_approval_required": true, "execution_provider": "automation-boundary", "source_data_owner_unchanged": true},
+  "runtime_change": false
+}
