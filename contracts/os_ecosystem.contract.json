@@ -1,0 +1,35 @@
+{
+  "id": "ultra-brain-os-ecosystem-management-contract",
+  "name": "Ultra Brain OS Ecosystem Management Contract",
+  "version": "0.7.0",
+  "status": "approved",
+  "owner_layer": "Ultra Brain",
+  "parties": ["Ultra Brain", "OS Ecosystem", "Personal Secretary Core Meta OS"],
+  "preconditions": [
+    "OS Ecosystem is registered with repository https://github.com/CSY8515/OS-Ecosystem.git and release tag v0.73.",
+    "The Ultra Brain management interface and this contract are approved and version coherent.",
+    "Operational reports identify a source registered by OS Ecosystem Operational Report Contract v1.0.",
+    "Personal Secretary Operational Reporting Interface and Contract 0.61.0 remain active."
+  ],
+  "obligations": [
+    "Ultra Brain maintains the OS Ecosystem registry identity, lifecycle status, declared release health, compatibility decision, and management evidence.",
+    "OS Ecosystem retains ownership of its repository, implementation, runtime, capabilities, releases, and management of Living OS and Universal Learning Engine relationships.",
+    "Living OS and Universal Learning Engine retain data, business rules, runtime decisions, versions, and independent deployment.",
+    "Operational summaries flow from Living OS or Universal Learning Engine through OS Ecosystem Personal Secretary Capability and the Ultra Brain Personal Secretary reporting boundary before advisory presentation to the User.",
+    "Every report preserves source, producer, project, report identity, timestamp, priority, and evidence references.",
+    "Raw databases, raw business records, credentials, secrets, and unbounded payloads are never transferred through this contract.",
+    "Recommendations remain advisory and consequential actions require an explicit, separate User approval transition.",
+    "The navigation artifact remains structural and does not implement UI, World, Theme, routes, rendering, or deployment."
+  ],
+  "postconditions": [
+    "Registry, interface, contract, dependency, navigation, and operational-flow references are mutually coherent.",
+    "The OS Ecosystem repository and connected project ownership remain independent and unchanged.",
+    "The User receives an evidence-linked advisory report or an explicit failure result."
+  ],
+  "failure_semantics": [
+    "Unknown ecosystem or source identity fails closed.",
+    "Missing evidence, incompatible versions, malformed summaries, secret-bearing data, or authority ambiguity fails closed.",
+    "A failed health or dependency check changes management status without modifying the independent ecosystem runtime.",
+    "No failure authorizes automatic recovery, rollback, repository mutation, or execution."
+  ]
+}

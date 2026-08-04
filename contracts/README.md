@@ -16,3 +16,10 @@ policy. Contract changes require impact and compatibility review.
 This README declares the contract namespace only. v0.1 contains no executable
 contract, runtime enforcement, generated client, service integration, dependency,
 or v0.2+ capability.
+
+## v0.7 OS Ecosystem management contract
+
+`os_ecosystem.contract.json` governs Ultra Brain's management of the independent
+OS Ecosystem registration and operational-report flow. It preserves OS
+Ecosystem, Living OS, and Universal Learning Engine ownership and requires
+fail-closed, advisory-only handling with separate User approval for action.

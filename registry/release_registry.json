@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-03",
+  "updated_date": "2026-08-04",
   "entities": [
     {
       "id": "ultra-brain-v0-1-foundation",
@@ -148,6 +148,22 @@
       "current_version": "0.61.0",
       "created_date": "2026-08-03",
       "updated_date": "2026-08-03"
+    },
+    {
+      "id": "ultra-brain-v0-7-os-ecosystem-integration",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.7 OS Ecosystem Integration",
+      "scope": "Formal independent OS Ecosystem v0.73 registry, management interface and contract, dependency validation, operational-report flow, and non-UI navigation structure.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "VERSION",
+      "interface": ["ultra-brain-os-ecosystem-management-interface"],
+      "contract": ["ultra-brain-os-ecosystem-management-contract"],
+      "current_version": "0.7.0",
+      "created_date": "2026-08-04",
+      "updated_date": "2026-08-04"
     }
   ]
 }

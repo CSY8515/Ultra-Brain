@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-03",
+  "updated_date": "2026-08-04",
   "entities": [
     {
       "id": "safety-core-control-contract",
@@ -118,6 +118,22 @@
       "current_version": "0.61.0",
       "created_date": "2026-08-03",
       "updated_date": "2026-08-03"
+    },
+    {
+      "id": "ultra-brain-os-ecosystem-management-contract",
+      "entity_type": "contract",
+      "name": "Ultra Brain OS Ecosystem Management Contract",
+      "scope": "v0.7 obligations for independent OS Ecosystem management, dependency compatibility, operational-report flow, advisory authority, navigation structure, and ownership preservation.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "os-ecosystem",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "contracts/os_ecosystem.contract.json",
+      "interface": ["ultra-brain-os-ecosystem-management-interface"],
+      "contract": [],
+      "current_version": "0.7.0",
+      "created_date": "2026-08-04",
+      "updated_date": "2026-08-04"
     }
   ]
 }

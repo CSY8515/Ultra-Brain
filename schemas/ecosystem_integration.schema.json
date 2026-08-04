@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/CSY8515/Ultra-Brain/schemas/ecosystem_integration.schema.json",
+  "title": "Ultra Brain OS Ecosystem Integration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["integration_id", "version", "status", "ecosystem", "management", "interface", "contract", "dependencies", "operational_flow", "navigation", "validated_date"],
+  "properties": {
+    "integration_id": {"const": "ultra-brain-os-ecosystem-integration"},
+    "version": {"const": "0.7.0"},
+    "status": {"const": "active"},
+    "ecosystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "release_tag", "repository", "status", "health", "health_basis"],
+      "properties": {
+        "id": {"const": "os-ecosystem"},
+        "version": {"const": "0.73"},
+        "release_tag": {"const": "v0.73"},
+        "repository": {"const": "https://github.com/CSY8515/OS-Ecosystem.git"},
+        "status": {"const": "active"},
+        "health": {"enum": ["healthy", "degraded", "unhealthy", "unknown"]},
+        "health_basis": {"type": "string", "minLength": 1}
+      }
+    },
+    "management": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manager", "managed_entity", "ecosystem_manages", "source_ownership_transferred", "repository_merged", "runtime_embedded"],
+      "properties": {
+        "manager": {"const": "ultra-brain"},
+        "managed_entity": {"const": "os-ecosystem"},
+        "ecosystem_manages": {"const": ["living-os", "universal-learning-engine"]},
+        "source_ownership_transferred": {"const": false},
+        "repository_merged": {"const": false},
+        "runtime_embedded": {"const": false}
+      }
+    },
+    "interface": {"const": "ultra-brain-os-ecosystem-management-interface"},
+    "contract": {"const": "ultra-brain-os-ecosystem-management-contract"},
+    "dependencies": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "required"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "version": {"type": "string", "minLength": 1},
+          "required": {"const": true}
+        }
+      }
+    },
+    "operational_flow": {"type": "array", "minItems": 5, "items": {"type": "string", "minLength": 1}},
+    "navigation": {"const": "navigation/os_ecosystem.navigation.json"},
+    "validated_date": {"type": "string", "format": "date"}
+  }
+}

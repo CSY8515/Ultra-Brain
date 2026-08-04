@@ -1,0 +1,27 @@
+{
+  "id": "ultra-brain-os-ecosystem-management-interface",
+  "name": "Ultra Brain OS Ecosystem Management Interface",
+  "version": "0.7.0",
+  "status": "approved",
+  "owner_layer": "Ultra Brain",
+  "inputs": [
+    "OS Ecosystem v0.73 release identity and lifecycle status",
+    "OS Ecosystem release-health evidence",
+    "OS Ecosystem Operational Report Contract v1.0 advisory brief",
+    "Personal Secretary Operational Reporting Contract v0.61.0 evidence references"
+  ],
+  "outputs": [
+    "governed ecosystem registry status",
+    "dependency and compatibility result",
+    "structural navigation entry",
+    "evidence-linked advisory operational report for the User"
+  ],
+  "errors": [
+    "unregistered ecosystem or operational source",
+    "missing or incompatible version identity",
+    "missing evidence or malformed summary",
+    "secret-bearing or unbounded payload",
+    "ownership or authority ambiguity"
+  ],
+  "compatibility": "Ultra Brain contract 0.7.x manages OS Ecosystem release v0.73 and consumes only its Operational Report Contract v1.0 through Personal Secretary Operational Reporting 0.61.0. No source, runtime, repository, UI, or execution authority is transferred."
+}

@@ -3,6 +3,25 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.7] - 2026-08-04
+
+### Integrated
+
+- Registered independent OS Ecosystem `v0.73` with ecosystem ID, active status,
+  release health, canonical repository, and management dependencies.
+- Added the Ultra Brain OS Ecosystem management Interface and Contract.
+- Connected the existing Living OS and Universal Learning Engine operational
+  reporting path through OS Ecosystem and Ultra Brain Personal Secretary to the User.
+- Added a structural OS Ecosystem navigation entry without UI implementation.
+
+### Preserved
+
+- No source was copied and no repository was merged or embedded.
+- OS Ecosystem, Living OS, Universal Learning Engine, and all five Core Meta OS
+  implementations are unchanged.
+- OS Ecosystem retains repository, runtime, release, capability, and
+  connected-project authority; reports remain advisory and user-approved.
+
 ## [v0.61] - 2026-08-03
 
 ### Recovered

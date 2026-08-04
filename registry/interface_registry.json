@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-03",
+  "updated_date": "2026-08-04",
   "entities": [
     {
       "id": "safety-core-control-interface",
@@ -118,6 +118,22 @@
       "current_version": "0.61.0",
       "created_date": "2026-08-03",
       "updated_date": "2026-08-03"
+    },
+    {
+      "id": "ultra-brain-os-ecosystem-management-interface",
+      "entity_type": "interface",
+      "name": "Ultra Brain OS Ecosystem Management Interface",
+      "scope": "Declarative v0.7 boundary for OS Ecosystem v0.73 identity, lifecycle, release health, dependency compatibility, operational reporting, and structural navigation.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "os-ecosystem",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "interfaces/os_ecosystem.interface.json",
+      "interface": [],
+      "contract": ["ultra-brain-os-ecosystem-management-contract"],
+      "current_version": "0.7.0",
+      "created_date": "2026-08-04",
+      "updated_date": "2026-08-04"
     }
   ]
 }

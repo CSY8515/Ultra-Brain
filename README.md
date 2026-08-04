@@ -4,11 +4,11 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 
 ## Release status
 
-The **v0.1 Foundation** through **v0.6 Personal Secretary** baselines remain
-cumulative. The current release is **v0.61 Personal Secretary Architecture
-Hotfix**, which restores the omitted operational-reporting architecture in the
-approved [Personal Secretary Core Meta OS](Personal-Secretary-Core-Meta-OS/README.md)
-without changing its runtime.
+The **v0.1 Foundation** through **v0.61 Personal Secretary Architecture Hotfix**
+baselines remain cumulative. The current release is **v0.7 OS Ecosystem
+Integration**, which formally registers and manages the independent OS
+Ecosystem `v0.73` through an approved Registry, Interface, Contract, dependency
+set, operational-report flow, and structural navigation entry.
 
 The v0.6 runtime provides consent-aware daily briefings, weekly and monthly reviews, reminder
 views, evidence-linked recommendations, transparent priorities, advisory
@@ -20,6 +20,11 @@ v0.61 adds the Architecture Audit, registered operational-reporting port,
 Database Report and operational brief schemas, verified Living OS and ULE
 bindings, OS Ecosystem support boundaries, approval flow, outcome reporting,
 and failure/recovery/rollback support contracts. It adds no new execution path.
+
+v0.7 binds that reporting architecture to the independent OS Ecosystem v0.73
+without copying source, merging repositories, embedding runtime, or transferring
+ownership. See the [integration review](OS_ECOSYSTEM_INTEGRATION.md) and
+[release notes](RELEASE_NOTES_v0.7.md). No UI, World, or Theme is implemented.
 
 The canonical authority hierarchy is:
 
@@ -79,11 +84,14 @@ The foundation MAY describe later versions so that present contracts remain forw
 
 The repository root is the sole Ultra Brain repository root. A nested Ultra-Brain repository MUST NOT be created. Neighboring or pre-existing projects, including any OS Ecosystem workspace content, remain outside this foundation and MUST NOT be modified or silently adopted.
 
-## v0.61 boundary
+## v0.7 boundary
 
 v0.61 repairs only Personal Secretary Core Meta OS architecture while preserving the
 cumulative v0.1-v0.6 baselines. Its reference runtime is dependency-free,
 caller-driven, bounded, Safety-grant-gated, ephemeral, and non-executing. It
 has no personal store, memory service, behavioral profile, daemon, timer,
 calendar write, message delivery, external I/O, or hidden background loop.
-UI/UX, Streamlit, and deployment remain absent.
+UI/UX, Streamlit, and deployment remain absent. The v0.7 navigation artifact is
+structural only. OS Ecosystem, Living OS, Universal Learning Engine, and all
+five Core Meta OS implementation directories remain independently owned and
+unchanged.

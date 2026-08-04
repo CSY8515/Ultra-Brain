@@ -1,0 +1,63 @@
+{
+  "integration_id": "ultra-brain-os-ecosystem-integration",
+  "version": "0.7.0",
+  "status": "active",
+  "ecosystem": {
+    "id": "os-ecosystem",
+    "version": "0.73",
+    "release_tag": "v0.73",
+    "repository": "https://github.com/CSY8515/OS-Ecosystem.git",
+    "status": "active",
+    "health": "healthy",
+    "health_basis": "Reviewed v0.73 identity and required reporting contracts are coherent; this is release health, not live availability monitoring."
+  },
+  "management": {
+    "manager": "ultra-brain",
+    "managed_entity": "os-ecosystem",
+    "ecosystem_manages": [
+      "living-os",
+      "universal-learning-engine"
+    ],
+    "source_ownership_transferred": false,
+    "repository_merged": false,
+    "runtime_embedded": false
+  },
+  "interface": "ultra-brain-os-ecosystem-management-interface",
+  "contract": "ultra-brain-os-ecosystem-management-contract",
+  "dependencies": [
+    {
+      "id": "os-ecosystem-operational-report-contract",
+      "version": "1.0",
+      "required": true
+    },
+    {
+      "id": "personal-secretary-operational-reporting-interface",
+      "version": "0.61.0",
+      "required": true
+    },
+    {
+      "id": "personal-secretary-operational-reporting-contract",
+      "version": "0.61.0",
+      "required": true
+    },
+    {
+      "id": "living-os.database-management",
+      "version": "source-identity",
+      "required": true
+    },
+    {
+      "id": "universal-learning-engine.operational-reporting",
+      "version": "source-identity",
+      "required": true
+    }
+  ],
+  "operational_flow": [
+    "living-os-or-universal-learning-engine",
+    "os-ecosystem-personal-secretary-capability",
+    "ultra-brain-personal-secretary-operational-reporting",
+    "ultra-brain-governed-advisory-report",
+    "user"
+  ],
+  "navigation": "navigation/os_ecosystem.navigation.json",
+  "validated_date": "2026-08-04"
+}

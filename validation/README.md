@@ -10,14 +10,15 @@ accountable reviewer unambiguous while excluding secrets and personal data.
 Validation evidence is not a substitute for governance approval, and approval
 is not a substitute for passing evidence.
 
-## v0.5 application
+## v0.7 application
 
 `validate_foundation.py` remains a dependency-free, standard-library check for
 the preserved Foundation and verifies cumulative v0.2 Safety, v0.3 Enhancement,
-v0.4 Automation, and v0.5 Collaboration & Connectivity release integration:
-version, registries, decisions,
-references, local paths, Markdown links, later-Meta-OS boundaries, and delegated
-domain validators. Run it from the repository root:
+v0.4 Automation, v0.5 Collaboration & Connectivity, v0.6/v0.61 Personal
+Secretary, and v0.7 OS Ecosystem integration: version, registries, decisions,
+interfaces, contracts, dependencies, operational flow, navigation structure,
+independence, references, local paths, Markdown links, protected boundaries,
+and delegated domain validators. Run it from the repository root:
 
 ```text
 python validation/validate_foundation.py

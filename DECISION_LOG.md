@@ -167,6 +167,30 @@ related artifacts.
   [Operational Reporting Architecture](Personal-Secretary-Core-Meta-OS/OPERATIONAL_REPORTING.md),
   [ROADMAP.md](ROADMAP.md)
 
+## decision-0010 - Integrate Independent OS Ecosystem v0.73
+
+- **Date:** 2026-08-04
+- **Status:** accepted
+- **Decision:** Release Ultra Brain v0.7 as the formal management integration
+  for the independently owned OS Ecosystem `v0.73`. Register its identity,
+  lifecycle status, release health, repository, interface, contract,
+  dependencies, operational-reporting flow, and structural navigation entry
+  without copying source, merging repositories, embedding runtime, or
+  transferring ownership.
+- **Rationale:** v0.61 recovered the Personal Secretary reporting architecture,
+  but OS Ecosystem was not yet admitted to Ultra Brain's Ecosystem Registry or
+  bound by an Ultra Brain management contract. OS Ecosystem v0.73 provides the
+  verified Living OS and Universal Learning Engine report aggregation boundary.
+- **Consequences:** Ultra Brain manages registration, lifecycle status, declared
+  release health, compatibility, and the user-facing advisory flow. OS Ecosystem
+  retains its repository, implementation, releases, runtime, capabilities, and
+  connected-project management. Living OS and ULE remain independent and
+  unchanged. The v0.7 UI/World allocation in decision-0003 is superseded; UI
+  remains deferred and v0.7 implements navigation structure only.
+- **Authority:** Explicit User v0.7 OS Ecosystem Integration mandate on 2026-08-04
+- **Related:** [OS Ecosystem Integration Review](OS_ECOSYSTEM_INTEGRATION.md),
+  [v0.7 Release Notes](RELEASE_NOTES_v0.7.md), [ROADMAP.md](ROADMAP.md)
+
 ## Adding a decision
 
 New entries MUST use the next unused `decision-####` identifier, be added to the decision registry, and include the fields above. A superseding entry MUST identify every superseded decision and explain migration or compatibility consequences.

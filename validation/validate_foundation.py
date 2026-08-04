@@ -1,4 +1,4 @@
-"""Validate Foundation and cumulative v0.2-v0.61 integration.
+"""Validate Foundation and cumulative v0.2-v0.7 integration.
 
 This validator intentionally uses only the Python standard library. It checks
 Foundation structure, release integration, and delegated Core validators; it is
@@ -19,15 +19,18 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
+OS_ECOSYSTEM_REPOSITORY = "https://github.com/CSY8515/OS-Ecosystem.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
-MILESTONE_VERSION = "0.61"
+MILESTONE_VERSION = "0.7"
 SAFETY_VERSION = "0.2.0"
 ENHANCEMENT_VERSION = "0.3.0"
 AUTOMATION_VERSION = "0.4.0"
 CONNECTIVITY_VERSION = "0.5.0"
 SECRETARY_RUNTIME_VERSION = "0.6.0"
 SECRETARY_VERSION = "0.61.0"
+OS_ECOSYSTEM_VERSION = "0.73"
+INTEGRATION_VERSION = "0.7.0"
 
 REQUIRED_DOCUMENTS = (
     "README.md",
@@ -69,6 +72,8 @@ REQUIRED_DOCUMENTS = (
     "Personal-Secretary-Core-Meta-OS/README.md",
     "Personal-Secretary-Core-Meta-OS/ARCHITECTURE_AUDIT_v0.61.md",
     "Personal-Secretary-Core-Meta-OS/OPERATIONAL_REPORTING.md",
+    "OS_ECOSYSTEM_INTEGRATION.md",
+    "RELEASE_NOTES_v0.7.md",
 )
 
 REGISTRY_FILES = (
@@ -92,6 +97,7 @@ SCHEMA_FILES = (
     "contract.schema.json",
     "decision.schema.json",
     "release.schema.json",
+    "ecosystem_integration.schema.json",
 )
 
 CONTAINER_FIELDS = {
@@ -143,7 +149,7 @@ CORE_META_OS_DIRECTORIES = (
 )
 
 ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-VERSION_PATTERN = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
+VERSION_PATTERN = re.compile(r"^[0-9]+\.[0-9]+(?:\.[0-9]+)?$")
 MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
@@ -261,8 +267,10 @@ def validate_registries(errors: list[str]) -> None:
                 errors.append(f"{label}: duplicate global entity ID {entity_id}")
             else:
                 entity_ids.add(entity_id)
-            if entity["repository"] != REPOSITORY:
+            if entity["repository"] not in {REPOSITORY, OS_ECOSYSTEM_REPOSITORY}:
                 errors.append(f"{label}: incorrect repository URL")
+            if "health" in entity and entity["health"] not in {"healthy", "degraded", "unhealthy", "unknown"}:
+                errors.append(f"{label}: invalid health {entity['health']!r}")
             if not isinstance(entity["current_version"], str) or not VERSION_PATTERN.fullmatch(entity["current_version"]):
                 errors.append(f"{label}: invalid current_version {entity['current_version']!r}")
             if not isinstance(entity["interface"], list) or not isinstance(entity["contract"], list):
@@ -273,7 +281,7 @@ def validate_registries(errors: list[str]) -> None:
             relative_path = entity["path"]
             if not isinstance(relative_path, str) or not relative_path:
                 errors.append(f"{label}: path must be a non-empty string")
-            else:
+            elif entity["repository"] == REPOSITORY:
                 target = ROOT / relative_path
                 if not within_root(target):
                     errors.append(f"{label}: path escapes repository root: {relative_path}")
@@ -324,8 +332,27 @@ def validate_registries(errors: list[str]) -> None:
     repository_registry = loaded.get("repository_registry.json")
     if repository_registry:
         repository_entities = repository_registry.get("entities", [])
-        if len(repository_entities) != 1 or repository_entities[0].get("repository") != REPOSITORY:
-            errors.append("repository_registry.json must contain exactly the canonical Ultra Brain repository")
+        repositories = {entity.get("id"): entity.get("repository") for entity in repository_entities}
+        if repositories != {"ultra-brain-repository": REPOSITORY, "os-ecosystem-repository": OS_ECOSYSTEM_REPOSITORY}:
+            errors.append("repository_registry.json must contain the canonical Ultra Brain and independent OS Ecosystem repositories")
+
+    ecosystem_registry = loaded.get("ecosystem_registry.json")
+    if ecosystem_registry:
+        ecosystems = ecosystem_registry.get("entities", [])
+        if len(ecosystems) != 1:
+            errors.append("ecosystem_registry.json must contain exactly OS Ecosystem")
+        else:
+            ecosystem = ecosystems[0]
+            if (
+                ecosystem.get("id") != "os-ecosystem"
+                or ecosystem.get("current_version") != OS_ECOSYSTEM_VERSION
+                or ecosystem.get("status") != "active"
+                or ecosystem.get("health") != "healthy"
+                or ecosystem.get("repository") != OS_ECOSYSTEM_REPOSITORY
+                or ecosystem.get("interface") != ["ultra-brain-os-ecosystem-management-interface"]
+                or ecosystem.get("contract") != ["ultra-brain-os-ecosystem-management-contract"]
+            ):
+                errors.append("OS Ecosystem registry identity, version, status, health, repository, or bindings are incorrect")
 
     release_registry = loaded.get("release_registry.json")
     if release_registry:
@@ -343,8 +370,9 @@ def validate_registries(errors: list[str]) -> None:
             "ultra-brain-v0-5-collaboration-connectivity",
             "ultra-brain-v0-6-personal-secretary",
             "ultra-brain-v0-61-personal-secretary-architecture-hotfix",
+            "ultra-brain-v0-7-os-ecosystem-integration",
         }:
-            errors.append("release_registry.json must contain exactly v0.1 through v0.61")
+            errors.append("release_registry.json must contain exactly v0.1 through v0.7")
         elif (
             releases["ultra-brain-v0-1-foundation"].get("current_version")
             != REGISTRY_VERSION
@@ -361,6 +389,8 @@ def validate_registries(errors: list[str]) -> None:
             or releases["ultra-brain-v0-6-personal-secretary"].get("status") != "released"
             or releases["ultra-brain-v0-61-personal-secretary-architecture-hotfix"].get("current_version") != SECRETARY_VERSION
             or releases["ultra-brain-v0-61-personal-secretary-architecture-hotfix"].get("status") != "released"
+            or releases["ultra-brain-v0-7-os-ecosystem-integration"].get("current_version") != INTEGRATION_VERSION
+            or releases["ultra-brain-v0-7-os-ecosystem-integration"].get("status") != "released"
         ):
             errors.append("release registry versions or release states are incorrect")
 
@@ -372,6 +402,7 @@ def validate_registries(errors: list[str]) -> None:
             "collaboration-connectivity-core-exchange-interface": CONNECTIVITY_VERSION,
             "personal-secretary-core-assistance-interface": SECRETARY_RUNTIME_VERSION,
             "personal-secretary-operational-reporting-interface": SECRETARY_VERSION,
+            "ultra-brain-os-ecosystem-management-interface": INTEGRATION_VERSION,
         },
         "contract_registry.json": {
             "safety-core-control-contract": SAFETY_VERSION,
@@ -380,6 +411,7 @@ def validate_registries(errors: list[str]) -> None:
             "collaboration-connectivity-core-exchange-contract": CONNECTIVITY_VERSION,
             "personal-secretary-core-assistance-contract": SECRETARY_RUNTIME_VERSION,
             "personal-secretary-operational-reporting-contract": SECRETARY_VERSION,
+            "ultra-brain-os-ecosystem-management-contract": INTEGRATION_VERSION,
         },
     }
     for filename, expected in expected_entries.items():
@@ -407,8 +439,9 @@ def validate_registries(errors: list[str]) -> None:
             "decision-0007",
             "decision-0008",
             "decision-0009",
+            "decision-0010",
         }:
-            errors.append("decision_registry.json must contain decisions 0001 through 0008")
+            errors.append("decision_registry.json must contain decisions 0001 through 0010")
 
     interface_ids = {
         entity.get("id")
@@ -434,6 +467,91 @@ def validate_registries(errors: list[str]) -> None:
                     errors.append(
                         f"registry/{filename}.entities[{index}]: unknown contract {reference}"
                     )
+
+
+def validate_os_ecosystem_integration(errors: list[str]) -> None:
+    files = {
+        "integration": ROOT / "integrations" / "os_ecosystem.integration.json",
+        "interface": ROOT / "interfaces" / "os_ecosystem.interface.json",
+        "contract": ROOT / "contracts" / "os_ecosystem.contract.json",
+        "navigation": ROOT / "navigation" / "os_ecosystem.navigation.json",
+    }
+    loaded: dict[str, dict[str, Any]] = {}
+    for label, path in files.items():
+        if not path.is_file():
+            errors.append(f"missing OS Ecosystem {label}: {path.relative_to(ROOT)}")
+            continue
+        try:
+            value = load_json(path)
+        except (json.JSONDecodeError, DuplicateKeyError) as exc:
+            errors.append(f"{path.relative_to(ROOT)}: {exc}")
+            continue
+        if not isinstance(value, dict):
+            errors.append(f"{path.relative_to(ROOT)}: root must be an object")
+            continue
+        loaded[label] = value
+
+    if len(loaded) != len(files):
+        return
+    integration = loaded["integration"]
+    interface = loaded["interface"]
+    contract = loaded["contract"]
+    navigation = loaded["navigation"]
+    ecosystem = integration.get("ecosystem", {})
+    management = integration.get("management", {})
+    if integration.get("version") != INTEGRATION_VERSION or integration.get("status") != "active":
+        errors.append("OS Ecosystem integration version or status is incorrect")
+    if ecosystem != {
+        "id": "os-ecosystem",
+        "version": OS_ECOSYSTEM_VERSION,
+        "release_tag": "v0.73",
+        "repository": OS_ECOSYSTEM_REPOSITORY,
+        "status": "active",
+        "health": "healthy",
+        "health_basis": "Reviewed v0.73 identity and required reporting contracts are coherent; this is release health, not live availability monitoring.",
+    }:
+        errors.append("OS Ecosystem integration identity or health evidence is incorrect")
+    if any(management.get(key) is not False for key in ("source_ownership_transferred", "repository_merged", "runtime_embedded")):
+        errors.append("OS Ecosystem independence flags must remain false")
+    expected_dependencies = {
+        ("os-ecosystem-operational-report-contract", "1.0"),
+        ("personal-secretary-operational-reporting-interface", SECRETARY_VERSION),
+        ("personal-secretary-operational-reporting-contract", SECRETARY_VERSION),
+        ("living-os.database-management", "source-identity"),
+        ("universal-learning-engine.operational-reporting", "source-identity"),
+    }
+    observed_dependencies = {
+        (item.get("id"), item.get("version"))
+        for item in integration.get("dependencies", [])
+        if isinstance(item, dict) and item.get("required") is True
+    }
+    if observed_dependencies != expected_dependencies:
+        errors.append("OS Ecosystem dependency set is incomplete or incompatible")
+    if integration.get("operational_flow") != [
+        "living-os-or-universal-learning-engine",
+        "os-ecosystem-personal-secretary-capability",
+        "ultra-brain-personal-secretary-operational-reporting",
+        "ultra-brain-governed-advisory-report",
+        "user",
+    ]:
+        errors.append("OS Ecosystem operational report flow is incorrect")
+    if (
+        interface.get("id") != integration.get("interface")
+        or contract.get("id") != integration.get("contract")
+        or interface.get("version") != INTEGRATION_VERSION
+        or contract.get("version") != INTEGRATION_VERSION
+        or interface.get("status") != "approved"
+        or contract.get("status") != "approved"
+    ):
+        errors.append("OS Ecosystem Interface and Contract bindings are incoherent")
+    if (
+        integration.get("navigation") != "navigation/os_ecosystem.navigation.json"
+        or navigation.get("managed_entity") != "os-ecosystem"
+        or navigation.get("interface") != interface.get("id")
+        or navigation.get("contract") != contract.get("id")
+        or any(navigation.get(key) is not False for key in ("ui_implemented", "world_implemented", "theme_implemented"))
+    ):
+        errors.append("OS Ecosystem navigation structure violates the non-UI contract")
 
 
 def validate_schemas(errors: list[str]) -> None:
@@ -572,6 +690,7 @@ def main() -> int:
     errors: list[str] = []
     validate_required_artifacts(errors)
     validate_registries(errors)
+    validate_os_ecosystem_integration(errors)
     validate_schemas(errors)
     validate_markdown_links(errors)
     validate_scope_boundaries(errors)
@@ -582,18 +701,19 @@ def main() -> int:
     validate_personal_secretary_core(errors)
 
     if errors:
-        print("Ultra Brain v0.61 integration validation: FAILED")
+        print("Ultra Brain v0.7 integration validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.61 integration validation: PASSED")
+    print("Ultra Brain v0.7 integration validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")
     print(f"- Core Meta OS scope directories: {len(CORE_META_OS_DIRECTORIES)}")
     print("- Active implementations: Safety Core 0.2.0, Enhancement Core 0.3.0, Automation Core 0.4.0, Collaboration & Connectivity Core 0.5.0, Personal Secretary Runtime 0.6.0")
     print("- Recovered architecture: Personal Secretary Operational Reporting 0.61.0")
+    print("- Integrated ecosystem: OS Ecosystem 0.73 (active, healthy, independent)")
     return 0
 
 

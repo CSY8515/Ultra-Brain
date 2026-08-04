@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-07-31",
+  "updated_date": "2026-08-04",
   "entities": [
     {
       "id": "ultra-brain-repository",
@@ -26,6 +26,22 @@
       "current_version": "0.1.0",
       "created_date": "2026-07-31",
       "updated_date": "2026-07-31"
+    },
+    {
+      "id": "os-ecosystem-repository",
+      "entity_type": "repository",
+      "name": "CSY8515/OS-Ecosystem",
+      "scope": "Independent canonical source for OS Ecosystem managed through the Ultra Brain v0.7 contract; ownership and release authority remain external.",
+      "status": "active",
+      "owner_layer": "OS Ecosystem",
+      "parent": "os-ecosystem",
+      "repository": "https://github.com/CSY8515/OS-Ecosystem.git",
+      "path": ".",
+      "interface": ["ultra-brain-os-ecosystem-management-interface"],
+      "contract": ["ultra-brain-os-ecosystem-management-contract"],
+      "current_version": "0.73",
+      "created_date": "2026-08-04",
+      "updated_date": "2026-08-04"
     }
   ]
 }

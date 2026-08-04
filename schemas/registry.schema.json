@@ -82,7 +82,7 @@
     },
     "semanticVersion": {
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      "pattern": "^[0-9]+\\.[0-9]+(?:\\.[0-9]+)?$"
     },
     "date": {
       "type": "string",
@@ -165,7 +165,7 @@
           ]
         },
         "repository": {
-          "$ref": "#/$defs/repository"
+          "$ref": "#/$defs/entityRepository"
         },
         "path": {
           "type": "string",
@@ -193,8 +193,17 @@
         },
         "updated_date": {
           "$ref": "#/$defs/date"
+        },
+        "health": {
+          "enum": ["healthy", "degraded", "unhealthy", "unknown"]
         }
       }
+    },
+    "entityRepository": {
+      "enum": [
+        "https://github.com/CSY8515/Ultra-Brain.git",
+        "https://github.com/CSY8515/OS-Ecosystem.git"
+      ]
     }
   }
 }

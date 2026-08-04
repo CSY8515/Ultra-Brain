@@ -1,4 +1,4 @@
-"""Regression tests for Foundation and cumulative v0.2-v0.61 integrations."""
+"""Regression tests for Foundation and cumulative v0.2-v0.7 integrations."""
 
 from __future__ import annotations
 
@@ -31,8 +31,31 @@ class FoundationTests(unittest.TestCase):
                 with path.open(encoding="utf-8") as stream:
                     self.assertIsInstance(json.load(stream), dict)
 
-    def test_version_is_v0_61(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.61")
+    def test_version_is_v0_7(self) -> None:
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.7")
+
+    def test_os_ecosystem_v0_73_is_registered_and_independent(self) -> None:
+        registry = json.loads((ROOT / "registry" / "ecosystem_registry.json").read_text(encoding="utf-8"))
+        ecosystem = next(entity for entity in registry["entities"] if entity["id"] == "os-ecosystem")
+        self.assertEqual(ecosystem["current_version"], "0.73")
+        self.assertEqual(ecosystem["status"], "active")
+        self.assertEqual(ecosystem["health"], "healthy")
+        self.assertEqual(ecosystem["repository"], "https://github.com/CSY8515/OS-Ecosystem.git")
+
+    def test_os_ecosystem_management_contract_and_flow(self) -> None:
+        integration = json.loads((ROOT / "integrations" / "os_ecosystem.integration.json").read_text(encoding="utf-8"))
+        interface = json.loads((ROOT / "interfaces" / "os_ecosystem.interface.json").read_text(encoding="utf-8"))
+        contract = json.loads((ROOT / "contracts" / "os_ecosystem.contract.json").read_text(encoding="utf-8"))
+        navigation = json.loads((ROOT / "navigation" / "os_ecosystem.navigation.json").read_text(encoding="utf-8"))
+        self.assertEqual(integration["interface"], interface["id"])
+        self.assertEqual(integration["contract"], contract["id"])
+        self.assertEqual(integration["ecosystem"]["release_tag"], "v0.73")
+        self.assertEqual(integration["operational_flow"][0], "living-os-or-universal-learning-engine")
+        self.assertEqual(integration["operational_flow"][-1], "user")
+        self.assertFalse(integration["management"]["repository_merged"])
+        self.assertFalse(integration["management"]["source_ownership_transferred"])
+        self.assertFalse(navigation["ui_implemented"])
+        self.assertFalse(navigation["world_implemented"])
 
     def test_safety_registry_is_active_at_v0_2(self) -> None:
         registry = json.loads(

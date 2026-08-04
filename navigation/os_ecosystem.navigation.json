@@ -1,0 +1,15 @@
+{
+  "id": "os-ecosystem-entry",
+  "version": "0.7.0",
+  "status": "defined",
+  "label": "OS Ecosystem",
+  "kind": "ecosystem-entry",
+  "structural_path": ["ecosystems", "os-ecosystem"],
+  "managed_entity": "os-ecosystem",
+  "destination": {"type": "independent-application", "url": "https://8javbq85jtappi6tkdhkt7g.streamlit.app/"},
+  "interface": "ultra-brain-os-ecosystem-management-interface",
+  "contract": "ultra-brain-os-ecosystem-management-contract",
+  "ui_implemented": false,
+  "world_implemented": false,
+  "theme_implemented": false
+}
