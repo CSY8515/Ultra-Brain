@@ -1,0 +1,24 @@
+{
+  "registry_version": "0.8.0",
+  "schema_version": "1.0.0",
+  "registry_id": "ui-theme-registry",
+  "status": "active",
+  "owner_layer": "Ultra Brain",
+  "updated_date": "2026-08-05",
+  "themes": [
+    {
+      "id": "ultra-brain-official",
+      "version": "0.8.0",
+      "scope": "global",
+      "target_hierarchy": ["Ultra Brain", "OS Ecosystem"],
+      "compatible_projects": ["os-ecosystem"],
+      "required_contract": "ultra-brain.ui/v1",
+      "required_interface": "1.0",
+      "override": true,
+      "lock": true,
+      "status": "active",
+      "fallback": "ultra-brain-official",
+      "rollback_reference": "device-local revision"
+    }
+  ]
+}

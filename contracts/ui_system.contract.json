@@ -1,0 +1,25 @@
+{
+  "id": "ultra-brain-ui-system-contract",
+  "name": "Ultra Brain Official UI System Contract",
+  "version": "0.8.0",
+  "status": "approved",
+  "owner_layer": "Ultra Brain",
+  "parties": ["User", "Ultra Brain", "OS Ecosystem"],
+  "preconditions": [
+    "Theme payload conforms to ultra-brain.ui/v1 and interface 1.0.",
+    "The target exists in the UI registry and its compatibility status is active.",
+    "Applicable overrides and locks are resolved before preview."
+  ],
+  "obligations": [
+    "Every change is validated and previewed before save or forwarding.",
+    "Feature, module, project, and OS Ecosystem overrides survive compatible global changes.",
+    "Locks have priority over all overrides and global profiles.",
+    "OS Ecosystem, Living OS, and Universal Learning Engine retain repository and runtime ownership.",
+    "A successful save records the previous validated preference as a rollback point."
+  ],
+  "failure_semantics": [
+    "Unknown fields, unsafe values, incompatible versions, and missing registry identity fail closed.",
+    "Invalid preferences fall back to ultra-brain-official.",
+    "A downstream failure retains the prior target theme and reports the affected scope."
+  ]
+}

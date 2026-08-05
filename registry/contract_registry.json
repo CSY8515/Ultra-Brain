@@ -9,7 +9,7 @@
   "owner_layer": "Ultra Brain",
   "repository": "https://github.com/CSY8515/Ultra-Brain.git",
   "created_date": "2026-07-31",
-  "updated_date": "2026-08-04",
+  "updated_date": "2026-08-05",
   "entities": [
     {
       "id": "safety-core-control-contract",
@@ -134,6 +134,22 @@
       "current_version": "0.7.0",
       "created_date": "2026-08-04",
       "updated_date": "2026-08-04"
+    },
+    {
+      "id": "ultra-brain-ui-system-contract",
+      "entity_type": "contract",
+      "name": "Ultra Brain Official UI System Contract",
+      "scope": "v0.8 obligations for preview-first theme resolution, hierarchical override, lock priority, compatibility, fallback, and rollback.",
+      "status": "active",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "contracts/ui_system.contract.json",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": [],
+      "current_version": "0.8.0",
+      "created_date": "2026-08-05",
+      "updated_date": "2026-08-05"
     }
   ]
 }
