@@ -1,4 +1,4 @@
-"""Ultra Brain v0.8 Streamlit production UI entry point.
+"""Ultra Brain v0.94 Streamlit production UI entry point.
 
 The source of truth for the visual direction remains the existing Vinext UI in
 ``ui/app``. This entry point maps that same world scene into Streamlit without
@@ -230,6 +230,9 @@ def build_css(theme: dict[str, str], accent: str, density: str, motion: bool) ->
         .ub-rail {{ right:12px; }}
         .ub-status {{ left:10px; right:10px; justify-content:center; }}
       }}
+      [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="stHeader"], [data-testid="stToolbar"], footer {{ display:none !important; }}
+      .ub-studio-launch {{ position:absolute; z-index:8; top:24px; left:24px; display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:6px 11px; border:1px solid var(--ub-line); background:rgba(6,15,16,.72); color:var(--ub-text); font:600 10px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }}
+      .ub-studio-launch b {{ display:grid; place-items:center; width:22px; height:22px; border:1px solid var(--ub-line); color:var(--ub-accent-bright); font-size:12px; }}
     </style>
     """
 
@@ -244,10 +247,7 @@ def render_world(theme: dict[str, str], accent: str, density: str, motion: bool)
         <main class="ub-shell" aria-label="Ultra Brain">
           <div class="ub-world-art" style="background-image:url('{art}')"></div>
           <div class="ub-vignette" aria-hidden="true"></div>
-          <header class="ub-topbar">
-            <div class="ub-path"><span>Ultra Brain</span><i>/</i><strong>OS Ecosystem</strong></div>
-            <div class="ub-health"><b></b>Healthy · v0.8 · Connected</div>
-          </header>
+          <div class="ub-studio-launch"><b>✦</b><span>UI Studio</span></div>
           <section class="ub-world-center" aria-label="Ultra Brain central identity">
             <span class="ub-title-rule ub-title-rule-top"></span>
             <h1>Ultra Brain</h1>
@@ -255,11 +255,9 @@ def render_world(theme: dict[str, str], accent: str, density: str, motion: bool)
           </section>
           <a class="ub-seed" href="{OS_ECOSYSTEM_URL}" target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem">
             <span class="ub-seed-aura" aria-hidden="true"></span>
-            <span class="ub-seed-copy"><strong>OS Ecosystem</strong><span class="ub-seed-action">Enter <b>↗</b></span></span>
+            <span class="ub-seed-copy"><strong>OS Ecosystem</strong></span>
           </a>
           <div class="ub-focus-art" style="background-image:url('{art}')" aria-hidden="true"></div>
-          <aside class="ub-rail"><a href="{OS_ECOSYSTEM_URL}" target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem">⌂</a><span>OS Ecosystem</span></aside>
-          <div class="ub-status"><span class="ub-status-dot"></span><strong>Healthy</strong><i></i><span>OS Ecosystem connected</span><i></i><span>v0.8</span></div>
         </main>
         """,
         unsafe_allow_html=True,
@@ -269,13 +267,9 @@ def render_world(theme: dict[str, str], accent: str, density: str, motion: bool)
 def main() -> None:
     """Run the official Ultra Brain Streamlit UI."""
 
-    st.set_page_config(page_title="Ultra Brain", layout="wide", initial_sidebar_state="expanded")
+    st.set_page_config(page_title="Ultra Brain v0.94", layout="wide", initial_sidebar_state="collapsed")
     load_existing_ui()
-    theme_name = st.session_state.get("theme_name", "Official")
-    theme = THEMES[theme_name]
-    selected_theme, selected_accent, density, motion, _locked = render_sidebar(theme_name, theme)
-    st.session_state["theme_name"] = selected_theme
-    render_world(THEMES[selected_theme], selected_accent, density, motion)
+    render_world(THEMES["Official"], THEMES["Official"]["accent"], "comfortable", True)
 
 
 if __name__ == "__main__":
