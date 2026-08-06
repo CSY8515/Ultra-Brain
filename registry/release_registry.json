@@ -228,6 +228,22 @@
       "current_version": "0.92.0",
       "created_date": "2026-08-06",
       "updated_date": "2026-08-06"
+    },
+    {
+      "id": "ultra-brain-v0-93-layout-custom-ui",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.93 Layout & Custom UI",
+      "scope": "Production UI polish, Korean-first operational controls, governed Layout Editor, six lock types, preview, rollback, and preserved hierarchy propagation.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.93.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.93.0",
+      "created_date": "2026-08-06",
+      "updated_date": "2026-08-06"
     }
   ]
 }

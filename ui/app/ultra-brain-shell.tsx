@@ -6,6 +6,7 @@ import {
   THEME_STORAGE_KEY,
   THEME_ADJUSTMENT_KEYS,
   THEME_ADJUSTMENT_RANGES,
+  UI_LOCK_KEYS,
   PROPAGATION_TARGETS,
   applyThemePreset,
   applyPreference,
@@ -22,43 +23,79 @@ import {
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
-const LAYOUT_LABELS = { topbar: "Topbar", center: "World identity", seed: "OS Entry", rail: "Navigation rail", status: "Status dock" } as const;
+const LAYOUT_LABELS = { topbar: "상단 바", center: "중앙 타이틀", seed: "OS Ecosystem", rail: "탐색 레일" } as const;
 const PROPAGATION_TARGET_LABELS: Record<string, string> = {
-  theme: "Theme",
-  background: "Background",
-  color: "Color",
-  brightness: "Brightness",
-  contrast: "Contrast",
-  saturation: "Saturation",
-  hue: "Hue",
-  texture: "Texture",
-  lighting: "Lighting",
-  shadow: "Shadow",
-  glow: "Glow",
-  transparency: "Transparency",
+  theme: "테마",
+  background: "배경",
+  color: "색상",
+  brightness: "밝기",
+  contrast: "명암",
+  saturation: "채도",
+  hue: "색조",
+  texture: "질감",
+  lighting: "광원",
+  shadow: "그림자",
+  glow: "발광",
+  transparency: "투명도",
   blur: "Blur",
-  layout: "Layout",
-  componentPosition: "Component position",
-  componentSize: "Component size",
-  visibility: "Visibility",
-  animation: "Animation",
+  layout: "배치",
+  componentPosition: "컴포넌트 위치",
+  componentSize: "컴포넌트 크기",
+  visibility: "표시 여부",
+  animation: "애니메이션",
+};
+const THEME_ADJUSTMENT_LABELS: Record<ThemeAdjustmentKey, string> = {
+  brightness: "밝기",
+  contrast: "명암",
+  saturation: "채도",
+  hue: "색조",
+  lighting: "광원",
+  shadow: "그림자",
+  glow: "발광",
+  texture: "질감",
+  blur: "Blur",
+  transparency: "투명도",
+};
+const UI_LOCK_LABELS: Record<string, string> = {
+  layout: "배치 잠금",
+  background: "배경 잠금",
+  component: "컴포넌트 잠금",
+  color: "색상 잠금",
+  texture: "질감 잠금",
+  lighting: "광원 잠금",
 };
 
-type Panel = null | "studio" | "notifications";
+type Panel = null | "studio";
 type StudioTab = "themes" | "layout" | "propagation" | "preview";
 type LayoutKey = keyof typeof LAYOUT_LABELS;
-type LayoutOffsets = Record<LayoutKey, { x: number; y: number }>;
+type LayoutItem = { x: number; y: number; scale: number; visible: boolean; pinned: boolean; group: "core" | "navigation" | "ecosystem" };
+type LayoutOffsets = Record<LayoutKey, LayoutItem>;
 type Preference = ReturnType<typeof validatePreference>;
 type RollbackPoint = ReturnType<typeof createRollbackPoint>;
 type ThemeAdjustmentKey = "brightness" | "contrast" | "saturation" | "hue" | "lighting" | "shadow" | "glow" | "texture" | "blur" | "transparency";
 
 const DEFAULT_LAYOUT: LayoutOffsets = {
-  topbar: { x: 0, y: 0 },
-  center: { x: 0, y: 0 },
-  seed: { x: 0, y: 0 },
-  rail: { x: 0, y: 0 },
-  status: { x: 0, y: 0 },
+  topbar: { x: 0, y: 0, scale: 1, visible: true, pinned: true, group: "core" },
+  center: { x: 0, y: 0, scale: 1, visible: true, pinned: false, group: "core" },
+  seed: { x: 0, y: 0, scale: 1, visible: true, pinned: false, group: "ecosystem" },
+  rail: { x: 0, y: 0, scale: 1, visible: true, pinned: false, group: "navigation" },
 };
+
+function normaliseLayout(value: unknown): LayoutOffsets {
+  const source = value && typeof value === "object" ? value as Partial<Record<LayoutKey, Partial<LayoutItem>>> : {};
+  return Object.fromEntries((Object.keys(DEFAULT_LAYOUT) as LayoutKey[]).map((key) => {
+    const candidate = source[key] || {};
+    return [key, {
+      ...DEFAULT_LAYOUT[key],
+      x: clamp(Number(candidate.x) || 0, -80, 80),
+      y: clamp(Number(candidate.y) || 0, -60, 60),
+      scale: clamp(Number(candidate.scale) || 1, .72, 1.32),
+      visible: candidate.visible !== false,
+      pinned: candidate.pinned === true || DEFAULT_LAYOUT[key].pinned,
+      group: candidate.group === "navigation" || candidate.group === "ecosystem" ? candidate.group : "core",
+    }];
+  })) as LayoutOffsets;
+}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -77,7 +114,7 @@ export function UltraBrainShell() {
   const [draftPreference, setDraftPreference] = useState<Preference>(defaultPreference);
   const [layout, setLayout] = useState<LayoutOffsets>(DEFAULT_LAYOUT);
   const [draftLayout, setDraftLayout] = useState<LayoutOffsets>(DEFAULT_LAYOUT);
-  const [rollbackStack, setRollbackStack] = useState<RollbackPoint[]>([]);
+  const [rollbackStack, setRollbackStack] = useState<(RollbackPoint & { layout?: LayoutOffsets; customBackground?: string | null })[]>([]);
   const [customBackground, setCustomBackground] = useState<string | null>(null);
   const [toast, setToast] = useState("");
   const [layoutSelection, setLayoutSelection] = useState<LayoutKey>("topbar");
@@ -88,7 +125,7 @@ export function UltraBrainShell() {
     try {
       const stored = JSON.parse(window.localStorage.getItem(THEME_STORAGE_KEY) || "null");
       if (stored?.preference) setPreference(validatePreference(stored.preference));
-      if (stored?.layout) setLayout({ ...DEFAULT_LAYOUT, ...stored.layout });
+      if (stored?.layout) setLayout(normaliseLayout(stored.layout));
       if (stored?.rollbackStack) setRollbackStack(stored.rollbackStack);
     } catch {
       // Local preferences are optional; the official profile remains safe.
@@ -97,6 +134,7 @@ export function UltraBrainShell() {
   }, []);
 
   const activePreference = panel === "studio" ? draftPreference : preference;
+  const locks = activePreference.uiLocks;
   const profile = useMemo(() => resolveThemeProfile(activePreference), [activePreference]);
   const propagation = useMemo(() => resolvePropagation(activePreference), [activePreference]);
   const selectedPropagationNode = propagation.hierarchy.find((node: { id: string }) => node.id === propagationSelection) || propagation.hierarchy[1];
@@ -139,7 +177,7 @@ export function UltraBrainShell() {
 
   function openStudio(tab: StudioTab = "themes") {
     setDraftPreference(preference);
-    setDraftLayout(layout);
+    setDraftLayout(normaliseLayout(layout));
     setStudioTab(tab);
     if (tab === "propagation") setPropagationSelection("os-ecosystem");
     setPanel("studio");
@@ -147,12 +185,17 @@ export function UltraBrainShell() {
 
   function closePanel() {
     setDraftPreference(preference);
-    setDraftLayout(layout);
+    setDraftLayout(normaliseLayout(layout));
     setPanel(null);
   }
 
   function updateDraft(partial: Partial<Preference>) {
     setDraftPreference((current) => validatePreference({ ...current, ...partial }));
+  }
+
+  function toggleUiLock(key: string) {
+    if (!UI_LOCK_KEYS.includes(key as never)) return;
+    setDraftPreference((current) => validatePreference({ ...current, uiLocks: { ...current.uiLocks, [key]: !current.uiLocks[key as keyof typeof current.uiLocks] } }));
   }
 
   function togglePropagationTarget(nodeId: string, mode: "lock" | "override", target: string) {
@@ -194,16 +237,21 @@ export function UltraBrainShell() {
 
   function selectTheme(theme: string) {
     updateDraft({ theme: theme as Preference["theme"], accent: themeRegistry[theme].accent, themePreset: "balanced", themeAdjustments: themePresets.balanced.adjustments });
-    setToast(`${themeRegistry[theme].label} preview`);
+    setToast(`${themeRegistry[theme].label} 미리보기`);
   }
 
   function updateThemeAdjustment(key: ThemeAdjustmentKey, value: number) {
+    const locked = key === "texture" ? locks.texture : key === "lighting" || key === "shadow" || key === "glow" ? locks.lighting : locks.color;
+    if (locked) {
+      setToast("이 설정은 잠겨 있습니다");
+      return;
+    }
     updateDraft({ themePreset: "custom", themeAdjustments: { ...draftPreference.themeAdjustments, [key]: value } });
   }
 
   function selectThemePreset(preset: string) {
     setDraftPreference((current) => applyThemePreset(current, preset));
-    setToast(`${themePresets[preset].label} preset preview`);
+    setToast(`${themePresets[preset].label} 프리셋 미리보기`);
   }
 
   function exportThemePackage() {
@@ -219,7 +267,7 @@ export function UltraBrainShell() {
     anchor.download = `${draftPreference.theme}-theme-package.json`;
     anchor.click();
     URL.revokeObjectURL(url);
-    setToast("Theme package exported");
+    setToast("테마 패키지를 내보냈습니다");
   }
 
   function importThemePackage(event: ChangeEvent<HTMLInputElement>) {
@@ -232,9 +280,9 @@ export function UltraBrainShell() {
         const source = data.preference || data;
         const imported = validatePreference({ ...draftPreference, theme: source.theme, accent: source.accent, themePreset: source.themePreset, themeAdjustments: source.themeAdjustments });
         setDraftPreference(imported);
-        setToast("Theme package imported for preview");
+        setToast("테마 패키지를 미리보기에 적용했습니다");
       } catch {
-        setToast("Theme package could not be read");
+        setToast("테마 패키지를 읽을 수 없습니다");
       }
     };
     reader.readAsText(file);
@@ -248,10 +296,12 @@ export function UltraBrainShell() {
   function saveStudio() {
     const result = applyPreference(preference, draftPreference);
     setPreference(result.next);
-    setLayout(draftLayout);
-    const nextRollbacks = [result.rollback, ...rollbackStack].slice(0, 6);
+    const nextLayout = normaliseLayout(draftLayout);
+    setLayout(nextLayout);
+    const rollback = { ...result.rollback, layout: normaliseLayout(layout), customBackground };
+    const nextRollbacks = [rollback, ...rollbackStack].slice(0, 6);
     setRollbackStack(nextRollbacks);
-    persist(result.next, draftLayout, nextRollbacks);
+    persist(result.next, nextLayout, nextRollbacks);
     setPanel(null);
     setToast(`UI saved · revision ${result.next.revision}`);
   }
@@ -259,27 +309,48 @@ export function UltraBrainShell() {
   function rollbackLast() {
     const [point, ...rest] = rollbackStack;
     if (!point) {
-      setToast("No rollback point available");
+      setToast("되돌릴 지점이 없습니다");
       return;
     }
     const next = validatePreference(point.preference);
     setPreference(next);
     setDraftPreference(next);
+    setLayout(normaliseLayout(point.layout || DEFAULT_LAYOUT));
+    setDraftLayout(normaliseLayout(point.layout || DEFAULT_LAYOUT));
+    setCustomBackground(point.customBackground || null);
     setRollbackStack(rest);
-    persist(next, layout, rest);
+    persist(next, normaliseLayout(point.layout || DEFAULT_LAYOUT), rest);
     setToast("Previous UI state restored");
   }
 
   function resetLayout() {
+    if (locks.layout) {
+      setToast("배치가 잠겨 있습니다");
+      return;
+    }
     setDraftLayout(DEFAULT_LAYOUT);
-    setToast("Layout reset for preview");
+    setToast("배치를 초기화했습니다");
   }
 
   function updateLayout(key: LayoutKey, patch: Partial<LayoutOffsets[LayoutKey]>) {
+    const componentChange = Object.keys(patch).some((field) => ["scale", "visible", "pinned", "group"].includes(field));
+    if (locks.layout || (componentChange && locks.component)) {
+      setToast(locks.layout ? "배치가 잠겨 있습니다" : "컴포넌트가 잠겨 있습니다");
+      return;
+    }
     setDraftLayout((current) => ({ ...current, [key]: { ...current[key], ...patch } }));
   }
 
+  function alignSelected(axis: "x" | "y") {
+    if (locks.layout) {
+      setToast("배치가 잠겨 있습니다");
+      return;
+    }
+    updateLayout(layoutSelection, { [axis]: 0 });
+  }
+
   function onLayoutPointerDown(key: LayoutKey, event: ReactPointerEvent<HTMLButtonElement>) {
+    if (locks.layout || draftLayout[key].pinned) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     setLayoutSelection(key);
     const origin = draftLayout[key];
@@ -297,6 +368,11 @@ export function UltraBrainShell() {
   }
 
   function importBackground(event: ChangeEvent<HTMLInputElement>) {
+    if (locks.background) {
+      setToast("배경이 잠겨 있습니다");
+      event.target.value = "";
+      return;
+    }
     const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -321,13 +397,12 @@ export function UltraBrainShell() {
   }
 
   const shellStyle = { "--ui-contrast": profile.adjustments.contrast } as CSSProperties;
-  const topbarStyle = { translate: `${layout.topbar.x}px ${layout.topbar.y}px` } as CSSProperties;
-  const centerStyle = { translate: `calc(-50% + ${layout.center.x}px) calc(-50% + ${layout.center.y}px)` } as CSSProperties;
-  const seedStyle = { left: `calc(50% + ${layout.seed.x}px)`, bottom: `calc(12.5% + ${layout.seed.y}px)` } as CSSProperties;
-  const railStyle = { right: `calc(25px - ${layout.rail.x}px)`, top: `calc(50% + ${layout.rail.y}px)` } as CSSProperties;
-  const statusStyle = { left: `calc(22px + ${layout.status.x}px)`, bottom: `calc(18px - ${layout.status.y}px)` } as CSSProperties;
+  const topbarStyle = { translate: `${layout.topbar.x}px ${layout.topbar.y}px`, scale: layout.topbar.scale } as CSSProperties;
+  const centerStyle = { translate: `calc(-50% + ${layout.center.x}px) calc(-50% + ${layout.center.y}px)`, scale: layout.center.scale, visibility: layout.center.visible ? "visible" : "hidden" } as CSSProperties;
+  const seedStyle = { left: `calc(50% + ${layout.seed.x}px)`, bottom: `calc(12.5% + ${layout.seed.y}px)`, scale: layout.seed.scale, visibility: layout.seed.visible ? "visible" : "hidden" } as CSSProperties;
+  const railStyle = { right: `calc(25px - ${layout.rail.x}px)`, top: `calc(50% + ${layout.rail.y}px)`, scale: layout.rail.scale, visibility: layout.rail.visible ? "visible" : "hidden" } as CSSProperties;
 
-  if (!hydrated) return <div className="world-loading" aria-label="Loading Ultra Brain"><div className="loading-mark" /><p>Opening Ultra Brain</p><span className="loading-line" /></div>;
+  if (!hydrated) return <div className="world-loading" aria-label="Ultra Brain 로딩"><div className="loading-mark" /><p>Ultra Brain을 여는 중</p><span className="loading-line" /></div>;
 
   return (
     <main className="world-shell" aria-label="Ultra Brain" style={shellStyle}>
@@ -340,10 +415,10 @@ export function UltraBrainShell() {
         <div className="topbar-left">
           <a className="brand" href="#ultra-brain" aria-label="Ultra Brain home">
             <span className="brand-sigil" aria-hidden="true">✦</span>
-            <span><strong>Ultra Brain</strong><small>v0.92 · Official UI</small></span>
+            <span><strong>Ultra Brain</strong><small>Official UI</small></span>
           </a>
           <button className="studio-launch" type="button" onClick={() => openStudio("themes")} aria-label="Open UI Studio">
-            <span aria-hidden="true">⌘</span><span><strong>UI Studio</strong><small>Change UI</small></span>
+            <span aria-hidden="true">✦</span><span><strong>UI Studio</strong><small>UI 설정</small></span>
           </button>
         </div>
         <nav className="world-path" aria-label="Current location"><span>Ultra Brain</span><i>/</i><span aria-current="page">OS Ecosystem</span></nav>
@@ -390,23 +465,26 @@ export function UltraBrainShell() {
           <h2>Shape the world</h2>
           <p className="drawer-intro">Preview visual changes in place, then save a governed UI revision. Changes stay inside Ultra Brain until you confirm.</p>
           <div className="studio-tabs" role="tablist" aria-label="UI Studio sections">
-            {(["themes", "layout", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "Theme" : tab === "layout" ? "Layout" : tab === "propagation" ? "Propagation" : "Preview"}</button>)}
+            {(["themes", "layout", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "Theme" : tab === "layout" ? "배치" : tab === "propagation" ? "Propagation" : "Preview"}</button>)}
           </div>
 
           {studioTab === "themes" && <div className="studio-pane">
-            <fieldset><legend>Theme profile</legend><div className="theme-grid">{themeNames.map((theme) => { const item = themeRegistry[theme]; return <button key={theme} type="button" className={activePreference.theme === theme ? "is-selected" : ""} onClick={() => selectTheme(theme)}><span className={`theme-preview ${theme}`} /><strong>{item.label}</strong><small>{item.description}</small></button>; })}</div></fieldset>
-            <fieldset><legend>Accent</legend><div className="accent-row">{ACCENT_SWATCHES.map((accent) => <button key={accent} type="button" className={activePreference.accent.toLowerCase() === accent ? "is-selected" : ""} style={{ "--swatch": accent } as CSSProperties} onClick={() => updateDraft({ accent })} aria-label={`Use accent ${accent}`} />)}<label className="accent-picker" aria-label="Choose custom accent"><input type="color" value={activePreference.accent} onChange={(event) => updateDraft({ accent: event.target.value })} /><span>Custom</span></label></div></fieldset>
-            <fieldset><legend>User custom theme</legend><label className="file-drop"><input type="file" accept="image/*" onChange={importBackground} /><span>Import image</span><small>Use your own background and sample its first accent automatically.</small></label>{customBackground && <button className="text-action" type="button" onClick={() => { setCustomBackground(null); setToast("Custom background removed"); }}>Remove imported background</button>}</fieldset>
-            <fieldset><legend>Theme preset</legend><div className="preset-row">{Object.values(themePresets).map((preset: { id: string; label: string; description: string }) => <button key={preset.id} type="button" className={activePreference.themePreset === preset.id ? "is-selected" : ""} onClick={() => selectThemePreset(preset.id)}><strong>{preset.label}</strong><small>{preset.description}</small></button>)}</div></fieldset>
-            <fieldset><legend>Theme detail adjustments</legend><div className="adjustment-grid">{THEME_ADJUSTMENT_KEYS.map((key: ThemeAdjustmentKey) => { const range = THEME_ADJUSTMENT_RANGES[key]; const value = activePreference.themeAdjustments[key]; return <label key={key}><span>{key === "componentPosition" ? "Component position" : key.charAt(0).toUpperCase() + key.slice(1)}</span><input type="range" min={range.min} max={range.max} step={range.step} value={value} onChange={(event) => updateThemeAdjustment(key, Number(event.target.value))} aria-label={`Adjust ${key}`} /><output>{Number(value).toFixed(range.step < 1 ? 2 : 0)}{range.unit === "x" ? "×" : range.unit}</output></label>; })}</div><small className="field-hint">Adjust presentation tokens without changing the selected world's concept art or illustration style.</small></fieldset>
-            <fieldset><legend>Theme package</legend><div className="theme-package-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{profile.package.name} · {profile.package.version}</strong></div><p>{profile.package.worldStyle}<br />{profile.package.adjustmentKeys.length} detail controls · import ready · export ready</p></div><div className="package-actions"><label className="package-import"><input type="file" accept="application/json,.json" onChange={importThemePackage} /><span>Import package</span></label><button className="text-action" type="button" onClick={exportThemePackage}>Export package</button></div></fieldset>
+            <fieldset><legend>테마 프로필</legend><div className="theme-grid">{themeNames.map((theme) => { const item = themeRegistry[theme]; return <button key={theme} type="button" className={activePreference.theme === theme ? "is-selected" : ""} onClick={() => selectTheme(theme)}><span className={`theme-preview ${theme}`} /><strong>{item.label}</strong><small>{item.description}</small></button>; })}</div></fieldset>
+            <fieldset><legend>강조 색상</legend><div className="accent-row">{ACCENT_SWATCHES.map((accent) => <button key={accent} type="button" className={activePreference.accent.toLowerCase() === accent ? "is-selected" : ""} style={{ "--swatch": accent } as CSSProperties} onClick={() => updateDraft({ accent })} aria-label={`강조 색상 ${accent} 사용`} />)}<label className="accent-picker" aria-label="사용자 색상 선택"><input type="color" value={activePreference.accent} onChange={(event) => updateDraft({ accent: event.target.value })} /><span>직접 선택</span></label></div></fieldset>
+            <fieldset><legend>사용자 테마</legend><label className="file-drop"><input type="file" accept="image/*" onChange={importBackground} /><span>이미지 가져오기</span><small>배경을 가져오고 대표 색상을 자동으로 추출합니다.</small></label>{customBackground && <button className="text-action" type="button" onClick={() => { setCustomBackground(null); setToast("가져온 배경을 제거했습니다"); }}>가져온 배경 제거</button>}</fieldset>
+            <fieldset><legend>테마 프리셋</legend><div className="preset-row">{Object.values(themePresets).map((preset: { id: string; label: string; description: string }) => <button key={preset.id} type="button" className={activePreference.themePreset === preset.id ? "is-selected" : ""} onClick={() => selectThemePreset(preset.id)}><strong>{preset.label}</strong><small>{preset.description}</small></button>)}</div></fieldset>
+            <fieldset><legend>테마 상세 조정</legend><div className="adjustment-grid">{THEME_ADJUSTMENT_KEYS.map((key: ThemeAdjustmentKey) => { const range = THEME_ADJUSTMENT_RANGES[key]; const value = activePreference.themeAdjustments[key]; const locked = key === "texture" ? locks.texture : key === "lighting" || key === "shadow" || key === "glow" ? locks.lighting : locks.color; return <label key={key} className={locked ? "is-locked" : ""}><span>{THEME_ADJUSTMENT_LABELS[key]}</span><input type="range" min={range.min} max={range.max} step={range.step} value={value} disabled={locked} onChange={(event) => updateThemeAdjustment(key, Number(event.target.value))} aria-label={`${THEME_ADJUSTMENT_LABELS[key]} 조정`} /><output>{Number(value).toFixed(range.step < 1 ? 2 : 0)}{range.unit === "x" ? "×" : range.unit}</output></label>; })}</div><small className="field-hint">선택한 Theme의 그림체와 세계관은 유지하면서 표현만 조정합니다.</small></fieldset>
+            <fieldset><legend>테마 패키지</legend><div className="theme-package-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{profile.package.name} · {profile.package.version}</strong></div><p>{profile.package.worldStyle}<br />상세 조정 {profile.package.adjustmentKeys.length}개 · 가져오기 준비 · 내보내기 준비</p></div><div className="package-actions"><label className="package-import"><input type="file" accept="application/json,.json" onChange={importThemePackage} /><span>패키지 가져오기</span></label><button className="text-action" type="button" onClick={exportThemePackage}>패키지 내보내기</button></div></fieldset>
             <div className="theme-detail-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{themeRegistry[activePreference.theme].label} system</strong></div><p>Background · {profile.mode}<br />Layout · world-first<br />Font · {profile.font.split(",")[0]}<br />Radius · {profile.radius} · {themePresets[activePreference.themePreset]?.label || "Custom"} detail</p></div>
           </div>}
 
           {studioTab === "layout" && <div className="studio-pane">
-            <fieldset><legend>Drag &amp; drop layout editor</legend><div className="layout-stage"><div className="layout-stage-world" aria-hidden="true" />{(Object.keys(LAYOUT_LABELS) as LayoutKey[]).map((key) => <button key={key} type="button" draggable className={`layout-node ${layoutSelection === key ? "is-selected" : ""} layout-${key}`} style={{ transform: `translate(${draftLayout[key].x}px, ${draftLayout[key].y}px)` }} onClick={() => setLayoutSelection(key)} onPointerDown={(event) => onLayoutPointerDown(key, event)} onPointerMove={onLayoutPointerMove} onPointerUp={onLayoutPointerUp} onPointerCancel={onLayoutPointerUp}>{LAYOUT_LABELS[key]}</button>)}</div><small className="field-hint">Drag a node to preview its position. Keyboard sliders below provide precise control.</small></fieldset>
-            <fieldset><legend>{LAYOUT_LABELS[layoutSelection]} position</legend><div className="range-row"><label>X <input type="range" min="-80" max="80" value={draftLayout[layoutSelection].x} onChange={(event) => updateLayout(layoutSelection, { x: Number(event.target.value) })} /><output>{draftLayout[layoutSelection].x}px</output></label><label>Y <input type="range" min="-60" max="60" value={draftLayout[layoutSelection].y} onChange={(event) => updateLayout(layoutSelection, { y: Number(event.target.value) })} /><output>{draftLayout[layoutSelection].y}px</output></label></div></fieldset>
-            <button className="text-action" type="button" onClick={resetLayout}>Reset all positions</button>
+            <fieldset><legend>배치 편집기</legend><div className="layout-stage"><div className="layout-stage-world" aria-hidden="true" />{(Object.keys(LAYOUT_LABELS) as LayoutKey[]).map((key) => <button key={key} type="button" draggable={!locks.layout && !draftLayout[key].pinned} className={`layout-node ${layoutSelection === key ? "is-selected" : ""} ${draftLayout[key].visible ? "" : "is-hidden"} layout-${key}`} style={{ transform: `translate(${draftLayout[key].x}px, ${draftLayout[key].y}px) scale(${draftLayout[key].scale})` }} onClick={() => setLayoutSelection(key)} onPointerDown={(event) => onLayoutPointerDown(key, event)} onPointerMove={onLayoutPointerMove} onPointerUp={onLayoutPointerUp} onPointerCancel={onLayoutPointerUp}>{LAYOUT_LABELS[key]}</button>)}</div><small className="field-hint">노드를 드래그해 위치를 바꾸고, 아래에서 크기·표시·고정을 조정합니다.</small></fieldset>
+            <fieldset><legend>{LAYOUT_LABELS[layoutSelection]} 설정</legend><div className="range-row"><label>X <input type="range" min="-80" max="80" disabled={locks.layout || draftLayout[layoutSelection].pinned} value={draftLayout[layoutSelection].x} onChange={(event) => updateLayout(layoutSelection, { x: Number(event.target.value) })} /><output>{draftLayout[layoutSelection].x}px</output></label><label>Y <input type="range" min="-60" max="60" disabled={locks.layout || draftLayout[layoutSelection].pinned} value={draftLayout[layoutSelection].y} onChange={(event) => updateLayout(layoutSelection, { y: Number(event.target.value) })} /><output>{draftLayout[layoutSelection].y}px</output></label><label>크기 <input type="range" min="0.72" max="1.32" step="0.01" disabled={locks.layout || locks.component} value={draftLayout[layoutSelection].scale} onChange={(event) => updateLayout(layoutSelection, { scale: Number(event.target.value) })} /><output>{Math.round(draftLayout[layoutSelection].scale * 100)}%</output></label></div></fieldset>
+            <div className="layout-control-grid"><button type="button" className={draftLayout[layoutSelection].visible ? "is-selected" : ""} onClick={() => updateLayout(layoutSelection, { visible: !draftLayout[layoutSelection].visible })}>표시 {draftLayout[layoutSelection].visible ? "켜짐" : "꺼짐"}</button><button type="button" className={draftLayout[layoutSelection].pinned ? "is-selected" : ""} onClick={() => updateLayout(layoutSelection, { pinned: !draftLayout[layoutSelection].pinned })}>고정 {draftLayout[layoutSelection].pinned ? "켜짐" : "꺼짐"}</button><select aria-label="컴포넌트 그룹" disabled={locks.layout || locks.component} value={draftLayout[layoutSelection].group} onChange={(event) => updateLayout(layoutSelection, { group: event.target.value as LayoutItem["group"] })}><option value="core">Core</option><option value="navigation">Navigation</option><option value="ecosystem">OS Ecosystem</option></select></div>
+            <div className="layout-align-row"><span>정렬</span><button type="button" onClick={() => alignSelected("x")}>가로 중앙</button><button type="button" onClick={() => alignSelected("y")}>세로 중앙</button></div>
+            <fieldset><legend>Layout Lock</legend><div className="lock-grid">{UI_LOCK_KEYS.map((key) => <button key={key} type="button" className={draftPreference.uiLocks[key] ? "is-selected" : ""} aria-pressed={draftPreference.uiLocks[key]} onClick={() => toggleUiLock(key)}>{UI_LOCK_LABELS[key]} <span>{draftPreference.uiLocks[key] ? "해제" : "잠금"}</span></button>)}</div></fieldset>
+            <button className="text-action" type="button" onClick={resetLayout}>배치 초기화</button>
           </div>}
 
           {studioTab === "propagation" && <div className="studio-pane">

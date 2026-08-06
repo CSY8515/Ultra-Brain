@@ -3,6 +3,7 @@ export type Density = "compact" | "comfortable" | "spacious";
 export type PropagationTarget = "theme" | "background" | "color" | "brightness" | "contrast" | "saturation" | "hue" | "texture" | "lighting" | "shadow" | "glow" | "transparency" | "blur" | "layout" | "componentPosition" | "componentSize" | "visibility" | "animation";
 export type PropagationNode = "ultra-brain" | "os-ecosystem" | "living-os" | "universal-learning-engine" | "project" | "module" | "feature";
 export type ThemeAdjustmentKey = "brightness" | "contrast" | "saturation" | "hue" | "lighting" | "shadow" | "glow" | "texture" | "blur" | "transparency";
+export type UILockKey = "layout" | "background" | "component" | "color" | "texture" | "lighting";
 export type ThemePreference = {
   theme: ThemeName;
   accent: string;
@@ -12,6 +13,7 @@ export type ThemePreference = {
   propagationOverride: boolean;
   themePreset: "balanced" | "luminous" | "cinematic" | "quiet" | "custom";
   themeAdjustments: Record<ThemeAdjustmentKey, number>;
+  uiLocks: Record<UILockKey, boolean>;
   propagationTargets: PropagationTarget[];
   propagationLocks: Partial<Record<PropagationNode, PropagationTarget[]>>;
   propagationOverrides: Partial<Record<PropagationNode, PropagationTarget[]>>;
@@ -22,6 +24,8 @@ export const THEME_STORAGE_KEY: string;
 export const PROPAGATION_TARGETS: readonly PropagationTarget[];
 export const HIERARCHY: readonly { id: PropagationNode; label: string; kind: "source" | "registered-child" | "downstream" }[];
 export const THEME_ADJUSTMENT_KEYS: readonly ThemeAdjustmentKey[];
+export const UI_LOCK_KEYS: readonly UILockKey[];
+export const defaultLocks: Record<UILockKey, boolean>;
 export const THEME_ADJUSTMENT_RANGES: Record<ThemeAdjustmentKey, { min: number; max: number; step: number; unit: string }>;
 export const themePresets: Record<string, { id: string; label: string; description: string; adjustments: Record<ThemeAdjustmentKey, number> }>;
 export const themePackageRegistry: Record<ThemeName, Record<string, any>>;

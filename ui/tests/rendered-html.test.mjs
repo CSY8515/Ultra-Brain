@@ -16,12 +16,12 @@ async function render() {
   );
 }
 
-test("server renders the Ultra Brain v0.92 world UI", async () => {
+test("server renders the Ultra Brain v0.93 world UI", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, /<title>Ultra Brain v0\.92 · Ultra Brain<\/title>/i);
+  assert.match(html, /<title>Ultra Brain v0\.93 · Ultra Brain<\/title>/i);
   assert.match(html, /Ultra Brain/);
   assert.match(html, /OS Ecosystem/);
   assert.match(html, /UI Studio/);
@@ -42,10 +42,11 @@ test("the production entry has no disposable starter surface", async () => {
   assert.match(shell, /Managed from Ultra Brain UI Studio/);
   assert.match(shell, /Child editor disabled/);
   assert.match(shell, /PROPAGATION_TARGET_LABELS/);
-  assert.match(shell, /Theme detail adjustments/);
-  assert.match(shell, /Import package/);
-  assert.match(shell, /Export package/);
-  assert.match(layout, /Ultra Brain v0\.92/);
+  assert.match(shell, /THEME_ADJUSTMENT_LABELS/);
+  assert.match(shell, /UI_LOCK_KEYS/);
+  assert.match(shell, /배치 편집기/);
+  assert.match(shell, /Rollback/);
+  assert.match(layout, /Ultra Brain v0\.93/);
   assert.doesNotMatch(layout, /codex-preview|_sites-preview|Starter Project/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(new URL("public/_sites-preview", templateRoot)));

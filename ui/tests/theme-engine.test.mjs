@@ -22,7 +22,7 @@ test("save creates a rollback point and increments revision", () => {
   assert.equal(result.next.revision, 2);
 });
 
-test("official theme studio exposes the complete v0.92 registry", () => {
+test("official theme studio exposes the complete v0.93 registry", () => {
   assert.equal(themeNames.length, 12);
   assert.deepEqual(themeNames, ["official", "light", "dark", "universe", "galaxy", "ecosystem", "ocean", "grassland", "lava", "minimal", "paper", "archive"]);
   for (const name of themeNames) {
@@ -30,6 +30,13 @@ test("official theme studio exposes the complete v0.92 registry", () => {
     assert.ok(themeRegistry[name].description);
     assert.ok(themeRegistry[name].worldFilter);
   }
+});
+
+test("UI lock settings are normalised and preserved", () => {
+  const safe = validatePreference({ ...defaultPreference, uiLocks: { layout: true, color: true, unknown: true } });
+  assert.equal(safe.uiLocks.layout, true);
+  assert.equal(safe.uiLocks.color, true);
+  assert.equal(Object.hasOwn(safe.uiLocks, "unknown"), false);
 });
 
 test("propagation override is explicit and visible in the resolved profile", () => {

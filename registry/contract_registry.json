@@ -139,7 +139,7 @@
       "id": "ultra-brain-ui-system-contract",
       "entity_type": "contract",
       "name": "Ultra Brain Official UI System Contract",
-      "scope": "v0.92 obligations for Theme Package resolution, bounded detail adjustments, preview-first theme changes, hierarchy propagation, target-level override, lock priority, compatibility, fallback, and rollback.",
+      "scope": "v0.93 obligations for Theme Package resolution, Korean-first operational UI, governed layout editing, six lock types, preview-first changes, hierarchy propagation, compatibility, fallback, and rollback.",
       "status": "active",
       "owner_layer": "Ultra Brain",
       "parent": "ultra-brain",
@@ -147,7 +147,7 @@
       "path": "contracts/ui_system.contract.json",
       "interface": ["ultra-brain-ui-system-interface"],
       "contract": [],
-      "current_version": "0.92.0",
+      "current_version": "0.93.0",
       "created_date": "2026-08-05",
       "updated_date": "2026-08-06"
     }

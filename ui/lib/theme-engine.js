@@ -62,6 +62,8 @@ export const themeRegistry = Object.freeze({
 });
 
 export const THEME_ADJUSTMENT_KEYS = Object.freeze(["brightness", "contrast", "saturation", "hue", "lighting", "shadow", "glow", "texture", "blur", "transparency"]);
+export const UI_LOCK_KEYS = Object.freeze(["layout", "background", "component", "color", "texture", "lighting"]);
+export const defaultLocks = Object.freeze(Object.fromEntries(UI_LOCK_KEYS.map((key) => [key, false])));
 export const THEME_ADJUSTMENT_RANGES = Object.freeze({
   brightness: { min: 0.7, max: 1.3, step: 0.01, unit: "x" },
   contrast: { min: 0.7, max: 1.4, step: 0.01, unit: "x" },
@@ -77,11 +79,11 @@ export const THEME_ADJUSTMENT_RANGES = Object.freeze({
 
 const balancedAdjustments = Object.freeze({ brightness: 1, contrast: 1, saturation: 1, hue: 0, lighting: 1, shadow: 1, glow: 1, texture: 1, blur: 0, transparency: 1 });
 export const themePresets = Object.freeze({
-  balanced: { id: "balanced", label: "Balanced", description: "Theme package defaults", adjustments: { ...balancedAdjustments } },
-  luminous: { id: "luminous", label: "Luminous", description: "More light and glow", adjustments: { ...balancedAdjustments, brightness: 1.08, lighting: 1.3, glow: 1.45, shadow: 0.82 } },
-  cinematic: { id: "cinematic", label: "Cinematic", description: "Deeper contrast and texture", adjustments: { ...balancedAdjustments, brightness: 0.92, contrast: 1.18, saturation: 1.08, lighting: 1.12, shadow: 1.3, texture: 1.2 } },
-  quiet: { id: "quiet", label: "Quiet", description: "Soft focus and calm signal", adjustments: { ...balancedAdjustments, brightness: 0.96, contrast: 0.9, saturation: 0.82, lighting: 0.86, glow: 0.65, blur: 1, transparency: 0.9 } },
-  custom: { id: "custom", label: "Custom", description: "Manual detail adjustments", adjustments: { ...balancedAdjustments } },
+  balanced: { id: "balanced", label: "균형", description: "테마 기본값", adjustments: { ...balancedAdjustments } },
+  luminous: { id: "luminous", label: "발광", description: "밝기와 빛을 강조", adjustments: { ...balancedAdjustments, brightness: 1.08, lighting: 1.3, glow: 1.45, shadow: 0.82 } },
+  cinematic: { id: "cinematic", label: "시네마틱", description: "깊은 명암과 질감", adjustments: { ...balancedAdjustments, brightness: 0.92, contrast: 1.18, saturation: 1.08, lighting: 1.12, shadow: 1.3, texture: 1.2 } },
+  quiet: { id: "quiet", label: "차분", description: "부드러운 초점과 안정감", adjustments: { ...balancedAdjustments, brightness: 0.96, contrast: 0.9, saturation: 0.82, lighting: 0.86, glow: 0.65, blur: 1, transparency: 0.9 } },
+  custom: { id: "custom", label: "사용자 지정", description: "상세 값을 직접 조정", adjustments: { ...balancedAdjustments } },
 });
 
 export const themePackageRegistry = Object.freeze(Object.fromEntries(Object.entries(themeRegistry).map(([name, item]) => [name, {
@@ -109,6 +111,7 @@ export const defaultPreference = Object.freeze({
   propagationOverride: false,
   themePreset: "balanced",
   themeAdjustments: { ...balancedAdjustments },
+  uiLocks: { ...defaultLocks },
   propagationTargets: [...PROPAGATION_TARGETS],
   propagationLocks: {},
   propagationOverrides: {},
@@ -141,6 +144,11 @@ function normaliseNodeMap(value) {
   }));
 }
 
+function normaliseLocks(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  return Object.fromEntries(UI_LOCK_KEYS.map((key) => [key, source[key] === true]));
+}
+
 export function validatePreference(input = {}) {
   const theme = Object.hasOwn(themeRegistry, input.theme) ? input.theme : "official";
   const fallbackAccent = themeRegistry[theme].accent;
@@ -148,6 +156,7 @@ export function validatePreference(input = {}) {
   const propagationTargets = normaliseTargets(input.propagationTargets);
   const propagationLocks = normaliseNodeMap(input.propagationLocks);
   const propagationOverrides = normaliseNodeMap(input.propagationOverrides);
+  const uiLocks = normaliseLocks(input.uiLocks);
   if (input.osEcosystemLocked === true) {
     propagationLocks["os-ecosystem"] = [...propagationTargets];
   }
@@ -168,6 +177,7 @@ export function validatePreference(input = {}) {
     propagationOverride: input.propagationOverride === true,
     themePreset,
     themeAdjustments: shouldUsePresetAdjustments ? { ...themePresets[themePreset].adjustments } : requestedAdjustments,
+    uiLocks,
     propagationTargets,
     propagationLocks,
     propagationOverrides,

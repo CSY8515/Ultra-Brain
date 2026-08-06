@@ -139,7 +139,7 @@
       "id": "ultra-brain-ui-system-interface",
       "entity_type": "interface",
       "name": "Ultra Brain Official UI System Interface",
-      "scope": "v0.92 boundary for registry-driven Theme Packages, bounded detail adjustments, live preview, hierarchy propagation, affected-scope reporting, locks, OS Ecosystem forwarding, and rollback references.",
+      "scope": "v0.93 boundary for registry-driven Theme Packages, Korean-first operational UI, governed Layout Editor controls, six lock types, live preview, hierarchy propagation, OS Ecosystem forwarding, and rollback references.",
       "status": "active",
       "owner_layer": "Ultra Brain",
       "parent": "ultra-brain",
@@ -147,7 +147,7 @@
       "path": "interfaces/ui_system.interface.json",
       "interface": [],
       "contract": ["ultra-brain-ui-system-contract"],
-      "current_version": "0.92.0",
+      "current_version": "0.93.0",
       "created_date": "2026-08-05",
       "updated_date": "2026-08-06"
     }

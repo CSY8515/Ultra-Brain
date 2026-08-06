@@ -3,6 +3,14 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.93] - 2026-08-06
+
+### Added
+
+- Completed the production UI polish pass with a quiet world-first default view and Korean-first operational labels.
+- Added Layout Editor controls for drag/drop position, size, visibility, pinning, grouping, alignment, and six governed lock types.
+- Extended rollback points to include layout and imported background state while preserving hierarchy propagation.
+
 ## [v0.92] - 2026-08-06
 
 ### Added
