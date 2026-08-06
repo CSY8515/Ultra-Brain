@@ -1,5 +1,7 @@
 export type ThemeName = "official" | "light" | "dark" | "universe" | "galaxy" | "ecosystem" | "ocean" | "grassland" | "lava" | "minimal" | "paper" | "archive";
 export type Density = "compact" | "comfortable" | "spacious";
+export type PropagationTarget = "theme" | "background" | "color" | "brightness" | "contrast" | "saturation" | "hue" | "texture" | "lighting" | "shadow" | "glow" | "transparency" | "blur" | "layout" | "componentPosition" | "componentSize" | "visibility" | "animation";
+export type PropagationNode = "ultra-brain" | "os-ecosystem" | "living-os" | "universal-learning-engine" | "project" | "module" | "feature";
 export type ThemePreference = {
   theme: ThemeName;
   accent: string;
@@ -7,14 +9,20 @@ export type ThemePreference = {
   motion: boolean;
   osEcosystemLocked: boolean;
   propagationOverride: boolean;
+  propagationTargets: PropagationTarget[];
+  propagationLocks: Partial<Record<PropagationNode, PropagationTarget[]>>;
+  propagationOverrides: Partial<Record<PropagationNode, PropagationTarget[]>>;
   scope: "global" | "os-ecosystem";
   revision: number;
 };
 export const THEME_STORAGE_KEY: string;
+export const PROPAGATION_TARGETS: readonly PropagationTarget[];
+export const HIERARCHY: readonly { id: PropagationNode; label: string; kind: "source" | "registered-child" | "downstream" }[];
 export const themeNames: readonly ThemeName[];
 export const themeRegistry: Record<ThemeName, Record<string, string>>;
 export const defaultPreference: ThemePreference;
 export function validatePreference(input?: Partial<ThemePreference>): ThemePreference;
 export function resolveThemeProfile(preference: ThemePreference): Record<string, any>;
+export function resolvePropagation(preference: ThemePreference): Record<string, any>;
 export function createRollbackPoint(current: ThemePreference): { id: string; createdAt: string; preference: ThemePreference };
 export function applyPreference(current: ThemePreference, candidate: Partial<ThemePreference>): { next: ThemePreference; rollback: { id: string; createdAt: string; preference: ThemePreference } };

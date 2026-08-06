@@ -1,5 +1,36 @@
 export const THEME_STORAGE_KEY = "ultra-brain.ui/v1";
 
+export const PROPAGATION_TARGETS = Object.freeze([
+  "theme",
+  "background",
+  "color",
+  "brightness",
+  "contrast",
+  "saturation",
+  "hue",
+  "texture",
+  "lighting",
+  "shadow",
+  "glow",
+  "transparency",
+  "blur",
+  "layout",
+  "componentPosition",
+  "componentSize",
+  "visibility",
+  "animation",
+]);
+
+export const HIERARCHY = Object.freeze([
+  { id: "ultra-brain", label: "Ultra Brain", kind: "source" },
+  { id: "os-ecosystem", label: "OS Ecosystem", kind: "registered-child" },
+  { id: "living-os", label: "Living OS", kind: "downstream" },
+  { id: "universal-learning-engine", label: "Universal Learning Engine", kind: "downstream" },
+  { id: "project", label: "Project", kind: "downstream" },
+  { id: "module", label: "Module", kind: "downstream" },
+  { id: "feature", label: "Feature", kind: "downstream" },
+]);
+
 const shared = {
   surface: "rgba(6,15,16,.76)",
   surfaceStrong: "rgba(9,22,22,.94)",
@@ -39,14 +70,40 @@ export const defaultPreference = Object.freeze({
   motion: true,
   osEcosystemLocked: false,
   propagationOverride: false,
+  propagationTargets: [...PROPAGATION_TARGETS],
+  propagationLocks: {},
+  propagationOverrides: {},
   scope: "global",
   revision: 1,
 });
+
+function normaliseTargets(value) {
+  if (!Array.isArray(value)) return [...PROPAGATION_TARGETS];
+  const targets = value.filter((target) => PROPAGATION_TARGETS.includes(target));
+  return targets.length ? [...new Set(targets)] : [...PROPAGATION_TARGETS];
+}
+
+function normaliseNodeMap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).flatMap(([nodeId, targets]) => {
+    if (!HIERARCHY.some((node) => node.id === nodeId) || !Array.isArray(targets)) return [];
+    return [[nodeId, [...new Set(targets.filter((target) => PROPAGATION_TARGETS.includes(target)))]]];
+  }));
+}
 
 export function validatePreference(input = {}) {
   const theme = Object.hasOwn(themeRegistry, input.theme) ? input.theme : "official";
   const fallbackAccent = themeRegistry[theme].accent;
   const accent = /^#[0-9a-f]{6}$/i.test(input.accent || "") ? input.accent : fallbackAccent;
+  const propagationTargets = normaliseTargets(input.propagationTargets);
+  const propagationLocks = normaliseNodeMap(input.propagationLocks);
+  const propagationOverrides = normaliseNodeMap(input.propagationOverrides);
+  if (input.osEcosystemLocked === true) {
+    propagationLocks["os-ecosystem"] = [...propagationTargets];
+  }
+  if (input.propagationOverride === true) {
+    propagationOverrides["os-ecosystem"] = [...propagationTargets];
+  }
   return {
     ...defaultPreference,
     ...input,
@@ -56,15 +113,75 @@ export function validatePreference(input = {}) {
     motion: input.motion !== false,
     osEcosystemLocked: input.osEcosystemLocked === true,
     propagationOverride: input.propagationOverride === true,
+    propagationTargets,
+    propagationLocks,
+    propagationOverrides,
     scope: input.scope === "os-ecosystem" ? "os-ecosystem" : "global",
     revision: Number.isInteger(input.revision) && input.revision > 0 ? input.revision : 1,
+  };
+}
+
+export function resolvePropagation(preference) {
+  const safe = validatePreference(preference);
+  const sourcePayload = {
+    revision: safe.revision,
+    theme: safe.theme,
+    accent: safe.accent,
+    density: safe.density,
+    motion: safe.motion,
+    targets: [...safe.propagationTargets],
+  };
+  const hierarchy = HIERARCHY.map((node) => {
+    if (node.kind === "source") {
+      return {
+        ...node,
+        status: "source",
+        automatic: false,
+        owner: "Ultra Brain UI Studio",
+        editableHere: true,
+        sourceRevision: safe.revision,
+        appliedTargets: [...safe.propagationTargets],
+        lockedTargets: [],
+        overriddenTargets: [],
+        preservedTargets: [],
+      };
+    }
+    const lockedTargets = (safe.propagationLocks[node.id] || []).filter((target) => safe.propagationTargets.includes(target));
+    const overriddenTargets = (safe.propagationOverrides[node.id] || []).filter((target) => safe.propagationTargets.includes(target));
+    const appliedTargets = safe.propagationTargets.filter((target) => !lockedTargets.includes(target) && !overriddenTargets.includes(target));
+    const status = overriddenTargets.length ? "override" : lockedTargets.length === safe.propagationTargets.length ? "locked" : "applied";
+    return {
+      ...node,
+      status,
+      automatic: appliedTargets.length > 0,
+      owner: "Ultra Brain UI Studio",
+      editableHere: false,
+      sourceRevision: safe.revision,
+      appliedTargets,
+      lockedTargets,
+      overriddenTargets,
+      preservedTargets: [...lockedTargets],
+    };
+  });
+  return {
+    source: "Ultra Brain",
+    owner: "Ultra Brain UI Studio",
+    contract: "ultra-brain.ui/v1",
+    interfaceVersion: "1.0",
+    revision: safe.revision,
+    automatic: true,
+    childEditorsEnabled: false,
+    targets: [...safe.propagationTargets],
+    payload: sourcePayload,
+    hierarchy,
   };
 }
 
 export function resolveThemeProfile(preference) {
   const safe = validatePreference(preference);
   const profile = themeRegistry[safe.theme] || themeRegistry.official;
-  const blocked = safe.scope === "global" && safe.osEcosystemLocked && !safe.propagationOverride;
+  const propagation = resolvePropagation(safe);
+  const ecosystemNode = propagation.hierarchy.find((node) => node.id === "os-ecosystem");
   return {
     ...profile,
     accent: safe.accent,
@@ -75,9 +192,8 @@ export function resolveThemeProfile(preference) {
     propagation: {
       source: "Ultra Brain Global UI",
       target: "OS Ecosystem",
-      status: blocked ? "locked" : safe.propagationOverride ? "override" : "compatible",
-      contract: "ultra-brain.ui/v1",
-      interfaceVersion: "1.0",
+      status: ecosystemNode?.status === "locked" ? "locked" : ecosystemNode?.status === "override" ? "override" : "compatible",
+      ...propagation,
     },
   };
 }

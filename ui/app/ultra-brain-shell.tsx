@@ -4,10 +4,12 @@ import type { ChangeEvent, CSSProperties, PointerEvent as ReactPointerEvent } fr
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   THEME_STORAGE_KEY,
+  PROPAGATION_TARGETS,
   applyPreference,
   createRollbackPoint,
   defaultPreference,
   resolveThemeProfile,
+  resolvePropagation,
   themeNames,
   themeRegistry,
   validatePreference,
@@ -15,8 +17,27 @@ import {
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
-const PROPAGATION_CHAIN = ["Ultra Brain", "OS Ecosystem", "Living OS", "Universal Learning Engine", "Future Projects"];
 const LAYOUT_LABELS = { topbar: "Topbar", center: "World identity", seed: "OS Entry", rail: "Navigation rail", status: "Status dock" } as const;
+const PROPAGATION_TARGET_LABELS: Record<string, string> = {
+  theme: "Theme",
+  background: "Background",
+  color: "Color",
+  brightness: "Brightness",
+  contrast: "Contrast",
+  saturation: "Saturation",
+  hue: "Hue",
+  texture: "Texture",
+  lighting: "Lighting",
+  shadow: "Shadow",
+  glow: "Glow",
+  transparency: "Transparency",
+  blur: "Blur",
+  layout: "Layout",
+  componentPosition: "Component position",
+  componentSize: "Component size",
+  visibility: "Visibility",
+  animation: "Animation",
+};
 
 type Panel = null | "studio" | "notifications";
 type StudioTab = "themes" | "layout" | "propagation" | "preview";
@@ -54,6 +75,7 @@ export function UltraBrainShell() {
   const [customBackground, setCustomBackground] = useState<string | null>(null);
   const [toast, setToast] = useState("");
   const [layoutSelection, setLayoutSelection] = useState<LayoutKey>("topbar");
+  const [propagationSelection, setPropagationSelection] = useState("os-ecosystem");
   const dragRef = useRef<{ key: LayoutKey; startX: number; startY: number; originX: number; originY: number } | null>(null);
 
   useEffect(() => {
@@ -70,6 +92,8 @@ export function UltraBrainShell() {
 
   const activePreference = panel === "studio" ? draftPreference : preference;
   const profile = useMemo(() => resolveThemeProfile(activePreference), [activePreference]);
+  const propagation = useMemo(() => resolvePropagation(activePreference), [activePreference]);
+  const selectedPropagationNode = propagation.hierarchy.find((node: { id: string }) => node.id === propagationSelection) || propagation.hierarchy[1];
 
   useEffect(() => {
     const root = document.documentElement;
@@ -101,6 +125,7 @@ export function UltraBrainShell() {
     setDraftPreference(preference);
     setDraftLayout(layout);
     setStudioTab(tab);
+    if (tab === "propagation") setPropagationSelection("os-ecosystem");
     setPanel("studio");
   }
 
@@ -112,6 +137,43 @@ export function UltraBrainShell() {
 
   function updateDraft(partial: Partial<Preference>) {
     setDraftPreference((current) => validatePreference({ ...current, ...partial }));
+  }
+
+  function togglePropagationTarget(nodeId: string, mode: "lock" | "override", target: string) {
+    setDraftPreference((current) => {
+      const key = mode === "lock" ? "propagationLocks" : "propagationOverrides";
+      const sourceMap = current[key] || {};
+      const selectedTargets = Array.isArray(sourceMap[nodeId]) ? sourceMap[nodeId] : [];
+      const nextTargets = selectedTargets.includes(target) ? selectedTargets.filter((item: string) => item !== target) : [...selectedTargets, target];
+      const nextMap = { ...sourceMap };
+      if (nextTargets.length) nextMap[nodeId] = nextTargets;
+      else delete nextMap[nodeId];
+      const aliases = nodeId === "os-ecosystem" ? {
+        osEcosystemLocked: mode === "lock" ? nextTargets.length === current.propagationTargets.length : current.osEcosystemLocked,
+        propagationOverride: mode === "override" ? nextTargets.length === current.propagationTargets.length : current.propagationOverride,
+      } : {};
+      return validatePreference({ ...current, [key]: nextMap, ...aliases });
+    });
+  }
+
+  function toggleEcosystemLock() {
+    setDraftPreference((current) => {
+      const nextLocked = !current.osEcosystemLocked;
+      const propagationLocks = { ...current.propagationLocks };
+      if (nextLocked) propagationLocks["os-ecosystem"] = [...current.propagationTargets];
+      else delete propagationLocks["os-ecosystem"];
+      return validatePreference({ ...current, osEcosystemLocked: nextLocked, propagationLocks });
+    });
+  }
+
+  function toggleEcosystemOverride() {
+    setDraftPreference((current) => {
+      const nextOverride = !current.propagationOverride;
+      const propagationOverrides = { ...current.propagationOverrides };
+      if (nextOverride) propagationOverrides["os-ecosystem"] = [...current.propagationTargets];
+      else delete propagationOverrides["os-ecosystem"];
+      return validatePreference({ ...current, propagationOverride: nextOverride, propagationOverrides });
+    });
   }
 
   function selectTheme(theme: string) {
@@ -285,10 +347,38 @@ export function UltraBrainShell() {
           </div>}
 
           {studioTab === "propagation" && <div className="studio-pane">
-            <div className="propagation-banner"><span className={profile.propagation.status === "locked" ? "lock-state" : "health-dot"} /><div><strong>{profile.propagation.status === "locked" ? "Propagation locked" : profile.propagation.status === "override" ? "Override active" : "Compatible propagation"}</strong><small>{profile.propagation.contract} · interface {profile.propagation.interfaceVersion}</small></div></div>
-            <div className="propagation-chain">{PROPAGATION_CHAIN.map((node, index) => <div key={node} className="chain-node"><span className={index < 2 ? "is-active" : ""}>{index + 1}</span><div><strong>{node}</strong><small>{index === 0 ? "Source" : index === 1 ? "Registered child" : "Future target"}</small></div>{index < PROPAGATION_CHAIN.length - 1 && <i aria-hidden="true">↓</i>}</div>)}</div>
-            <div className="setting-row"><div><strong>Propagation lock</strong><small>Keep global UI changes from reaching OS Ecosystem.</small></div><button className={`switch ${draftPreference.osEcosystemLocked ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.osEcosystemLocked} onClick={() => updateDraft({ osEcosystemLocked: !draftPreference.osEcosystemLocked })}><span /></button></div>
-            <div className="setting-row"><div><strong>Override lock</strong><small>Explicitly preview a governed exception without changing child ownership.</small></div><button className={`switch ${draftPreference.propagationOverride ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.propagationOverride} onClick={() => updateDraft({ propagationOverride: !draftPreference.propagationOverride })}><span /></button></div>
+            <div className="propagation-banner"><span className={profile.propagation.status === "locked" ? "lock-state" : "health-dot"} /><div><strong>{profile.propagation.status === "locked" ? "Propagation locked" : profile.propagation.status === "override" ? "Override active" : "Automatic hierarchy propagation"}</strong><small>{profile.propagation.contract} · interface {profile.propagation.interfaceVersion} · revision {propagation.revision}</small></div></div>
+            <div className="hierarchy-note"><strong>One source of truth</strong><span>Ultra Brain UI Studio governs every level. Unlocked descendants automatically receive the saved UI payload.</span></div>
+            <div className="propagation-hierarchy" aria-label="UI propagation hierarchy">
+              {propagation.hierarchy.map((node: { id: string; label: string; kind: string; status: string; automatic: boolean; appliedTargets: string[]; lockedTargets: string[]; overriddenTargets: string[] }, index: number) => {
+                const statusLabel = node.status === "source" ? "Source" : node.status === "locked" ? "Locked" : node.status === "override" ? "Override" : "Auto applied";
+                return <button key={node.id} type="button" className={`hierarchy-node ${propagationSelection === node.id ? "is-selected" : ""}`} onClick={() => setPropagationSelection(node.id)}>
+                  <span className={`hierarchy-index status-${node.status}`}>{index + 1}</span>
+                  <span className="hierarchy-copy"><strong>{node.label}</strong><small>{node.kind === "source" ? "UI Studio source" : node.kind === "registered-child" ? "Registered child" : "Downstream target"}</small></span>
+                  <em className={`propagation-status status-${node.status}`}>{statusLabel}</em>
+                  {index < propagation.hierarchy.length - 1 && <i aria-hidden="true">↓</i>}
+                </button>;
+              })}
+            </div>
+            <div className="propagation-editor-card">
+              <div className="editor-card-heading"><div><small>SELECTED LEVEL</small><strong>{selectedPropagationNode?.label}</strong></div><span className="auto-apply-badge">{selectedPropagationNode?.kind === "source" ? "Editable source" : "Child editor disabled"}</span></div>
+              <p className="field-hint">{selectedPropagationNode?.kind === "source" ? "Edit the source UI here. The saved payload is then offered to every unlocked descendant." : "Managed from Ultra Brain UI Studio. This level cannot edit its own UI."}</p>
+              {selectedPropagationNode?.kind !== "source" && <div className="target-grid" aria-label={`Propagation targets for ${selectedPropagationNode?.label}`}>
+                {PROPAGATION_TARGETS.map((target: string) => {
+                  const locked = (draftPreference.propagationLocks[selectedPropagationNode?.id || ""] || []).includes(target);
+                  const overridden = (draftPreference.propagationOverrides[selectedPropagationNode?.id || ""] || []).includes(target);
+                  return <div key={target} className={`propagation-target ${locked ? "is-locked" : ""} ${overridden ? "is-overridden" : ""}`}>
+                    <span>{PROPAGATION_TARGET_LABELS[target]}</span>
+                    <button type="button" className={`target-toggle ${locked ? "is-on" : ""}`} onClick={() => togglePropagationTarget(selectedPropagationNode?.id || "os-ecosystem", "lock", target)} aria-pressed={locked}>Lock</button>
+                    <button type="button" className={`target-toggle ${overridden ? "is-on" : ""}`} onClick={() => togglePropagationTarget(selectedPropagationNode?.id || "os-ecosystem", "override", target)} aria-pressed={overridden}>Override</button>
+                  </div>;
+                })}
+              </div>}
+              {selectedPropagationNode?.kind === "source" && <div className="source-target-summary"><span className="health-dot" /><strong>All {PROPAGATION_TARGETS.length} targets originate here</strong><small>Theme, visual tokens, layout, component geometry, visibility and motion.</small></div>}
+            </div>
+            <div className="setting-row"><div><strong>OS Ecosystem lock</strong><small>Keep the selected global UI payload from reaching the registered child.</small></div><button className={`switch ${draftPreference.osEcosystemLocked ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.osEcosystemLocked} onClick={toggleEcosystemLock}><span /></button></div>
+            <div className="setting-row"><div><strong>OS Ecosystem override</strong><small>Preview a governed exception while keeping child ownership independent.</small></div><button className={`switch ${draftPreference.propagationOverride ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.propagationOverride} onClick={toggleEcosystemOverride}><span /></button></div>
+            <div className="propagation-payload"><div><small>PROPAGATION PREVIEW PAYLOAD</small><strong>{themeRegistry[draftPreference.theme].label} · revision {draftPreference.revision}</strong></div><span>{selectedPropagationNode?.appliedTargets?.length || 0} auto applied · {selectedPropagationNode?.lockedTargets?.length || 0} locked · {selectedPropagationNode?.overriddenTargets?.length || 0} override</span></div>
           </div>}
 
           {studioTab === "preview" && <div className="studio-pane">

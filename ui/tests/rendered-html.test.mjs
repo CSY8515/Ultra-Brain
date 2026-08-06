@@ -38,6 +38,10 @@ test("the production entry has no disposable starter surface", async () => {
   assert.match(page, /<UltraBrainShell \/>/);
   assert.match(shell, /ultra-brain-world\.png/);
   assert.match(shell, /Open UI Studio/);
+  assert.match(shell, /Automatic hierarchy propagation/);
+  assert.match(shell, /Managed from Ultra Brain UI Studio/);
+  assert.match(shell, /Child editor disabled/);
+  assert.match(shell, /PROPAGATION_TARGET_LABELS/);
   assert.match(layout, /Ultra Brain v0\.9/);
   assert.doesNotMatch(layout, /codex-preview|_sites-preview|Starter Project/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
