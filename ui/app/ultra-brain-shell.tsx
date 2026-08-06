@@ -23,6 +23,7 @@ import {
 } from "../lib/theme-engine";
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
+const CURRENT_UI_VERSION = "0.94";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
 const LAYOUT_LABELS = { topbar: "상단 바", center: "중앙 타이틀", seed: "OS Ecosystem", rail: "탐색 레일" } as const;
 const PROPAGATION_TARGET_LABELS: Record<string, string> = {
@@ -128,10 +129,10 @@ export function UltraBrainShell() {
   useEffect(() => {
     try {
       const stored = JSON.parse(window.localStorage.getItem(THEME_STORAGE_KEY) || "null");
-      if (stored?.preference) setPreference(validatePreference(stored.preference));
-      if (stored?.layout) setLayout(normaliseLayout(stored.layout));
-      if (stored?.customBackground) setCustomBackground(stored.customBackground);
-      if (stored?.rollbackStack) setRollbackStack(stored.rollbackStack);
+      if (stored?.releaseVersion === CURRENT_UI_VERSION && stored?.preference) setPreference(validatePreference(stored.preference));
+      if (stored?.releaseVersion === CURRENT_UI_VERSION && stored?.layout) setLayout(normaliseLayout(stored.layout));
+      if (stored?.releaseVersion === CURRENT_UI_VERSION && stored?.customBackground) setCustomBackground(stored.customBackground);
+      if (stored?.releaseVersion === CURRENT_UI_VERSION && stored?.rollbackStack) setRollbackStack(stored.rollbackStack);
     } catch {
       // Local preferences are optional; the official profile remains safe.
     }
@@ -295,7 +296,7 @@ export function UltraBrainShell() {
   }
 
   function persist(nextPreference: Preference, nextLayout: LayoutOffsets, nextRollbacks: RollbackPoint[], background = customBackground) {
-    window.localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({ preference: nextPreference, layout: nextLayout, rollbackStack: nextRollbacks, customBackground: background }));
+    window.localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({ releaseVersion: CURRENT_UI_VERSION, preference: nextPreference, layout: nextLayout, rollbackStack: nextRollbacks, customBackground: background }));
   }
 
   function saveStudio() {
@@ -448,16 +449,14 @@ export function UltraBrainShell() {
       </header>
 
       <section id="ultra-brain" className="world-center" style={centerStyle} aria-labelledby="ultra-brain-title">
-        <p className="eyebrow">OFFICIAL WORLD · REVISION {activePreference.revision}</p>
         <span className="title-rule title-rule-top" aria-hidden="true" />
         <h1 id="ultra-brain-title">Ultra Brain</h1>
         <span className="title-rule" aria-hidden="true" />
-        <p className="world-status"><span className="health-dot" />Healthy <b>·</b> Official UI</p>
       </section>
 
       <a className="ecosystem-seed" style={seedStyle} href={OS_ECOSYSTEM_URL} target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem in a new tab">
         <span className="seed-aura" aria-hidden="true" />
-        <span className="seed-copy"><small>REGISTERED SYSTEM</small><strong>OS Ecosystem</strong><em>v0.74 · Healthy</em><span className="seed-action">Enter <b>↗</b></span></span>
+        <span className="seed-copy"><strong>OS Ecosystem</strong></span>
       </a>
       <img className="world-focus-art" src="/ultra-brain-world.png" alt="" aria-hidden="true" />
 
