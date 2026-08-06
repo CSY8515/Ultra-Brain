@@ -3,7 +3,7 @@ export type Density = "compact" | "comfortable" | "spacious";
 export type PropagationTarget = "theme" | "background" | "color" | "brightness" | "contrast" | "saturation" | "hue" | "texture" | "lighting" | "shadow" | "glow" | "transparency" | "blur" | "layout" | "componentPosition" | "componentSize" | "visibility" | "animation";
 export type PropagationNode = "ultra-brain" | "os-ecosystem" | "living-os" | "universal-learning-engine" | "project" | "module" | "feature";
 export type ThemeAdjustmentKey = "brightness" | "contrast" | "saturation" | "hue" | "lighting" | "shadow" | "glow" | "texture" | "blur" | "transparency";
-export type UILockKey = "layout" | "background" | "component" | "color" | "texture" | "lighting";
+export type UILockKey = "position" | "size" | "background" | "layout" | "color" | "texture" | "lighting" | "component" | "layer";
 export type ThemePreference = {
   theme: ThemeName;
   accent: string;

@@ -2,6 +2,7 @@
 
 import type { ChangeEvent, CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { CanvasEditor } from "./canvas-editor";
 import {
   THEME_STORAGE_KEY,
   THEME_ADJUSTMENT_KEYS,
@@ -57,16 +58,19 @@ const THEME_ADJUSTMENT_LABELS: Record<ThemeAdjustmentKey, string> = {
   transparency: "투명도",
 };
 const UI_LOCK_LABELS: Record<string, string> = {
+  position: "위치 잠금",
+  size: "크기 잠금",
   layout: "배치 잠금",
   background: "배경 잠금",
   component: "컴포넌트 잠금",
   color: "색상 잠금",
   texture: "질감 잠금",
   lighting: "광원 잠금",
+  layer: "레이어 잠금",
 };
 
 type Panel = null | "studio";
-type StudioTab = "themes" | "layout" | "propagation" | "preview";
+type StudioTab = "themes" | "layout" | "custom" | "propagation" | "preview";
 type LayoutKey = keyof typeof LAYOUT_LABELS;
 type LayoutItem = { x: number; y: number; scale: number; visible: boolean; pinned: boolean; group: "core" | "navigation" | "ecosystem" };
 type LayoutOffsets = Record<LayoutKey, LayoutItem>;
@@ -126,6 +130,7 @@ export function UltraBrainShell() {
       const stored = JSON.parse(window.localStorage.getItem(THEME_STORAGE_KEY) || "null");
       if (stored?.preference) setPreference(validatePreference(stored.preference));
       if (stored?.layout) setLayout(normaliseLayout(stored.layout));
+      if (stored?.customBackground) setCustomBackground(stored.customBackground);
       if (stored?.rollbackStack) setRollbackStack(stored.rollbackStack);
     } catch {
       // Local preferences are optional; the official profile remains safe.
@@ -289,8 +294,8 @@ export function UltraBrainShell() {
     event.target.value = "";
   }
 
-  function persist(nextPreference: Preference, nextLayout: LayoutOffsets, nextRollbacks: RollbackPoint[]) {
-    window.localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({ preference: nextPreference, layout: nextLayout, rollbackStack: nextRollbacks }));
+  function persist(nextPreference: Preference, nextLayout: LayoutOffsets, nextRollbacks: RollbackPoint[], background = customBackground) {
+    window.localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({ preference: nextPreference, layout: nextLayout, rollbackStack: nextRollbacks, customBackground: background }));
   }
 
   function saveStudio() {
@@ -301,7 +306,7 @@ export function UltraBrainShell() {
     const rollback = { ...result.rollback, layout: normaliseLayout(layout), customBackground };
     const nextRollbacks = [rollback, ...rollbackStack].slice(0, 6);
     setRollbackStack(nextRollbacks);
-    persist(result.next, nextLayout, nextRollbacks);
+    persist(result.next, nextLayout, nextRollbacks, customBackground);
     setPanel(null);
     setToast(`UI saved · revision ${result.next.revision}`);
   }
@@ -319,7 +324,7 @@ export function UltraBrainShell() {
     setDraftLayout(normaliseLayout(point.layout || DEFAULT_LAYOUT));
     setCustomBackground(point.customBackground || null);
     setRollbackStack(rest);
-    persist(next, normaliseLayout(point.layout || DEFAULT_LAYOUT), rest);
+    persist(next, normaliseLayout(point.layout || DEFAULT_LAYOUT), rest, point.customBackground || null);
     setToast("Previous UI state restored");
   }
 
@@ -333,8 +338,11 @@ export function UltraBrainShell() {
   }
 
   function updateLayout(key: LayoutKey, patch: Partial<LayoutOffsets[LayoutKey]>) {
-    const componentChange = Object.keys(patch).some((field) => ["scale", "visible", "pinned", "group"].includes(field));
-    if (locks.layout || (componentChange && locks.component)) {
+    const fields = Object.keys(patch);
+    const positionChange = fields.some((field) => ["x", "y"].includes(field));
+    const sizeChange = fields.includes("scale");
+    const layerChange = fields.some((field) => ["visible", "pinned", "group"].includes(field));
+    if (locks.layout || (positionChange && locks.position) || (sizeChange && locks.size) || (layerChange && locks.layer) || (layerChange && locks.component)) {
       setToast(locks.layout ? "배치가 잠겨 있습니다" : "컴포넌트가 잠겨 있습니다");
       return;
     }
@@ -350,7 +358,7 @@ export function UltraBrainShell() {
   }
 
   function onLayoutPointerDown(key: LayoutKey, event: ReactPointerEvent<HTMLButtonElement>) {
-    if (locks.layout || draftLayout[key].pinned) return;
+    if (locks.layout || locks.position || draftLayout[key].pinned) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     setLayoutSelection(key);
     const origin = draftLayout[key];
@@ -396,18 +404,29 @@ export function UltraBrainShell() {
     reader.readAsDataURL(file);
   }
 
+  function applyUserCustomTheme(preview: string, name: string) {
+    if (locks.background) {
+      setToast("배경이 잠겨 있습니다");
+      return;
+    }
+    setCustomBackground(preview);
+    updateDraft({ themePreset: "custom" });
+    setToast(`${name} User Custom UI를 미리보기에 적용했습니다`);
+  }
+
   const shellStyle = { "--ui-contrast": profile.adjustments.contrast } as CSSProperties;
   const topbarStyle = { translate: `${layout.topbar.x}px ${layout.topbar.y}px`, scale: layout.topbar.scale } as CSSProperties;
   const centerStyle = { translate: `calc(-50% + ${layout.center.x}px) calc(-50% + ${layout.center.y}px)`, scale: layout.center.scale, visibility: layout.center.visible ? "visible" : "hidden" } as CSSProperties;
   const seedStyle = { left: `calc(50% + ${layout.seed.x}px)`, bottom: `calc(12.5% + ${layout.seed.y}px)`, scale: layout.seed.scale, visibility: layout.seed.visible ? "visible" : "hidden" } as CSSProperties;
   const railStyle = { right: `calc(25px - ${layout.rail.x}px)`, top: `calc(50% + ${layout.rail.y}px)`, scale: layout.rail.scale, visibility: layout.rail.visible ? "visible" : "hidden" } as CSSProperties;
+  const statusStyle = { left: "22px", bottom: "18px" } as CSSProperties;
 
   if (!hydrated) return <div className="world-loading" aria-label="Ultra Brain 로딩"><div className="loading-mark" /><p>Ultra Brain을 여는 중</p><span className="loading-line" /></div>;
 
   return (
     <main className="world-shell" aria-label="Ultra Brain" style={shellStyle}>
       <img className={`world-art ${loaded ? "is-loaded" : ""}`} src="/ultra-brain-world.png" alt="World tree with a central sun sphere and OS Ecosystem seed" onLoad={() => setLoaded(true)} />
-      {customBackground && <div className="custom-world-art" style={{ backgroundImage: `url(${customBackground})` }} aria-hidden="true" />}
+      {customBackground && <div className="custom-world-art is-user-custom" style={{ backgroundImage: `url(${customBackground})` }} aria-hidden="true" />}
       <div className="world-vignette" aria-hidden="true" />
       <div className="world-texture" aria-hidden="true" />
 
@@ -460,15 +479,16 @@ export function UltraBrainShell() {
 
       {panel === "studio" && <>
         <div className="drawer-scrim" onClick={closePanel} aria-hidden="true" />
-        <aside className="settings-drawer is-open" aria-label="UI Studio">
+        <aside className={`settings-drawer is-open ${studioTab === "custom" ? "is-canvas" : ""}`} aria-label="UI Studio">
           <div className="drawer-topline"><span className="eyebrow">OFFICIAL UI STUDIO</span><button type="button" onClick={closePanel} aria-label="Close UI Studio">×</button></div>
           <h2>Shape the world</h2>
           <p className="drawer-intro">Preview visual changes in place, then save a governed UI revision. Changes stay inside Ultra Brain until you confirm.</p>
           <div className="studio-tabs" role="tablist" aria-label="UI Studio sections">
-            {(["themes", "layout", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "Theme" : tab === "layout" ? "배치" : tab === "propagation" ? "Propagation" : "Preview"}</button>)}
+            {(["themes", "layout", "custom", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "Theme" : tab === "layout" ? "배치" : tab === "custom" ? "User Custom" : tab === "propagation" ? "Propagation" : "Preview"}</button>)}
           </div>
 
           {studioTab === "themes" && <div className="studio-pane">
+            <div className="theme-mode-switch"><button type="button" className="is-selected">Official Theme</button><button type="button" onClick={() => setStudioTab("custom")}>User Custom UI</button></div>
             <fieldset><legend>테마 프로필</legend><div className="theme-grid">{themeNames.map((theme) => { const item = themeRegistry[theme]; return <button key={theme} type="button" className={activePreference.theme === theme ? "is-selected" : ""} onClick={() => selectTheme(theme)}><span className={`theme-preview ${theme}`} /><strong>{item.label}</strong><small>{item.description}</small></button>; })}</div></fieldset>
             <fieldset><legend>강조 색상</legend><div className="accent-row">{ACCENT_SWATCHES.map((accent) => <button key={accent} type="button" className={activePreference.accent.toLowerCase() === accent ? "is-selected" : ""} style={{ "--swatch": accent } as CSSProperties} onClick={() => updateDraft({ accent })} aria-label={`강조 색상 ${accent} 사용`} />)}<label className="accent-picker" aria-label="사용자 색상 선택"><input type="color" value={activePreference.accent} onChange={(event) => updateDraft({ accent: event.target.value })} /><span>직접 선택</span></label></div></fieldset>
             <fieldset><legend>사용자 테마</legend><label className="file-drop"><input type="file" accept="image/*" onChange={importBackground} /><span>이미지 가져오기</span><small>배경을 가져오고 대표 색상을 자동으로 추출합니다.</small></label>{customBackground && <button className="text-action" type="button" onClick={() => { setCustomBackground(null); setToast("가져온 배경을 제거했습니다"); }}>가져온 배경 제거</button>}</fieldset>
@@ -486,6 +506,8 @@ export function UltraBrainShell() {
             <fieldset><legend>Layout Lock</legend><div className="lock-grid">{UI_LOCK_KEYS.map((key) => <button key={key} type="button" className={draftPreference.uiLocks[key] ? "is-selected" : ""} aria-pressed={draftPreference.uiLocks[key]} onClick={() => toggleUiLock(key)}>{UI_LOCK_LABELS[key]} <span>{draftPreference.uiLocks[key] ? "해제" : "잠금"}</span></button>)}</div></fieldset>
             <button className="text-action" type="button" onClick={resetLayout}>배치 초기화</button>
           </div>}
+
+          {studioTab === "custom" && <CanvasEditor baseTheme={themeRegistry[draftPreference.theme].label} onUseTheme={applyUserCustomTheme} onToast={setToast} />}
 
           {studioTab === "propagation" && <div className="studio-pane">
             <div className="propagation-banner"><span className={profile.propagation.status === "locked" ? "lock-state" : "health-dot"} /><div><strong>{profile.propagation.status === "locked" ? "Propagation locked" : profile.propagation.status === "override" ? "Override active" : "Automatic hierarchy propagation"}</strong><small>{profile.propagation.contract} · interface {profile.propagation.interfaceVersion} · revision {propagation.revision}</small></div></div>

@@ -1,7 +1,7 @@
 {
   "id": "ultra-brain-ui-system-contract",
   "name": "Ultra Brain Official UI System Contract",
-  "version": "0.93.0",
+  "version": "0.94.0",
   "status": "approved",
   "owner_layer": "Ultra Brain",
   "parties": ["User", "Ultra Brain", "OS Ecosystem"],

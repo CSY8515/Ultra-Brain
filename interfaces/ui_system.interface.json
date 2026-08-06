@@ -1,7 +1,7 @@
 {
   "id": "ultra-brain-ui-system-interface",
   "name": "Ultra Brain Official UI System Interface",
-  "version": "0.93.0",
+  "version": "0.94.0",
   "contract_id": "ultra-brain.ui",
   "contract_version": 1,
   "interface_version": "1.0",

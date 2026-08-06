@@ -3,6 +3,14 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.94] - 2026-08-06
+
+### Added
+
+- Added User Custom UI and a real Canvas Editor inside UI Studio.
+- Added direct drawing, image asset import, component placement, layer controls, locks, preview modes, local User Custom Theme registry, and save/apply/rollback integration.
+- Kept Official Theme concept-art world language and the quiet production-first default screen.
+
 ## [v0.93] - 2026-08-06
 
 ### Added

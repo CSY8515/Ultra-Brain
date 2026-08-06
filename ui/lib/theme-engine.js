@@ -62,7 +62,7 @@ export const themeRegistry = Object.freeze({
 });
 
 export const THEME_ADJUSTMENT_KEYS = Object.freeze(["brightness", "contrast", "saturation", "hue", "lighting", "shadow", "glow", "texture", "blur", "transparency"]);
-export const UI_LOCK_KEYS = Object.freeze(["layout", "background", "component", "color", "texture", "lighting"]);
+export const UI_LOCK_KEYS = Object.freeze(["position", "size", "background", "layout", "color", "texture", "lighting", "component", "layer"]);
 export const defaultLocks = Object.freeze(Object.fromEntries(UI_LOCK_KEYS.map((key) => [key, false])));
 export const THEME_ADJUSTMENT_RANGES = Object.freeze({
   brightness: { min: 0.7, max: 1.3, step: 0.01, unit: "x" },

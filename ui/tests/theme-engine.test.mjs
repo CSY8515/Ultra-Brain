@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyPreference, applyThemePreset, defaultPreference, HIERARCHY, PROPAGATION_TARGETS, resolvePropagation, resolveThemeProfile, THEME_ADJUSTMENT_KEYS, themeNames, themePackageRegistry, themePresets, themeRegistry, validatePreference } from "../lib/theme-engine.js";
+import { applyPreference, applyThemePreset, defaultPreference, HIERARCHY, PROPAGATION_TARGETS, resolvePropagation, resolveThemeProfile, THEME_ADJUSTMENT_KEYS, UI_LOCK_KEYS, themeNames, themePackageRegistry, themePresets, themeRegistry, validatePreference } from "../lib/theme-engine.js";
 
 test("invalid preferences fall back to the official profile", () => {
   const safe = validatePreference({ theme: "unknown", accent: "javascript:bad", density: "tiny" });
@@ -37,6 +37,15 @@ test("UI lock settings are normalised and preserved", () => {
   assert.equal(safe.uiLocks.layout, true);
   assert.equal(safe.uiLocks.color, true);
   assert.equal(Object.hasOwn(safe.uiLocks, "unknown"), false);
+});
+
+test("v0.94 exposes independent position, size, component, and layer locks", () => {
+  assert.deepEqual(UI_LOCK_KEYS, ["position", "size", "background", "layout", "color", "texture", "lighting", "component", "layer"]);
+  const safe = validatePreference({ ...defaultPreference, uiLocks: { position: true, size: true, component: true, layer: true } });
+  assert.equal(safe.uiLocks.position, true);
+  assert.equal(safe.uiLocks.size, true);
+  assert.equal(safe.uiLocks.component, true);
+  assert.equal(safe.uiLocks.layer, true);
 });
 
 test("propagation override is explicit and visible in the resolved profile", () => {

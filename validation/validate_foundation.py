@@ -1,4 +1,4 @@
-"""Validate Foundation, cumulative integrations, and the v0.93 UI release.
+"""Validate Foundation, cumulative integrations, and the v0.94 UI release.
 
 This validator intentionally uses only the Python standard library. It checks
 Foundation structure, release integration, and delegated Core validators; it is
@@ -22,7 +22,7 @@ REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
 OS_ECOSYSTEM_REPOSITORY = "https://github.com/CSY8515/OS-Ecosystem.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
-MILESTONE_VERSION = "0.93"
+MILESTONE_VERSION = "0.94"
 SAFETY_VERSION = "0.2.0"
 ENHANCEMENT_VERSION = "0.3.0"
 AUTOMATION_VERSION = "0.4.0"
@@ -35,7 +35,8 @@ UI_FOUNDATION_VERSION = "0.8.0"
 UI_LEGACY_VERSION = "0.9.0"
 UI_PREVIOUS_VERSION = "0.91.0"
 UI_THEME_VERSION = "0.92.0"
-UI_VERSION = "0.93.0"
+UI_POLISH_VERSION = "0.93.0"
+UI_VERSION = "0.94.0"
 
 REQUIRED_DOCUMENTS = (
     "README.md",
@@ -83,6 +84,7 @@ REQUIRED_DOCUMENTS = (
     "RELEASE_NOTES_v0.91.md",
     "RELEASE_NOTES_v0.92.md",
     "RELEASE_NOTES_v0.93.md",
+    "RELEASE_NOTES_v0.94.md",
 )
 
 REGISTRY_FILES = (
@@ -385,8 +387,9 @@ def validate_registries(errors: list[str]) -> None:
             "ultra-brain-v0-91-hierarchy-propagation-final",
             "ultra-brain-v0-92-official-theme-system",
             "ultra-brain-v0-93-layout-custom-ui",
+            "ultra-brain-v0-94-user-custom-ui-canvas-editor",
         }:
-            errors.append("release_registry.json must contain exactly v0.1 through v0.93 milestones")
+            errors.append("release_registry.json must contain exactly v0.1 through v0.94 milestones")
         elif (
             releases["ultra-brain-v0-1-foundation"].get("current_version")
             != REGISTRY_VERSION
@@ -413,8 +416,10 @@ def validate_registries(errors: list[str]) -> None:
             or releases["ultra-brain-v0-91-hierarchy-propagation-final"].get("status") != "released"
             or releases["ultra-brain-v0-92-official-theme-system"].get("current_version") != UI_THEME_VERSION
             or releases["ultra-brain-v0-92-official-theme-system"].get("status") != "released"
-            or releases["ultra-brain-v0-93-layout-custom-ui"].get("current_version") != UI_VERSION
+            or releases["ultra-brain-v0-93-layout-custom-ui"].get("current_version") != UI_POLISH_VERSION
             or releases["ultra-brain-v0-93-layout-custom-ui"].get("status") != "released"
+            or releases["ultra-brain-v0-94-user-custom-ui-canvas-editor"].get("current_version") != UI_VERSION
+            or releases["ultra-brain-v0-94-user-custom-ui-canvas-editor"].get("status") != "released"
         ):
             errors.append("release registry versions or release states are incorrect")
 
@@ -736,12 +741,12 @@ def main() -> int:
     validate_personal_secretary_core(errors)
 
     if errors:
-        print("Ultra Brain v0.93 release validation: FAILED")
+        print("Ultra Brain v0.94 release validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.93 release validation: PASSED")
+    print("Ultra Brain v0.94 release validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")
