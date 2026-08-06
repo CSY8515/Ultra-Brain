@@ -128,3 +128,15 @@ test("official themes resolve a complete visual world engine", () => {
     assert.equal(profile.package.world.id, profile.worldEngine.id);
   }
 });
+
+test("v0.96 theme packages retain concept art and builder metadata", () => {
+  for (const name of themeNames) {
+    const themePackage = themePackageRegistry[name];
+    assert.equal(themePackage.worldAsset.source, "/ultra-brain-world.png");
+    assert.ok(themePackage.layoutPreset);
+    assert.ok(themePackage.componentSkin);
+    assert.deepEqual(themePackage.responsive, ["desktop", "tablet", "mobile"]);
+    assert.equal(themePackage.revisionPolicy, "every-save");
+    assert.equal(themePackage.states.length, 9);
+  }
+});

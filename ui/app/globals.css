@@ -378,6 +378,31 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .custom-theme-list span { font-size: 9px; }
 .custom-theme-list small { color: var(--text-soft); font-size: 8px; }
 
+/* v0.96 UI Builder: professional three-pane editing surface. */
+.canvas-header-actions { display: grid; gap: 8px; justify-items: end; }
+.builder-workspace { display: grid; grid-template-columns: 176px minmax(0, 1fr) 260px; gap: 10px; min-height: 0; }
+.builder-tool-panel, .builder-property-panel { display: grid; align-content: start; gap: 10px; min-width: 0; }
+.builder-tool-panel section, .builder-property-panel section, .builder-bottom-panels section { display: grid; gap: 7px; padding: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.018); }
+.builder-tool-panel button, .builder-property-panel button, .builder-bottom-panels button { min-height: 28px; padding: 5px 7px; border: 1px solid var(--line); background: transparent; color: var(--text-soft); cursor: pointer; font-size: 9px; text-align: left; }
+.builder-tool-panel button:hover, .builder-tool-panel button.is-selected, .builder-property-panel button:hover, .builder-property-panel button.is-selected, .builder-bottom-panels button:hover { border-color: var(--accent); color: var(--accent-bright); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.builder-tool-panel button:disabled, .builder-property-panel button:disabled, .builder-bottom-panels button:disabled { opacity: .35; cursor: not-allowed; }
+.builder-canvas-column { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; min-width: 0; }
+.builder-property-panel section > label { display: grid; gap: 4px; color: var(--text-soft); font-size: 9px; }
+.builder-property-panel input[type="number"] { width: 100%; min-height: 27px; padding: 4px 6px; border: 1px solid var(--line); background: transparent; color: var(--text); }
+.property-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.property-grid label { display: grid; gap: 3px; color: var(--text-soft); font-size: 8px; }
+.builder-property-panel input[type="range"] { width: 100%; accent-color: var(--accent); }
+.asset-library-list, .revision-list { display: grid; gap: 5px; max-height: 250px; overflow: auto; }
+.asset-library-list button { display: grid; grid-template-columns: 38px 1fr; gap: 3px 6px; align-items: center; }
+.asset-library-list img { grid-row: 1 / span 2; width: 38px; height: 30px; object-fit: cover; border: 1px solid var(--line); }
+.asset-library-list small, .revision-list small { color: var(--text-soft); font-size: 8px; }
+.revision-list button { display: grid; gap: 3px; }
+.builder-bottom-panels { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; }
+.builder-bottom-panels .canvas-layer-list { max-height: 180px; }
+.builder-bottom-panels .custom-theme-list { max-height: 180px; }
+.builder-bottom-panels .canvas-section-heading strong, .builder-tool-panel .canvas-section-heading strong, .builder-property-panel .canvas-section-heading strong { color: var(--text); font-size: 10px; }
+.builder-bottom-panels .canvas-section-heading span, .builder-tool-panel .canvas-section-heading span, .builder-property-panel .canvas-section-heading span { color: var(--text-soft); font-size: 8px; }
+
 @keyframes breathe { 50% { scale: .86; opacity: .55; } }
 @keyframes world-orbit { from { rotate: 0deg; } to { rotate: 360deg; } }
 @keyframes world-nebula { from { translate: -1.5% -1%; scale: 1; } to { translate: 1.5% 1%; scale: 1.04; } }
@@ -417,6 +442,18 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
   .canvas-editor-header { display: grid; }
   .canvas-workspace { grid-template-columns: 1fr; }
   .canvas-side-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .builder-workspace { grid-template-columns: 150px minmax(0, 1fr); }
+  .builder-property-panel { grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .builder-bottom-panels { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .builder-workspace { grid-template-columns: 1fr; }
+  .builder-tool-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .builder-tool-panel section { align-content: start; }
+  .builder-property-panel { grid-template-columns: 1fr; }
+  .canvas-header-actions { justify-items: stretch; }
+  .zoom-control { margin-left: 0; }
 }
 
 /* The production world is intentionally quiet: UI Studio is the only entry control. */

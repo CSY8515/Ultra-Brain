@@ -79,6 +79,16 @@ export const themeWorldRegistry = Object.freeze({
   archive: { id: "bronze-record-world", label: "청동 기록 세계", description: "컨셉아트를 청동 장치와 보관 기록의 분위기로 압축", layout: "archive", motion: "orbit", background: "radial-gradient(circle at 50% 42%, rgba(190,153,92,.2), transparent 28%), linear-gradient(180deg, rgba(28,20,12,.62), rgba(8,7,5,.8))", overlay: "repeating-radial-gradient(circle at 50% 42%, transparent 0 34px, rgba(204,167,107,.09) 35px 36px)", texture: "repeating-linear-gradient(0deg, rgba(215,186,137,.06) 0 1px, transparent 1px 6px)", lighting: "rgba(230,215,184,.22)", assetLabel: "청동 기록 컨셉아트" },
 });
 
+// Official themes share the approved concept-art source while each world
+// package supplies its own composition, atmosphere, layout and component skin.
+export const OFFICIAL_WORLD_ASSET = Object.freeze({
+  id: "ultra-brain-official-concept-art",
+  source: "/ultra-brain-world.png",
+  type: "background/world",
+  owner: "official",
+  immutable: true,
+});
+
 export const THEME_ADJUSTMENT_KEYS = Object.freeze(["brightness", "contrast", "saturation", "hue", "lighting", "shadow", "glow", "texture", "blur", "transparency"]);
 export const UI_LOCK_KEYS = Object.freeze(["position", "size", "background", "layout", "color", "texture", "lighting", "component", "layer"]);
 export const defaultLocks = Object.freeze(Object.fromEntries(UI_LOCK_KEYS.map((key) => [key, false])));
@@ -111,6 +121,16 @@ export const themePackageRegistry = Object.freeze(Object.fromEntries(Object.entr
   category: name === "official" || name === "light" || name === "dark" ? "foundation" : "official",
   worldStyle: themeWorldRegistry[name]?.description || item.description,
   world: themeWorldRegistry[name] || themeWorldRegistry.official,
+  worldAsset: { ...OFFICIAL_WORLD_ASSET, worldId: (themeWorldRegistry[name] || themeWorldRegistry.official).id },
+  assetIds: [OFFICIAL_WORLD_ASSET.id],
+  layoutPreset: (themeWorldRegistry[name] || themeWorldRegistry.official).layout,
+  navigationStyle: (themeWorldRegistry[name] || themeWorldRegistry.official).layout,
+  componentSkin: `${name}-world-skin`,
+  states: ["Default", "Hover", "Focus", "Active", "Selected", "Disabled", "Loading", "Error", "Success"],
+  animation: (themeWorldRegistry[name] || themeWorldRegistry.official).motion,
+  responsive: ["desktop", "tablet", "mobile"],
+  lockable: true,
+  revisionPolicy: "every-save",
   mode: item.mode,
   palette: { accent: item.accent, accentBright: item.accentBright, surface: item.surface, border: item.border },
   detail: { background: item.surfaceStrong, font: item.font, radius: item.radius, texture: item.texture, lighting: item.lighting, shadow: item.shadow, contrast: item.contrast },

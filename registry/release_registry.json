@@ -276,6 +276,22 @@
       "current_version": "0.95.0",
       "created_date": "2026-08-06",
       "updated_date": "2026-08-06"
+    },
+    {
+      "id": "ultra-brain-v0-96-ui-builder-asset-component-revision-rollback",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.96 UI Builder Evolution",
+      "scope": "Builder-first UI Studio with professional canvas editing, component states, Asset Library, templates, world package metadata, responsive preview, revision history, rollback and emergency restore.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.96.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.96.0",
+      "created_date": "2026-08-06",
+      "updated_date": "2026-08-06"
     }
   ]
 }

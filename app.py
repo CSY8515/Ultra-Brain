@@ -1,4 +1,4 @@
-"""Ultra Brain v0.95 Streamlit production UI entry point.
+"""Ultra Brain v0.96 Streamlit production UI entry point.
 
 The source of truth for the visual direction remains the existing Vinext UI in
 ``ui/app``. This entry point maps that same world scene into Streamlit without
@@ -267,7 +267,7 @@ def render_world(theme: dict[str, str], accent: str, density: str, motion: bool)
 def main() -> None:
     """Run the official Ultra Brain Streamlit UI."""
 
-    st.set_page_config(page_title="Ultra Brain v0.95", layout="wide", initial_sidebar_state="collapsed")
+    st.set_page_config(page_title="Ultra Brain v0.96", layout="wide", initial_sidebar_state="collapsed")
     load_existing_ui()
     render_world(THEMES["Official"], THEMES["Official"]["accent"], "comfortable", True)
 

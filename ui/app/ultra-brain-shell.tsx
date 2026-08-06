@@ -23,7 +23,7 @@ import {
 } from "../lib/theme-engine";
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
-const CURRENT_UI_VERSION = "0.95";
+const CURRENT_UI_VERSION = "0.96";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
 const LAYOUT_LABELS = { topbar: "상단 바", center: "중앙 타이틀", seed: "OS Ecosystem", rail: "탐색 레일" } as const;
 const PROPAGATION_TARGET_LABELS: Record<string, string> = {
@@ -477,7 +477,7 @@ export function UltraBrainShell() {
       </nav>
 
       <aside className="status-dock" style={statusStyle} aria-label="System status">
-        <div><span className="health-dot" /> <strong>Healthy</strong></div><i /><span>OS Ecosystem connected</span><i /><span>v0.92</span><button type="button" onClick={() => openStudio("preview")}>Preview</button>
+        <div><span className="health-dot" /> <strong>Healthy</strong></div><i /><span>OS Ecosystem connected</span><i /><span>v0.96</span><button type="button" onClick={() => openStudio("preview")}>Preview</button>
       </aside>
 
       {panel === "notifications" && <section className="notice-panel floating-panel" aria-label="Notifications">
@@ -490,8 +490,8 @@ export function UltraBrainShell() {
         <div className="drawer-scrim" onClick={closePanel} aria-hidden="true" />
         <aside className={`settings-drawer is-open ${studioTab === "custom" ? "is-canvas" : ""}`} aria-label="UI Studio">
           <div className="drawer-topline"><span className="eyebrow">OFFICIAL UI STUDIO</span><button type="button" onClick={closePanel} aria-label="Close UI Studio">×</button></div>
-          <h2>Shape the world</h2>
-          <p className="drawer-intro">Preview visual changes in place, then save a governed UI revision. Changes stay inside Ultra Brain until you confirm.</p>
+          <h2>UI 만들고 관리하기</h2>
+          <p className="drawer-intro">화면을 미리 확인한 뒤 UI 리비전으로 저장하세요. 적용 전까지 변경 내용은 Ultra Brain 안에서만 유지됩니다.</p>
           <div className="studio-tabs" role="tablist" aria-label="UI Studio sections">
             {(["themes", "layout", "custom", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "테마" : tab === "layout" ? "배치" : tab === "custom" ? "사용자 UI" : tab === "propagation" ? "자동 적용" : "미리보기"}</button>)}
           </div>
@@ -519,45 +519,45 @@ export function UltraBrainShell() {
           {studioTab === "custom" && <CanvasEditor baseTheme={themeRegistry[draftPreference.theme].label} onUseTheme={applyUserCustomTheme} onToast={setToast} />}
 
           {studioTab === "propagation" && <div className="studio-pane">
-            <div className="propagation-banner"><span className={profile.propagation.status === "locked" ? "lock-state" : "health-dot"} /><div><strong>{profile.propagation.status === "locked" ? "Propagation locked" : profile.propagation.status === "override" ? "Override active" : "Automatic hierarchy propagation"}</strong><small>{profile.propagation.contract} · interface {profile.propagation.interfaceVersion} · revision {propagation.revision}</small></div></div>
-            <div className="hierarchy-note"><strong>One source of truth</strong><span>Ultra Brain UI Studio governs every level. Unlocked descendants automatically receive the saved UI payload.</span></div>
+            <div className="propagation-banner"><span className={profile.propagation.status === "locked" ? "lock-state" : "health-dot"} /><div><strong>{profile.propagation.status === "locked" ? "전달 잠금" : profile.propagation.status === "override" ? "예외 적용 중" : "계층 자동 적용"}</strong><small>{profile.propagation.contract} · interface {profile.propagation.interfaceVersion} · revision {propagation.revision}</small></div></div>
+            <div className="hierarchy-note"><strong>하나의 UI 기준</strong><span>Ultra Brain UI Studio가 모든 계층을 관리합니다. 잠금되지 않은 하위 항목에는 저장된 UI가 자동 적용됩니다.</span></div>
             <div className="propagation-hierarchy" aria-label="UI propagation hierarchy">
               {propagation.hierarchy.map((node: { id: string; label: string; kind: string; status: string; automatic: boolean; appliedTargets: string[]; lockedTargets: string[]; overriddenTargets: string[] }, index: number) => {
-                const statusLabel = node.status === "source" ? "Source" : node.status === "locked" ? "Locked" : node.status === "override" ? "Override" : "Auto applied";
+                const statusLabel = node.status === "source" ? "기준" : node.status === "locked" ? "잠금" : node.status === "override" ? "예외" : "자동 적용";
                 return <button key={node.id} type="button" className={`hierarchy-node ${propagationSelection === node.id ? "is-selected" : ""}`} onClick={() => setPropagationSelection(node.id)}>
                   <span className={`hierarchy-index status-${node.status}`}>{index + 1}</span>
-                  <span className="hierarchy-copy"><strong>{node.label}</strong><small>{node.kind === "source" ? "UI Studio source" : node.kind === "registered-child" ? "Registered child" : "Downstream target"}</small></span>
+                  <span className="hierarchy-copy"><strong>{node.label}</strong><small>{node.kind === "source" ? "UI Studio 기준" : node.kind === "registered-child" ? "연결된 하위 시스템" : "하위 적용 대상"}</small></span>
                   <em className={`propagation-status status-${node.status}`}>{statusLabel}</em>
                   {index < propagation.hierarchy.length - 1 && <i aria-hidden="true">↓</i>}
                 </button>;
               })}
             </div>
             <div className="propagation-editor-card">
-              <div className="editor-card-heading"><div><small>SELECTED LEVEL</small><strong>{selectedPropagationNode?.label}</strong></div><span className="auto-apply-badge">{selectedPropagationNode?.kind === "source" ? "Editable source" : "Child editor disabled"}</span></div>
-              <p className="field-hint">{selectedPropagationNode?.kind === "source" ? "Edit the source UI here. The saved payload is then offered to every unlocked descendant." : "Managed from Ultra Brain UI Studio. This level cannot edit its own UI."}</p>
+              <div className="editor-card-heading"><div><small>선택한 계층</small><strong>{selectedPropagationNode?.label}</strong></div><span className="auto-apply-badge">{selectedPropagationNode?.kind === "source" ? "여기서 편집" : "하위 편집 잠금"}</span></div>
+              <p className="field-hint">{selectedPropagationNode?.kind === "source" ? "여기서 기준 UI를 편집합니다. 저장한 설정은 잠금되지 않은 하위 계층에 전달됩니다." : "Ultra Brain UI Studio에서 관리합니다. 이 계층에서는 직접 UI를 편집할 수 없습니다."}</p>
               {selectedPropagationNode?.kind !== "source" && <div className="target-grid" aria-label={`Propagation targets for ${selectedPropagationNode?.label}`}>
                 {PROPAGATION_TARGETS.map((target: string) => {
                   const locked = (draftPreference.propagationLocks[selectedPropagationNode?.id || ""] || []).includes(target);
                   const overridden = (draftPreference.propagationOverrides[selectedPropagationNode?.id || ""] || []).includes(target);
                   return <div key={target} className={`propagation-target ${locked ? "is-locked" : ""} ${overridden ? "is-overridden" : ""}`}>
                     <span>{PROPAGATION_TARGET_LABELS[target]}</span>
-                    <button type="button" className={`target-toggle ${locked ? "is-on" : ""}`} onClick={() => togglePropagationTarget(selectedPropagationNode?.id || "os-ecosystem", "lock", target)} aria-pressed={locked}>Lock</button>
-                    <button type="button" className={`target-toggle ${overridden ? "is-on" : ""}`} onClick={() => togglePropagationTarget(selectedPropagationNode?.id || "os-ecosystem", "override", target)} aria-pressed={overridden}>Override</button>
+                    <button type="button" className={`target-toggle ${locked ? "is-on" : ""}`} onClick={() => togglePropagationTarget(selectedPropagationNode?.id || "os-ecosystem", "lock", target)} aria-pressed={locked}>{locked ? "잠금 해제" : "잠금"}</button>
+                    <button type="button" className={`target-toggle ${overridden ? "is-on" : ""}`} onClick={() => togglePropagationTarget(selectedPropagationNode?.id || "os-ecosystem", "override", target)} aria-pressed={overridden}>{overridden ? "예외 해제" : "예외"}</button>
                   </div>;
                 })}
               </div>}
               {selectedPropagationNode?.kind === "source" && <div className="source-target-summary"><span className="health-dot" /><strong>All {PROPAGATION_TARGETS.length} targets originate here</strong><small>Theme, visual tokens, layout, component geometry, visibility and motion.</small></div>}
             </div>
-            <div className="setting-row"><div><strong>OS Ecosystem lock</strong><small>Keep the selected global UI payload from reaching the registered child.</small></div><button className={`switch ${draftPreference.osEcosystemLocked ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.osEcosystemLocked} onClick={toggleEcosystemLock}><span /></button></div>
-            <div className="setting-row"><div><strong>OS Ecosystem override</strong><small>Preview a governed exception while keeping child ownership independent.</small></div><button className={`switch ${draftPreference.propagationOverride ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.propagationOverride} onClick={toggleEcosystemOverride}><span /></button></div>
-            <div className="propagation-payload"><div><small>PROPAGATION PREVIEW PAYLOAD</small><strong>{themeRegistry[draftPreference.theme].label} · revision {draftPreference.revision}</strong></div><span>{selectedPropagationNode?.appliedTargets?.length || 0} auto applied · {selectedPropagationNode?.lockedTargets?.length || 0} locked · {selectedPropagationNode?.overriddenTargets?.length || 0} override</span></div>
+            <div className="setting-row"><div><strong>OS Ecosystem 잠금</strong><small>저장한 UI가 연결된 하위 시스템으로 전달되지 않도록 유지합니다.</small></div><button className={`switch ${draftPreference.osEcosystemLocked ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.osEcosystemLocked} onClick={toggleEcosystemLock}><span /></button></div>
+            <div className="setting-row"><div><strong>OS Ecosystem 예외 적용</strong><small>하위 시스템의 독립 소유권은 유지한 채 전달 규칙을 미리 확인합니다.</small></div><button className={`switch ${draftPreference.propagationOverride ? "is-on" : ""}`} type="button" role="switch" aria-checked={draftPreference.propagationOverride} onClick={toggleEcosystemOverride}><span /></button></div>
+            <div className="propagation-payload"><div><small>전달 미리보기</small><strong>{themeRegistry[draftPreference.theme].label} · revision {draftPreference.revision}</strong></div><span>{selectedPropagationNode?.appliedTargets?.length || 0}개 자동 적용 · {selectedPropagationNode?.lockedTargets?.length || 0}개 잠금 · {selectedPropagationNode?.overriddenTargets?.length || 0}개 예외</span></div>
           </div>}
 
           {studioTab === "preview" && <div className="studio-pane">
-            <div className="preview-mode"><div><strong>Live preview</strong><small>Draft changes are visible behind this studio.</small></div><span className="preview-pill">ON</span></div>
-            <div className="compare-grid"><div className="compare-card"><small>SAVED</small><strong>Revision {preference.revision}</strong><span>{themeRegistry[preference.theme].label}</span><i style={{ background: preference.accent }} /></div><div className="compare-arrow">→</div><div className="compare-card is-draft"><small>PREVIEW</small><strong>Revision {preference.revision + 1}</strong><span>{themeRegistry[draftPreference.theme].label}</span><i style={{ background: draftPreference.accent }} /></div></div>
-            <div className="impact-card"><div><span className="health-dot" /><strong>Compatibility check</strong></div><p>Ultra Brain <b>→</b> OS Ecosystem</p><small>Only UI tokens and governed presentation preferences are affected. Runtime ownership remains independent.</small></div>
-            <button className="rollback-action" type="button" onClick={rollbackLast} disabled={!rollbackStack.length}>Rollback last saved revision {rollbackStack.length ? `(${rollbackStack.length})` : ""}</button>
+            <div className="preview-mode"><div><strong>실시간 미리보기</strong><small>초안 변경 내용이 이 화면 뒤에 바로 표시됩니다.</small></div><span className="preview-pill">켜짐</span></div>
+            <div className="compare-grid"><div className="compare-card"><small>저장됨</small><strong>Revision {preference.revision}</strong><span>{themeRegistry[preference.theme].label}</span><i style={{ background: preference.accent }} /></div><div className="compare-arrow">→</div><div className="compare-card is-draft"><small>미리보기</small><strong>Revision {preference.revision + 1}</strong><span>{themeRegistry[draftPreference.theme].label}</span><i style={{ background: draftPreference.accent }} /></div></div>
+            <div className="impact-card"><div><span className="health-dot" /><strong>호환성 확인</strong></div><p>Ultra Brain <b>→</b> OS Ecosystem</p><small>UI 토큰과 관리된 표시 설정만 적용됩니다. 실제 실행 소유권은 각 시스템에 그대로 유지됩니다.</small></div>
+            <button className="rollback-action" type="button" onClick={rollbackLast} disabled={!rollbackStack.length}>마지막 저장 리비전 되돌리기 {rollbackStack.length ? `(${rollbackStack.length})` : ""}</button>
           </div>}
 
           <div className="drawer-actions"><button className="secondary-action" type="button" onClick={closePanel}>취소</button><button className="primary-action" type="button" onClick={saveStudio}>UI 저장</button></div>

@@ -7,9 +7,12 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 The **v0.1 Foundation** through **v0.61 Personal Secretary Architecture Hotfix**
 baselines remain cumulative. v0.7 formally registered the independent OS
 Ecosystem `v0.73`; v0.8 established the world-first UI foundation; and the
-current release is **v0.95 Advanced Theme & Visual World Engine**, which extends
+current release is **v0.96 UI Builder Evolution**, which extends the v0.95
 the registry-driven theme package into world-specific concept-art atmosphere,
 texture, lighting, layout language, and motion inside UI Studio.
+v0.96 adds the builder-first canvas, Asset Library, reusable component states,
+responsive preview, templates, and revision/rollback controls without changing
+the lower-system ownership boundaries.
 
 The v0.6 runtime provides consent-aware daily briefings, weekly and monthly reviews, reminder
 views, evidence-linked recommendations, transparent priorities, advisory

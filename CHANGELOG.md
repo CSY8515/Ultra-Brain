@@ -3,6 +3,19 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.96] - 2026-08-06
+
+### Added
+
+- Evolved UI Studio into a builder-first canvas with frames, containers, components, navigation, exact properties, multi-select, grouping, z-order, visibility and locks.
+- Added responsive desktop/tablet/mobile preview, grid, guides, safe area, snap and component state preview.
+- Added Asset Library import/search/insertion, reusable templates, world-package metadata and official concept-art asset protection.
+- Added revision history for every save, applied/rollback revisions and emergency restore of the last validated revision.
+
+### Preserved
+
+- v0.95 visual world themes, Korean-first practical UI, hierarchy propagation, Lock/Override semantics and lower-system ownership boundaries.
+
 ## [v0.95] - 2026-08-06
 
 ### Added
