@@ -139,7 +139,7 @@
       "id": "ultra-brain-ui-system-interface",
       "entity_type": "interface",
       "name": "Ultra Brain Official UI System Interface",
-      "scope": "v0.9 boundary for validated theme profiles, live preview, layout revisions, affected-scope reporting, locks, OS Ecosystem forwarding, and rollback references.",
+      "scope": "v0.91 boundary for validated theme profiles, live preview, layout revisions, hierarchy propagation, affected-scope reporting, locks, OS Ecosystem forwarding, and rollback references.",
       "status": "active",
       "owner_layer": "Ultra Brain",
       "parent": "ultra-brain",
@@ -147,9 +147,9 @@
       "path": "interfaces/ui_system.interface.json",
       "interface": [],
       "contract": ["ultra-brain-ui-system-contract"],
-      "current_version": "0.9.0",
+      "current_version": "0.91.0",
       "created_date": "2026-08-05",
-      "updated_date": "2026-08-05"
+      "updated_date": "2026-08-06"
     }
   ]
 }

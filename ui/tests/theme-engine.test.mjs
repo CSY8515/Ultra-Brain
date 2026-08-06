@@ -22,7 +22,7 @@ test("save creates a rollback point and increments revision", () => {
   assert.equal(result.next.revision, 2);
 });
 
-test("official theme studio exposes the complete v0.9 registry", () => {
+test("official theme studio exposes the complete v0.91 registry", () => {
   assert.equal(themeNames.length, 12);
   assert.deepEqual(themeNames, ["official", "light", "dark", "universe", "galaxy", "ecosystem", "ocean", "grassland", "lava", "minimal", "paper", "archive"]);
   for (const name of themeNames) {

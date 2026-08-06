@@ -280,7 +280,7 @@ export function UltraBrainShell() {
         <div className="topbar-left">
           <a className="brand" href="#ultra-brain" aria-label="Ultra Brain home">
             <span className="brand-sigil" aria-hidden="true">✦</span>
-            <span><strong>Ultra Brain</strong><small>v0.9 · Official UI</small></span>
+            <span><strong>Ultra Brain</strong><small>v0.91 · Official UI</small></span>
           </a>
           <button className="studio-launch" type="button" onClick={() => openStudio("themes")} aria-label="Open UI Studio">
             <span aria-hidden="true">⌘</span><span><strong>UI Studio</strong><small>Change UI</small></span>
@@ -314,7 +314,7 @@ export function UltraBrainShell() {
       </nav>
 
       <aside className="status-dock" style={statusStyle} aria-label="System status">
-        <div><span className="health-dot" /> <strong>Healthy</strong></div><i /><span>OS Ecosystem connected</span><i /><span>v0.9</span><button type="button" onClick={() => openStudio("preview")}>Preview</button>
+        <div><span className="health-dot" /> <strong>Healthy</strong></div><i /><span>OS Ecosystem connected</span><i /><span>v0.91</span><button type="button" onClick={() => openStudio("preview")}>Preview</button>
       </aside>
 
       {panel === "notifications" && <section className="notice-panel floating-panel" aria-label="Notifications">

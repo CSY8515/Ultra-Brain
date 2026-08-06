@@ -3,6 +3,20 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.91] - 2026-08-06
+
+### Added
+
+- Completed hierarchical UI propagation from Ultra Brain through Feature.
+- Added automatic propagation status, target-level Lock, and target-level Override controls in UI Studio.
+- Added governed propagation payload reporting while keeping child editors disabled.
+- Re-deployed the validated Ultra Brain UI to the private Production site.
+
+### Preserved
+
+- Existing v0.9 Official UI/UX, theme registry, layout editor, preview, and rollback behavior.
+- Living OS, Universal Learning Engine, OS Ecosystem, and all Core Meta OS ownership boundaries.
+
 ## [v0.9] - 2026-08-06
 
 ### Added
