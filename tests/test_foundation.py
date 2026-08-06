@@ -31,8 +31,8 @@ class FoundationTests(unittest.TestCase):
                 with path.open(encoding="utf-8") as stream:
                     self.assertIsInstance(json.load(stream), dict)
 
-    def test_version_is_v0_91(self) -> None:
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.91")
+    def test_version_is_v0_92(self) -> None:
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "0.92")
 
     def test_os_ecosystem_v0_73_is_registered_and_independent(self) -> None:
         registry = json.loads((ROOT / "registry" / "ecosystem_registry.json").read_text(encoding="utf-8"))

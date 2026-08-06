@@ -61,6 +61,43 @@ export const themeRegistry = Object.freeze({
   archive: { ...shared, id: "ultra-brain-archive", label: "Archive", mode: "dark", accent: "#b49b78", accentBright: "#e6d7b8", description: "Bronze record / measured", surface: "rgba(22,17,12,.82)", surfaceStrong: "rgba(31,24,17,.96)", text: "#f2e9da", textSoft: "#b7a994", border: "rgba(180,155,120,.34)", worldFilter: "brightness(.66) saturate(.54) sepia(.25)", lighting: "rgba(230,215,184,.14)", radius: "2px" },
 });
 
+export const THEME_ADJUSTMENT_KEYS = Object.freeze(["brightness", "contrast", "saturation", "hue", "lighting", "shadow", "glow", "texture", "blur", "transparency"]);
+export const THEME_ADJUSTMENT_RANGES = Object.freeze({
+  brightness: { min: 0.7, max: 1.3, step: 0.01, unit: "x" },
+  contrast: { min: 0.7, max: 1.4, step: 0.01, unit: "x" },
+  saturation: { min: 0.5, max: 1.5, step: 0.01, unit: "x" },
+  hue: { min: -30, max: 30, step: 1, unit: "°" },
+  lighting: { min: 0, max: 1.5, step: 0.01, unit: "x" },
+  shadow: { min: 0.4, max: 1.6, step: 0.01, unit: "x" },
+  glow: { min: 0, max: 1.8, step: 0.01, unit: "x" },
+  texture: { min: 0, max: 1.5, step: 0.01, unit: "x" },
+  blur: { min: 0, max: 8, step: 1, unit: "px" },
+  transparency: { min: 0.45, max: 1, step: 0.01, unit: "x" },
+});
+
+const balancedAdjustments = Object.freeze({ brightness: 1, contrast: 1, saturation: 1, hue: 0, lighting: 1, shadow: 1, glow: 1, texture: 1, blur: 0, transparency: 1 });
+export const themePresets = Object.freeze({
+  balanced: { id: "balanced", label: "Balanced", description: "Theme package defaults", adjustments: { ...balancedAdjustments } },
+  luminous: { id: "luminous", label: "Luminous", description: "More light and glow", adjustments: { ...balancedAdjustments, brightness: 1.08, lighting: 1.3, glow: 1.45, shadow: 0.82 } },
+  cinematic: { id: "cinematic", label: "Cinematic", description: "Deeper contrast and texture", adjustments: { ...balancedAdjustments, brightness: 0.92, contrast: 1.18, saturation: 1.08, lighting: 1.12, shadow: 1.3, texture: 1.2 } },
+  quiet: { id: "quiet", label: "Quiet", description: "Soft focus and calm signal", adjustments: { ...balancedAdjustments, brightness: 0.96, contrast: 0.9, saturation: 0.82, lighting: 0.86, glow: 0.65, blur: 1, transparency: 0.9 } },
+  custom: { id: "custom", label: "Custom", description: "Manual detail adjustments", adjustments: { ...balancedAdjustments } },
+});
+
+export const themePackageRegistry = Object.freeze(Object.fromEntries(Object.entries(themeRegistry).map(([name, item]) => [name, {
+  id: `ultra-brain-theme-${name}`,
+  version: "1.0",
+  name: item.label,
+  category: name === "official" || name === "light" || name === "dark" ? "foundation" : "official",
+  worldStyle: item.description,
+  mode: item.mode,
+  palette: { accent: item.accent, accentBright: item.accentBright, surface: item.surface, border: item.border },
+  detail: { background: item.surfaceStrong, font: item.font, radius: item.radius, texture: item.texture, lighting: item.lighting, shadow: item.shadow, contrast: item.contrast },
+  adjustmentKeys: [...THEME_ADJUSTMENT_KEYS],
+  exportReady: true,
+  importReady: true,
+}])));
+
 export const themeNames = Object.freeze(Object.keys(themeRegistry));
 
 export const defaultPreference = Object.freeze({
@@ -70,6 +107,8 @@ export const defaultPreference = Object.freeze({
   motion: true,
   osEcosystemLocked: false,
   propagationOverride: false,
+  themePreset: "balanced",
+  themeAdjustments: { ...balancedAdjustments },
   propagationTargets: [...PROPAGATION_TARGETS],
   propagationLocks: {},
   propagationOverrides: {},
@@ -81,6 +120,17 @@ function normaliseTargets(value) {
   if (!Array.isArray(value)) return [...PROPAGATION_TARGETS];
   const targets = value.filter((target) => PROPAGATION_TARGETS.includes(target));
   return targets.length ? [...new Set(targets)] : [...PROPAGATION_TARGETS];
+}
+
+function normaliseThemeAdjustments(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  return Object.fromEntries(THEME_ADJUSTMENT_KEYS.map((key) => {
+    const range = THEME_ADJUSTMENT_RANGES[key];
+    const candidate = Number(source[key]);
+    const fallback = balancedAdjustments[key];
+    const next = Number.isFinite(candidate) ? candidate : fallback;
+    return [key, Math.min(range.max, Math.max(range.min, next))];
+  }));
 }
 
 function normaliseNodeMap(value) {
@@ -104,6 +154,9 @@ export function validatePreference(input = {}) {
   if (input.propagationOverride === true) {
     propagationOverrides["os-ecosystem"] = [...propagationTargets];
   }
+  const themePreset = Object.hasOwn(themePresets, input.themePreset) ? input.themePreset : "balanced";
+  const requestedAdjustments = normaliseThemeAdjustments(input.themeAdjustments);
+  const shouldUsePresetAdjustments = themePreset !== "custom" && THEME_ADJUSTMENT_KEYS.every((key) => requestedAdjustments[key] === balancedAdjustments[key]);
   return {
     ...defaultPreference,
     ...input,
@@ -113,12 +166,20 @@ export function validatePreference(input = {}) {
     motion: input.motion !== false,
     osEcosystemLocked: input.osEcosystemLocked === true,
     propagationOverride: input.propagationOverride === true,
+    themePreset,
+    themeAdjustments: shouldUsePresetAdjustments ? { ...themePresets[themePreset].adjustments } : requestedAdjustments,
     propagationTargets,
     propagationLocks,
     propagationOverrides,
     scope: input.scope === "os-ecosystem" ? "os-ecosystem" : "global",
     revision: Number.isInteger(input.revision) && input.revision > 0 ? input.revision : 1,
   };
+}
+
+export function applyThemePreset(preference, preset = "balanced") {
+  const safe = validatePreference(preference);
+  const selected = themePresets[preset] || themePresets.balanced;
+  return validatePreference({ ...safe, themePreset: selected.id, themeAdjustments: selected.adjustments });
 }
 
 export function resolvePropagation(preference) {
@@ -129,6 +190,9 @@ export function resolvePropagation(preference) {
     accent: safe.accent,
     density: safe.density,
     motion: safe.motion,
+    themePreset: safe.themePreset,
+    adjustments: safe.themeAdjustments,
+    package: themePackageRegistry[safe.theme] || themePackageRegistry.official,
     targets: [...safe.propagationTargets],
   };
   const hierarchy = HIERARCHY.map((node) => {
@@ -188,6 +252,9 @@ export function resolveThemeProfile(preference) {
     accentBright: safe.accent,
     density: safe.density,
     motion: safe.motion,
+    themePreset: safe.themePreset,
+    adjustments: safe.themeAdjustments,
+    package: themePackageRegistry[safe.theme] || themePackageRegistry.official,
     effectiveMode: profile.mode,
     propagation: {
       source: "Ultra Brain Global UI",

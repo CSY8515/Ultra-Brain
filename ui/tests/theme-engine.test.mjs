@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyPreference, defaultPreference, HIERARCHY, PROPAGATION_TARGETS, resolvePropagation, resolveThemeProfile, themeNames, themeRegistry, validatePreference } from "../lib/theme-engine.js";
+import { applyPreference, applyThemePreset, defaultPreference, HIERARCHY, PROPAGATION_TARGETS, resolvePropagation, resolveThemeProfile, THEME_ADJUSTMENT_KEYS, themeNames, themePackageRegistry, themePresets, themeRegistry, validatePreference } from "../lib/theme-engine.js";
 
 test("invalid preferences fall back to the official profile", () => {
   const safe = validatePreference({ theme: "unknown", accent: "javascript:bad", density: "tiny" });
@@ -22,7 +22,7 @@ test("save creates a rollback point and increments revision", () => {
   assert.equal(result.next.revision, 2);
 });
 
-test("official theme studio exposes the complete v0.91 registry", () => {
+test("official theme studio exposes the complete v0.92 registry", () => {
   assert.equal(themeNames.length, 12);
   assert.deepEqual(themeNames, ["official", "light", "dark", "universe", "galaxy", "ecosystem", "ocean", "grassland", "lava", "minimal", "paper", "archive"]);
   for (const name of themeNames) {
@@ -70,4 +70,33 @@ test("target-level override is explicit at the selected hierarchy level", () => 
   assert.equal(moduleNode.status, "override");
   assert.deepEqual(moduleNode.overriddenTargets, ["animation"]);
   assert.equal(moduleNode.appliedTargets.includes("animation"), false);
+});
+
+test("official theme packages expose detail controls and import/export readiness", () => {
+  assert.equal(THEME_ADJUSTMENT_KEYS.length, 10);
+  for (const name of themeNames) {
+    const themePackage = themePackageRegistry[name];
+    assert.equal(themePackage.exportReady, true);
+    assert.equal(themePackage.importReady, true);
+    assert.deepEqual(themePackage.adjustmentKeys, THEME_ADJUSTMENT_KEYS);
+  }
+});
+
+test("theme presets resolve bounded visual adjustments without changing world identity", () => {
+  const luminous = applyThemePreset(defaultPreference, "luminous");
+  assert.equal(luminous.theme, "official");
+  assert.equal(luminous.themePreset, "luminous");
+  assert.equal(luminous.themeAdjustments.glow, themePresets.luminous.adjustments.glow);
+  assert.equal(luminous.themeAdjustments.blur, 0);
+  const safe = validatePreference({ ...defaultPreference, themeAdjustments: { brightness: 99, hue: -99, blur: 99 } });
+  assert.equal(safe.themeAdjustments.brightness, 1.3);
+  assert.equal(safe.themeAdjustments.hue, -30);
+  assert.equal(safe.themeAdjustments.blur, 8);
+});
+
+test("resolved theme profile carries package, preset, and adjustment payload", () => {
+  const profile = resolveThemeProfile({ ...defaultPreference, theme: "universe", themePreset: "cinematic" });
+  assert.equal(profile.package.id, "ultra-brain-theme-universe");
+  assert.equal(profile.themePreset, "cinematic");
+  assert.equal(profile.adjustments.contrast, themePresets.cinematic.adjustments.contrast);
 });

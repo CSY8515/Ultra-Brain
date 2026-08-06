@@ -1,7 +1,7 @@
 {
   "id": "ultra-brain-ui-system-contract",
   "name": "Ultra Brain Official UI System Contract",
-  "version": "0.91.0",
+  "version": "0.92.0",
   "status": "approved",
   "owner_layer": "Ultra Brain",
   "parties": ["User", "Ultra Brain", "OS Ecosystem"],
@@ -12,7 +12,7 @@
   ],
   "obligations": [
     "Every change is validated and previewed before save or forwarding.",
-    "Theme profiles may change background, layout, typography, texture, lighting, contrast, radius, and motion as one governed presentation revision.",
+    "Theme Packages may adjust brightness, contrast, saturation, hue, lighting, shadow, glow, texture, blur, and transparency as one governed presentation revision while preserving the world's concept art and illustration style.",
     "Feature, module, project, and OS Ecosystem overrides survive compatible global changes through the hierarchy propagation payload.",
     "Locks have priority over all overrides and global profiles.",
     "OS Ecosystem, Living OS, and Universal Learning Engine retain repository and runtime ownership.",

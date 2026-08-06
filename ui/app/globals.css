@@ -9,6 +9,16 @@
   --text-soft: #aeb9af;
   --line: rgba(195, 167, 96, .34);
   --world-filter: brightness(.72) saturate(.78);
+  --theme-brightness: 1;
+  --theme-contrast: 1;
+  --theme-saturation: 1;
+  --theme-hue: 0deg;
+  --theme-lighting: 1;
+  --theme-shadow: 1;
+  --theme-glow: 1;
+  --theme-texture: 1;
+  --theme-blur: 0px;
+  --theme-transparency: 1;
   --space: 1;
   color-scheme: dark;
   font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -26,12 +36,12 @@ button { color: inherit; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 4px; }
 
 .world-shell { position: relative; width: 100%; min-height: 100svh; overflow: hidden; isolation: isolate; background: #020707; }
-.world-art { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; opacity: 0; filter: var(--world-filter); transform: scale(1.008); transition: opacity 1s ease, filter .45s ease, transform 1.4s cubic-bezier(.22,.61,.36,1); }
+.world-art { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; opacity: 0; filter: var(--world-filter) brightness(var(--theme-brightness)) contrast(var(--theme-contrast)) saturate(var(--theme-saturation)) hue-rotate(var(--theme-hue)); transform: scale(1.008); transition: opacity 1s ease, filter .45s ease, transform 1.4s cubic-bezier(.22,.61,.36,1); }
 .world-art.is-loaded { opacity: 1; transform: scale(1); }
-.world-focus-art { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: contain; object-position: center; pointer-events: none; opacity: 0; clip-path: ellipse(9.5% 9.5% at 50% 70%); filter: brightness(1.18) saturate(1.12) drop-shadow(0 0 18px rgba(232, 190, 100, .42)); transform: scale(1); transform-origin: 50% 70%; transition: opacity .35s ease, clip-path .4s ease, transform .4s cubic-bezier(.22,.61,.36,1), filter .4s ease; }
-.world-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(1,5,7,.22) 0%, transparent 18%, transparent 78%, rgba(1,5,6,.2) 100%), radial-gradient(circle at 50% 44%, transparent 44%, rgba(0,3,4,.3) 100%); }
+.world-focus-art { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: contain; object-position: center; pointer-events: none; opacity: 0; clip-path: ellipse(9.5% 9.5% at 50% 70%); filter: brightness(calc(1.18 * var(--theme-brightness))) contrast(var(--theme-contrast)) saturate(calc(1.12 * var(--theme-saturation))) hue-rotate(var(--theme-hue)) drop-shadow(0 0 calc(18px * var(--theme-glow)) rgba(232, 190, 100, .42)); transform: scale(1); transform-origin: 50% 70%; transition: opacity .35s ease, clip-path .4s ease, transform .4s cubic-bezier(.22,.61,.36,1), filter .4s ease; }
+.world-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(1,5,7,.22) 0%, transparent 18%, transparent 78%, rgba(1,5,6,.2) 100%), radial-gradient(circle at 50% 44%, transparent 44%, rgba(0,3,4,calc(.3 * var(--theme-shadow))) 100%); opacity: var(--theme-transparency); }
 .custom-world-art { position: absolute; inset: 0; z-index: 1; background-position: center; background-size: cover; background-repeat: no-repeat; opacity: .24; mix-blend-mode: screen; pointer-events: none; filter: saturate(.8) contrast(.9); }
-.world-texture { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: var(--ui-texture); opacity: .9; mix-blend-mode: soft-light; }
+.world-texture { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: var(--ui-texture); opacity: calc(.9 * var(--theme-texture)); mix-blend-mode: soft-light; }
 :root[data-theme="light"] .world-vignette { background: linear-gradient(180deg, rgba(239,235,216,.34), transparent 25%, transparent 73%, rgba(237,230,204,.36)); mix-blend-mode: screen; }
 
 .world-loading { position: fixed; inset: 0; z-index: 90; display: grid; place-content: center; gap: 18px; text-align: center; background: #040909; color: #aeb9af; letter-spacing: .12em; font-size: 12px; }
@@ -143,6 +153,22 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright);
 .theme-detail-card strong { font-size: 12px; }
 .detail-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
 .theme-detail-card p { margin: 11px 0 0; color: var(--text-soft); font-size: 10px; line-height: 1.6; }
+.preset-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+.preset-row button { display: grid; gap: 4px; padding: 9px; border: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer; }
+.preset-row button:hover, .preset-row button.is-selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.preset-row strong { font-size: 10px; }
+.preset-row small { color: var(--text-soft); font-size: 8px; line-height: 1.35; }
+.adjustment-grid { display: grid; gap: 9px; }
+.adjustment-grid label { display: grid; grid-template-columns: 84px 1fr 42px; align-items: center; gap: 8px; color: var(--text-soft); font-size: 9px; }
+.adjustment-grid input { width: 100%; accent-color: var(--accent); }
+.adjustment-grid output { color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
+.theme-package-card { display: grid; gap: 7px; padding: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.025); }
+.theme-package-card > div { display: flex; align-items: center; gap: 8px; }
+.theme-package-card strong { font-size: 11px; }
+.theme-package-card p { margin: 0; color: var(--text-soft); font-size: 9px; line-height: 1.5; }
+.package-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.package-import { color: var(--accent-bright); cursor: pointer; font-size: 10px; text-decoration: underline; text-underline-offset: 4px; }
+.package-import input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .layout-stage { position: relative; min-height: 245px; overflow: hidden; border: 1px solid var(--line); background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 34%), #040909; }
 .layout-stage-world { position: absolute; inset: 22px 35px; border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); border-radius: 50%; opacity: .5; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 18%), linear-gradient(145deg, transparent 46%, color-mix(in srgb, var(--accent) 9%, transparent) 47% 53%, transparent 54%); }
 .layout-node { position: absolute; z-index: 2; min-width: 68px; padding: 6px 7px; border: 1px solid var(--line); border-radius: var(--ui-radius); background: var(--surface-strong); color: var(--text); cursor: grab; font-size: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.25); touch-action: none; }

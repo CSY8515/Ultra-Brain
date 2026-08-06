@@ -212,6 +212,22 @@
       "current_version": "0.91.0",
       "created_date": "2026-08-06",
       "updated_date": "2026-08-06"
+    },
+    {
+      "id": "ultra-brain-v0-92-official-theme-system",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.92 Official Theme System",
+      "scope": "Registry-driven official Theme Packages with detail adjustments, presets, preview, import preparation, export preparation, and existing hierarchy propagation.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.92.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.92.0",
+      "created_date": "2026-08-06",
+      "updated_date": "2026-08-06"
     }
   ]
 }

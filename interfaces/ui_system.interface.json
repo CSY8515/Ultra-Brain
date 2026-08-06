@@ -1,14 +1,14 @@
 {
   "id": "ultra-brain-ui-system-interface",
   "name": "Ultra Brain Official UI System Interface",
-  "version": "0.91.0",
+  "version": "0.92.0",
   "contract_id": "ultra-brain.ui",
   "contract_version": 1,
   "interface_version": "1.0",
   "status": "approved",
   "owner_layer": "Ultra Brain",
   "inputs": ["theme profile", "design tokens", "scope overrides", "locks", "compatible target identity"],
-  "outputs": ["resolved profile", "preview", "affected-scope report", "hierarchy propagation payload", "OS Ecosystem forwarding payload", "layout revision", "rollback reference"],
+  "outputs": ["resolved profile", "theme package", "theme detail preview", "affected-scope report", "hierarchy propagation payload", "OS Ecosystem forwarding payload", "layout revision", "rollback reference"],
   "errors": ["invalid token", "unsupported version", "unknown scope", "locked target", "incompatible target"],
   "compatibility": "OS Ecosystem v0.74; Living OS v2.096 and Universal Learning Engine v1.09 through the OS Ecosystem compatibility boundary."
 }

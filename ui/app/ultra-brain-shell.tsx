@@ -4,13 +4,18 @@ import type { ChangeEvent, CSSProperties, PointerEvent as ReactPointerEvent } fr
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   THEME_STORAGE_KEY,
+  THEME_ADJUSTMENT_KEYS,
+  THEME_ADJUSTMENT_RANGES,
   PROPAGATION_TARGETS,
+  applyThemePreset,
   applyPreference,
   createRollbackPoint,
   defaultPreference,
   resolveThemeProfile,
   resolvePropagation,
   themeNames,
+  themePackageRegistry,
+  themePresets,
   themeRegistry,
   validatePreference,
 } from "../lib/theme-engine";
@@ -45,6 +50,7 @@ type LayoutKey = keyof typeof LAYOUT_LABELS;
 type LayoutOffsets = Record<LayoutKey, { x: number; y: number }>;
 type Preference = ReturnType<typeof validatePreference>;
 type RollbackPoint = ReturnType<typeof createRollbackPoint>;
+type ThemeAdjustmentKey = "brightness" | "contrast" | "saturation" | "hue" | "lighting" | "shadow" | "glow" | "texture" | "blur" | "transparency";
 
 const DEFAULT_LAYOUT: LayoutOffsets = {
   topbar: { x: 0, y: 0 },
@@ -113,6 +119,16 @@ export function UltraBrainShell() {
     root.style.setProperty("--ui-shadow", profile.shadow);
     root.style.setProperty("--ui-texture", profile.texture);
     root.style.setProperty("--ui-lighting", profile.lighting);
+    root.style.setProperty("--theme-brightness", String(profile.adjustments.brightness));
+    root.style.setProperty("--theme-contrast", String(profile.adjustments.contrast));
+    root.style.setProperty("--theme-saturation", String(profile.adjustments.saturation));
+    root.style.setProperty("--theme-hue", `${profile.adjustments.hue}deg`);
+    root.style.setProperty("--theme-lighting", String(profile.adjustments.lighting));
+    root.style.setProperty("--theme-shadow", String(profile.adjustments.shadow));
+    root.style.setProperty("--theme-glow", String(profile.adjustments.glow));
+    root.style.setProperty("--theme-texture", String(profile.adjustments.texture));
+    root.style.setProperty("--theme-blur", `${profile.adjustments.blur}px`);
+    root.style.setProperty("--theme-transparency", String(profile.adjustments.transparency));
   }, [activePreference, profile]);
 
   useEffect(() => {
@@ -177,8 +193,52 @@ export function UltraBrainShell() {
   }
 
   function selectTheme(theme: string) {
-    updateDraft({ theme: theme as Preference["theme"], accent: themeRegistry[theme].accent });
+    updateDraft({ theme: theme as Preference["theme"], accent: themeRegistry[theme].accent, themePreset: "balanced", themeAdjustments: themePresets.balanced.adjustments });
     setToast(`${themeRegistry[theme].label} preview`);
+  }
+
+  function updateThemeAdjustment(key: ThemeAdjustmentKey, value: number) {
+    updateDraft({ themePreset: "custom", themeAdjustments: { ...draftPreference.themeAdjustments, [key]: value } });
+  }
+
+  function selectThemePreset(preset: string) {
+    setDraftPreference((current) => applyThemePreset(current, preset));
+    setToast(`${themePresets[preset].label} preset preview`);
+  }
+
+  function exportThemePackage() {
+    const packageData = {
+      format: "ultra-brain.theme/v1",
+      exportedAt: new Date().toISOString(),
+      package: themePackageRegistry[draftPreference.theme],
+      preference: { theme: draftPreference.theme, accent: draftPreference.accent, themePreset: draftPreference.themePreset, themeAdjustments: draftPreference.themeAdjustments },
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(packageData, null, 2)], { type: "application/json" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${draftPreference.theme}-theme-package.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    setToast("Theme package exported");
+  }
+
+  function importThemePackage(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result));
+        const source = data.preference || data;
+        const imported = validatePreference({ ...draftPreference, theme: source.theme, accent: source.accent, themePreset: source.themePreset, themeAdjustments: source.themeAdjustments });
+        setDraftPreference(imported);
+        setToast("Theme package imported for preview");
+      } catch {
+        setToast("Theme package could not be read");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
   }
 
   function persist(nextPreference: Preference, nextLayout: LayoutOffsets, nextRollbacks: RollbackPoint[]) {
@@ -260,7 +320,7 @@ export function UltraBrainShell() {
     reader.readAsDataURL(file);
   }
 
-  const shellStyle = { "--ui-contrast": profile.contrast } as CSSProperties;
+  const shellStyle = { "--ui-contrast": profile.adjustments.contrast } as CSSProperties;
   const topbarStyle = { translate: `${layout.topbar.x}px ${layout.topbar.y}px` } as CSSProperties;
   const centerStyle = { translate: `calc(-50% + ${layout.center.x}px) calc(-50% + ${layout.center.y}px)` } as CSSProperties;
   const seedStyle = { left: `calc(50% + ${layout.seed.x}px)`, bottom: `calc(12.5% + ${layout.seed.y}px)` } as CSSProperties;
@@ -280,7 +340,7 @@ export function UltraBrainShell() {
         <div className="topbar-left">
           <a className="brand" href="#ultra-brain" aria-label="Ultra Brain home">
             <span className="brand-sigil" aria-hidden="true">✦</span>
-            <span><strong>Ultra Brain</strong><small>v0.91 · Official UI</small></span>
+            <span><strong>Ultra Brain</strong><small>v0.92 · Official UI</small></span>
           </a>
           <button className="studio-launch" type="button" onClick={() => openStudio("themes")} aria-label="Open UI Studio">
             <span aria-hidden="true">⌘</span><span><strong>UI Studio</strong><small>Change UI</small></span>
@@ -314,7 +374,7 @@ export function UltraBrainShell() {
       </nav>
 
       <aside className="status-dock" style={statusStyle} aria-label="System status">
-        <div><span className="health-dot" /> <strong>Healthy</strong></div><i /><span>OS Ecosystem connected</span><i /><span>v0.91</span><button type="button" onClick={() => openStudio("preview")}>Preview</button>
+        <div><span className="health-dot" /> <strong>Healthy</strong></div><i /><span>OS Ecosystem connected</span><i /><span>v0.92</span><button type="button" onClick={() => openStudio("preview")}>Preview</button>
       </aside>
 
       {panel === "notifications" && <section className="notice-panel floating-panel" aria-label="Notifications">
@@ -337,7 +397,10 @@ export function UltraBrainShell() {
             <fieldset><legend>Theme profile</legend><div className="theme-grid">{themeNames.map((theme) => { const item = themeRegistry[theme]; return <button key={theme} type="button" className={activePreference.theme === theme ? "is-selected" : ""} onClick={() => selectTheme(theme)}><span className={`theme-preview ${theme}`} /><strong>{item.label}</strong><small>{item.description}</small></button>; })}</div></fieldset>
             <fieldset><legend>Accent</legend><div className="accent-row">{ACCENT_SWATCHES.map((accent) => <button key={accent} type="button" className={activePreference.accent.toLowerCase() === accent ? "is-selected" : ""} style={{ "--swatch": accent } as CSSProperties} onClick={() => updateDraft({ accent })} aria-label={`Use accent ${accent}`} />)}<label className="accent-picker" aria-label="Choose custom accent"><input type="color" value={activePreference.accent} onChange={(event) => updateDraft({ accent: event.target.value })} /><span>Custom</span></label></div></fieldset>
             <fieldset><legend>User custom theme</legend><label className="file-drop"><input type="file" accept="image/*" onChange={importBackground} /><span>Import image</span><small>Use your own background and sample its first accent automatically.</small></label>{customBackground && <button className="text-action" type="button" onClick={() => { setCustomBackground(null); setToast("Custom background removed"); }}>Remove imported background</button>}</fieldset>
-            <div className="theme-detail-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{themeRegistry[activePreference.theme].label} system</strong></div><p>Background · {profile.mode}<br />Layout · world-first<br />Font · {profile.font.split(",")[0]}<br />Radius · {profile.radius} · Lighting tuned</p></div>
+            <fieldset><legend>Theme preset</legend><div className="preset-row">{Object.values(themePresets).map((preset: { id: string; label: string; description: string }) => <button key={preset.id} type="button" className={activePreference.themePreset === preset.id ? "is-selected" : ""} onClick={() => selectThemePreset(preset.id)}><strong>{preset.label}</strong><small>{preset.description}</small></button>)}</div></fieldset>
+            <fieldset><legend>Theme detail adjustments</legend><div className="adjustment-grid">{THEME_ADJUSTMENT_KEYS.map((key: ThemeAdjustmentKey) => { const range = THEME_ADJUSTMENT_RANGES[key]; const value = activePreference.themeAdjustments[key]; return <label key={key}><span>{key === "componentPosition" ? "Component position" : key.charAt(0).toUpperCase() + key.slice(1)}</span><input type="range" min={range.min} max={range.max} step={range.step} value={value} onChange={(event) => updateThemeAdjustment(key, Number(event.target.value))} aria-label={`Adjust ${key}`} /><output>{Number(value).toFixed(range.step < 1 ? 2 : 0)}{range.unit === "x" ? "×" : range.unit}</output></label>; })}</div><small className="field-hint">Adjust presentation tokens without changing the selected world's concept art or illustration style.</small></fieldset>
+            <fieldset><legend>Theme package</legend><div className="theme-package-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{profile.package.name} · {profile.package.version}</strong></div><p>{profile.package.worldStyle}<br />{profile.package.adjustmentKeys.length} detail controls · import ready · export ready</p></div><div className="package-actions"><label className="package-import"><input type="file" accept="application/json,.json" onChange={importThemePackage} /><span>Import package</span></label><button className="text-action" type="button" onClick={exportThemePackage}>Export package</button></div></fieldset>
+            <div className="theme-detail-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{themeRegistry[activePreference.theme].label} system</strong></div><p>Background · {profile.mode}<br />Layout · world-first<br />Font · {profile.font.split(",")[0]}<br />Radius · {profile.radius} · {themePresets[activePreference.themePreset]?.label || "Custom"} detail</p></div>
           </div>}
 
           {studioTab === "layout" && <div className="studio-pane">

@@ -2,6 +2,7 @@ export type ThemeName = "official" | "light" | "dark" | "universe" | "galaxy" | 
 export type Density = "compact" | "comfortable" | "spacious";
 export type PropagationTarget = "theme" | "background" | "color" | "brightness" | "contrast" | "saturation" | "hue" | "texture" | "lighting" | "shadow" | "glow" | "transparency" | "blur" | "layout" | "componentPosition" | "componentSize" | "visibility" | "animation";
 export type PropagationNode = "ultra-brain" | "os-ecosystem" | "living-os" | "universal-learning-engine" | "project" | "module" | "feature";
+export type ThemeAdjustmentKey = "brightness" | "contrast" | "saturation" | "hue" | "lighting" | "shadow" | "glow" | "texture" | "blur" | "transparency";
 export type ThemePreference = {
   theme: ThemeName;
   accent: string;
@@ -9,6 +10,8 @@ export type ThemePreference = {
   motion: boolean;
   osEcosystemLocked: boolean;
   propagationOverride: boolean;
+  themePreset: "balanced" | "luminous" | "cinematic" | "quiet" | "custom";
+  themeAdjustments: Record<ThemeAdjustmentKey, number>;
   propagationTargets: PropagationTarget[];
   propagationLocks: Partial<Record<PropagationNode, PropagationTarget[]>>;
   propagationOverrides: Partial<Record<PropagationNode, PropagationTarget[]>>;
@@ -18,11 +21,16 @@ export type ThemePreference = {
 export const THEME_STORAGE_KEY: string;
 export const PROPAGATION_TARGETS: readonly PropagationTarget[];
 export const HIERARCHY: readonly { id: PropagationNode; label: string; kind: "source" | "registered-child" | "downstream" }[];
+export const THEME_ADJUSTMENT_KEYS: readonly ThemeAdjustmentKey[];
+export const THEME_ADJUSTMENT_RANGES: Record<ThemeAdjustmentKey, { min: number; max: number; step: number; unit: string }>;
+export const themePresets: Record<string, { id: string; label: string; description: string; adjustments: Record<ThemeAdjustmentKey, number> }>;
+export const themePackageRegistry: Record<ThemeName, Record<string, any>>;
 export const themeNames: readonly ThemeName[];
 export const themeRegistry: Record<ThemeName, Record<string, string>>;
 export const defaultPreference: ThemePreference;
 export function validatePreference(input?: Partial<ThemePreference>): ThemePreference;
 export function resolveThemeProfile(preference: ThemePreference): Record<string, any>;
 export function resolvePropagation(preference: ThemePreference): Record<string, any>;
+export function applyThemePreset(preference: ThemePreference, preset?: string): ThemePreference;
 export function createRollbackPoint(current: ThemePreference): { id: string; createdAt: string; preference: ThemePreference };
 export function applyPreference(current: ThemePreference, candidate: Partial<ThemePreference>): { next: ThemePreference; rollback: { id: string; createdAt: string; preference: ThemePreference } };

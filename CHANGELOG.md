@@ -3,6 +3,21 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.92] - 2026-08-06
+
+### Added
+
+- Added registry-driven Official Theme Packages for the Ultra Brain UI Studio.
+- Added official world themes Universe, Ecosystem, Galaxy, Ocean, Grassland, Lava, Minimal, Paper, and Archive while preserving the foundation profiles.
+- Added Theme Detail controls for brightness, contrast, saturation, hue, lighting, shadow, glow, texture, blur, and transparency.
+- Added Balanced, Luminous, Cinematic, Quiet, and Custom presets with bounded values.
+- Added preview-safe Theme Package Import and Export preparation.
+
+### Preserved
+
+- v0.91 hierarchy propagation, automatic application, Lock, Override, Preview, and Rollback behavior.
+- World concept art, illustration style, child editor boundaries, and independent downstream ownership.
+
 ## [v0.91] - 2026-08-06
 
 ### Added
