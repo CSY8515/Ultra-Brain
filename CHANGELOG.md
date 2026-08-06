@@ -3,6 +3,28 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.9] - 2026-08-06
+
+### Added
+
+- Completed the Official world-first UI/UX surface on the existing v0.8 visual foundation.
+- Added the full-screen UI Studio with live preview, save, and governed rollback.
+- Added Official, Light, Dark, Universe, Galaxy, Ecosystem, Ocean, Grassland,
+  Lava, Minimal, Paper, and Archive theme profiles with independent lighting,
+  contrast, typography, texture, radius, and motion tokens.
+- Added user background import with local accent sampling and custom accent control.
+- Added drag-based Layout Editor controls for Topbar, World identity, OS Entry,
+  Navigation rail, and Status dock.
+- Added OS Ecosystem propagation chain with explicit Override and Lock states.
+- Removed the temporary starter loading surface and its dependency.
+
+### Preserved
+
+- Ultra Brain remains the source of global UI preferences and the existing
+  OS Ecosystem remains an independent registered child system.
+- Living OS, Universal Learning Engine, OS Ecosystem, and all Core Meta OS
+  implementations remain outside the change set.
+
 ## [v0.7] - 2026-08-04
 
 ### Integrated

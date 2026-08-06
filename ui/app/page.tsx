@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { UltraBrainShell } from "./ultra-brain-shell";
 
 export const metadata: Metadata = {
-  title: "Ultra Brain",
-  description: "Ultra Brain과 OS Ecosystem 진입 화면",
+  title: "Ultra Brain v0.9",
+  description: "Ultra Brain Official UI Studio and OS Ecosystem world interface",
 };
 
 export default function Home() {

@@ -164,6 +164,38 @@
       "current_version": "0.7.0",
       "created_date": "2026-08-04",
       "updated_date": "2026-08-04"
+    },
+    {
+      "id": "ultra-brain-v0-8-official-ui-foundation",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.8 Official UI Foundation",
+      "scope": "World-first Ultra Brain UI foundation with the registered OS Ecosystem entry and preview-first UI system boundary.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.9.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.8.0",
+      "created_date": "2026-08-05",
+      "updated_date": "2026-08-05"
+    },
+    {
+      "id": "ultra-brain-v0-9-official-ui-ux-final",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.9 Official UI / UX Final",
+      "scope": "Production-ready Official UI/UX with UI Studio, twelve theme profiles, custom theme import, Layout Editor, propagation controls, preview, and rollback.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.9.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.9.0",
+      "created_date": "2026-08-06",
+      "updated_date": "2026-08-06"
     }
   ]
 }

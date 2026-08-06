@@ -1,4 +1,4 @@
-"""Validate Foundation and cumulative v0.2-v0.7 integration.
+"""Validate Foundation, cumulative integrations, and the v0.9 UI release.
 
 This validator intentionally uses only the Python standard library. It checks
 Foundation structure, release integration, and delegated Core validators; it is
@@ -22,7 +22,7 @@ REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
 OS_ECOSYSTEM_REPOSITORY = "https://github.com/CSY8515/OS-Ecosystem.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
-MILESTONE_VERSION = "0.7"
+MILESTONE_VERSION = "0.9"
 SAFETY_VERSION = "0.2.0"
 ENHANCEMENT_VERSION = "0.3.0"
 AUTOMATION_VERSION = "0.4.0"
@@ -31,6 +31,8 @@ SECRETARY_RUNTIME_VERSION = "0.6.0"
 SECRETARY_VERSION = "0.61.0"
 OS_ECOSYSTEM_VERSION = "0.73"
 INTEGRATION_VERSION = "0.7.0"
+UI_FOUNDATION_VERSION = "0.8.0"
+UI_VERSION = "0.9.0"
 
 REQUIRED_DOCUMENTS = (
     "README.md",
@@ -74,6 +76,7 @@ REQUIRED_DOCUMENTS = (
     "Personal-Secretary-Core-Meta-OS/OPERATIONAL_REPORTING.md",
     "OS_ECOSYSTEM_INTEGRATION.md",
     "RELEASE_NOTES_v0.7.md",
+    "RELEASE_NOTES_v0.9.md",
 )
 
 REGISTRY_FILES = (
@@ -371,8 +374,10 @@ def validate_registries(errors: list[str]) -> None:
             "ultra-brain-v0-6-personal-secretary",
             "ultra-brain-v0-61-personal-secretary-architecture-hotfix",
             "ultra-brain-v0-7-os-ecosystem-integration",
+            "ultra-brain-v0-8-official-ui-foundation",
+            "ultra-brain-v0-9-official-ui-ux-final",
         }:
-            errors.append("release_registry.json must contain exactly v0.1 through v0.7")
+            errors.append("release_registry.json must contain exactly v0.1 through v0.9 milestones")
         elif (
             releases["ultra-brain-v0-1-foundation"].get("current_version")
             != REGISTRY_VERSION
@@ -391,6 +396,10 @@ def validate_registries(errors: list[str]) -> None:
             or releases["ultra-brain-v0-61-personal-secretary-architecture-hotfix"].get("status") != "released"
             or releases["ultra-brain-v0-7-os-ecosystem-integration"].get("current_version") != INTEGRATION_VERSION
             or releases["ultra-brain-v0-7-os-ecosystem-integration"].get("status") != "released"
+            or releases["ultra-brain-v0-8-official-ui-foundation"].get("current_version") != UI_FOUNDATION_VERSION
+            or releases["ultra-brain-v0-8-official-ui-foundation"].get("status") != "released"
+            or releases["ultra-brain-v0-9-official-ui-ux-final"].get("current_version") != UI_VERSION
+            or releases["ultra-brain-v0-9-official-ui-ux-final"].get("status") != "released"
         ):
             errors.append("release registry versions or release states are incorrect")
 
@@ -403,6 +412,7 @@ def validate_registries(errors: list[str]) -> None:
             "personal-secretary-core-assistance-interface": SECRETARY_RUNTIME_VERSION,
             "personal-secretary-operational-reporting-interface": SECRETARY_VERSION,
             "ultra-brain-os-ecosystem-management-interface": INTEGRATION_VERSION,
+            "ultra-brain-ui-system-interface": UI_VERSION,
         },
         "contract_registry.json": {
             "safety-core-control-contract": SAFETY_VERSION,
@@ -412,6 +422,7 @@ def validate_registries(errors: list[str]) -> None:
             "personal-secretary-core-assistance-contract": SECRETARY_RUNTIME_VERSION,
             "personal-secretary-operational-reporting-contract": SECRETARY_VERSION,
             "ultra-brain-os-ecosystem-management-contract": INTEGRATION_VERSION,
+            "ultra-brain-ui-system-contract": UI_VERSION,
         },
     }
     for filename, expected in expected_entries.items():
@@ -578,7 +589,16 @@ def validate_schemas(errors: list[str]) -> None:
 
 
 def validate_markdown_links(errors: list[str]) -> None:
-    excluded_roots = {ROOT / "OS Ecosystem", ROOT / ".git"}
+    excluded_roots = {
+        ROOT / "OS Ecosystem",
+        ROOT / ".git",
+        ROOT / ".pnpm-store",
+        ROOT / "__pycache__",
+        ROOT / "ui" / "node_modules",
+        ROOT / "ui" / "dist",
+        ROOT / "ui" / ".next",
+        ROOT / "ui" / "build",
+    }
     markdown_files = [
         path
         for path in ROOT.rglob("*.md")
@@ -599,10 +619,10 @@ def validate_markdown_links(errors: list[str]) -> None:
 
 
 def validate_scope_boundaries(errors: list[str]) -> None:
-    forbidden_top_level = {"ui", "pages", "components", "styles", ".streamlit"}
+    forbidden_top_level = {"pages", "components", "styles", ".streamlit"}
     actual_top_level = {path.name.lower() for path in ROOT.iterdir() if path.name not in {".git", "OS Ecosystem"}}
     for forbidden in sorted(forbidden_top_level & actual_top_level):
-        errors.append(f"forbidden v0.61 UI/runtime path exists: {forbidden}")
+        errors.append(f"forbidden UI/runtime path exists: {forbidden}")
 
     for directory_name in CORE_META_OS_DIRECTORIES:
         directory = ROOT / directory_name
@@ -701,12 +721,12 @@ def main() -> int:
     validate_personal_secretary_core(errors)
 
     if errors:
-        print("Ultra Brain v0.7 integration validation: FAILED")
+        print("Ultra Brain v0.9 release validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.7 integration validation: PASSED")
+    print("Ultra Brain v0.9 release validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")

@@ -5,10 +5,10 @@ Ultra Brain is the user's top-level Second Brain and governance layer. It define
 ## Release status
 
 The **v0.1 Foundation** through **v0.61 Personal Secretary Architecture Hotfix**
-baselines remain cumulative. The current release is **v0.7 OS Ecosystem
-Integration**, which formally registers and manages the independent OS
-Ecosystem `v0.73` through an approved Registry, Interface, Contract, dependency
-set, operational-report flow, and structural navigation entry.
+baselines remain cumulative. v0.7 formally registered the independent OS
+Ecosystem `v0.73`; v0.8 established the world-first UI foundation; and the
+current release is **v0.9 Official UI / UX Final**, which completes the
+production UI Studio, theme, layout, propagation, preview, and rollback layer.
 
 The v0.6 runtime provides consent-aware daily briefings, weekly and monthly reviews, reminder
 views, evidence-linked recommendations, transparent priorities, advisory
@@ -24,7 +24,8 @@ and failure/recovery/rollback support contracts. It adds no new execution path.
 v0.7 binds that reporting architecture to the independent OS Ecosystem v0.73
 without copying source, merging repositories, embedding runtime, or transferring
 ownership. See the [integration review](OS_ECOSYSTEM_INTEGRATION.md) and
-[release notes](RELEASE_NOTES_v0.7.md). No UI, World, or Theme is implemented.
+[release notes](RELEASE_NOTES_v0.7.md). v0.9's UI remains an Ultra Brain-owned
+presentation layer and does not modify the independent OS Ecosystem.
 
 The canonical authority hierarchy is:
 

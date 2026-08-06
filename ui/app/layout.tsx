@@ -8,17 +8,17 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.startsWith("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
   return {
-    title: { default: "Ultra Brain", template: "%s · Ultra Brain" },
-    description: "Ultra Brain v0.8 공식 UI System",
+    title: { default: "Ultra Brain v0.9", template: "%s · Ultra Brain" },
+    description: "Ultra Brain v0.9 Official UI Studio and OS Ecosystem world interface",
     icons: { icon: "/favicon.png", shortcut: "/favicon.png" },
-    openGraph: { title: "Ultra Brain", description: "OS Ecosystem", images: [`${origin}/og.png`] },
-    twitter: { card: "summary_large_image", title: "Ultra Brain", description: "OS Ecosystem", images: [`${origin}/og.png`] },
+    openGraph: { title: "Ultra Brain v0.9", description: "Official UI Studio · OS Ecosystem", images: [`${origin}/og.png`] },
+    twitter: { card: "summary_large_image", title: "Ultra Brain v0.9", description: "Official UI Studio · OS Ecosystem", images: [`${origin}/og.png`] },
   };
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

@@ -1,10 +1,20 @@
-export type ThemeName = "official" | "dark" | "light";
+export type ThemeName = "official" | "light" | "dark" | "universe" | "galaxy" | "ecosystem" | "ocean" | "grassland" | "lava" | "minimal" | "paper" | "archive";
 export type Density = "compact" | "comfortable" | "spacious";
-export type ThemePreference = { theme: ThemeName; accent: string; density: Density; motion: boolean; osEcosystemLocked: boolean; scope: "global" | "os-ecosystem"; revision: number };
+export type ThemePreference = {
+  theme: ThemeName;
+  accent: string;
+  density: Density;
+  motion: boolean;
+  osEcosystemLocked: boolean;
+  propagationOverride: boolean;
+  scope: "global" | "os-ecosystem";
+  revision: number;
+};
 export const THEME_STORAGE_KEY: string;
+export const themeNames: readonly ThemeName[];
 export const themeRegistry: Record<ThemeName, Record<string, string>>;
 export const defaultPreference: ThemePreference;
 export function validatePreference(input?: Partial<ThemePreference>): ThemePreference;
 export function resolveThemeProfile(preference: ThemePreference): Record<string, any>;
 export function createRollbackPoint(current: ThemePreference): { id: string; createdAt: string; preference: ThemePreference };
-export function applyPreference(current: ThemePreference, candidate: ThemePreference): { next: ThemePreference; rollback: { id: string; createdAt: string; preference: ThemePreference } };
+export function applyPreference(current: ThemePreference, candidate: Partial<ThemePreference>): { next: ThemePreference; rollback: { id: string; createdAt: string; preference: ThemePreference } };
