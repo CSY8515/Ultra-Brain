@@ -39,7 +39,7 @@ test("UI lock settings are normalised and preserved", () => {
   assert.equal(Object.hasOwn(safe.uiLocks, "unknown"), false);
 });
 
-test("v0.94 exposes independent position, size, component, and layer locks", () => {
+test("v0.95 exposes independent position, size, component, and layer locks", () => {
   assert.deepEqual(UI_LOCK_KEYS, ["position", "size", "background", "layout", "color", "texture", "lighting", "component", "layer"]);
   const safe = validatePreference({ ...defaultPreference, uiLocks: { position: true, size: true, component: true, layer: true } });
   assert.equal(safe.uiLocks.position, true);
@@ -115,4 +115,16 @@ test("resolved theme profile carries package, preset, and adjustment payload", (
   assert.equal(profile.package.id, "ultra-brain-theme-universe");
   assert.equal(profile.themePreset, "cinematic");
   assert.equal(profile.adjustments.contrast, themePresets.cinematic.adjustments.contrast);
+});
+
+test("official themes resolve a complete visual world engine", () => {
+  for (const name of themeNames) {
+    const profile = resolveThemeProfile({ ...defaultPreference, theme: name });
+    assert.ok(profile.worldEngine.label);
+    assert.ok(profile.worldEngine.background);
+    assert.ok(profile.worldEngine.overlay);
+    assert.ok(profile.worldEngine.texture);
+    assert.ok(profile.worldEngine.motion);
+    assert.equal(profile.package.world.id, profile.worldEngine.id);
+  }
 });

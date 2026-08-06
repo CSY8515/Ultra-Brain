@@ -3,6 +3,22 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.95] - 2026-08-06
+
+### Added
+
+- Added a registry-driven Visual World Engine for official themes.
+- Added world-specific concept-art interpretation with background, atmosphere,
+  texture, lighting, layout language, and motion layers for Universe, Ecosystem,
+  Galaxy, Ocean, Grassland, Lava, Minimal, Paper, Archive, and the Official sun world.
+- Added Theme Browser world previews and a Theme Detail image-world preview in UI Studio.
+- Kept Korean-first operational controls while preserving product names and world titles.
+
+### Preserved
+
+- Existing User Custom Canvas, theme adjustments, preview, rollback, hierarchy
+  propagation, Override, Lock, and lower-system ownership boundaries.
+
 ## [v0.94] - 2026-08-06
 
 ### Added

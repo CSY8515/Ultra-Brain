@@ -260,6 +260,22 @@
       "current_version": "0.94.0",
       "created_date": "2026-08-06",
       "updated_date": "2026-08-06"
+    },
+    {
+      "id": "ultra-brain-v0-95-advanced-theme-visual-world-engine",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.95 Advanced Theme & Visual World Engine",
+      "scope": "Registry-driven visual world themes that reinterpret the existing concept art with world-specific atmosphere, layout language, texture, lighting, typography, component treatment, motion, Theme Browser previews, and Theme Detail controls.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.95.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.95.0",
+      "created_date": "2026-08-06",
+      "updated_date": "2026-08-06"
     }
   ]
 }

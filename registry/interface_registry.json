@@ -139,7 +139,7 @@
       "id": "ultra-brain-ui-system-interface",
       "entity_type": "interface",
       "name": "Ultra Brain Official UI System Interface",
-      "scope": "v0.94 boundary for Official Theme preservation, User Custom UI, Canvas Editor drawing and asset import, components, layers, nine lock types, preview, hierarchy propagation, and rollback references.",
+      "scope": "v0.95 boundary for Official Theme preservation, registry-driven Visual World Engine packages, concept-art world previews, User Custom UI, Canvas Editor drawing and asset import, components, layers, nine lock types, preview, hierarchy propagation, and rollback references.",
       "status": "active",
       "owner_layer": "Ultra Brain",
       "parent": "ultra-brain",
@@ -147,7 +147,7 @@
       "path": "interfaces/ui_system.interface.json",
       "interface": [],
       "contract": ["ultra-brain-ui-system-contract"],
-      "current_version": "0.94.0",
+      "current_version": "0.95.0",
       "created_date": "2026-08-05",
       "updated_date": "2026-08-06"
     }

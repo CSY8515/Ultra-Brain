@@ -139,7 +139,7 @@
       "id": "ultra-brain-ui-system-contract",
       "entity_type": "contract",
       "name": "Ultra Brain Official UI System Contract",
-      "scope": "v0.94 obligations for Official Theme preservation, User Custom UI, Canvas Editor drawing and asset import, components, layers, nine lock types, preview-first changes, hierarchy propagation, compatibility, fallback, and rollback.",
+      "scope": "v0.95 obligations for Official Theme preservation, registry-driven Visual World Engine packages, concept-art world interpretation, User Custom UI, Canvas Editor drawing and asset import, components, layers, nine lock types, preview-first changes, hierarchy propagation, compatibility, fallback, and rollback.",
       "status": "active",
       "owner_layer": "Ultra Brain",
       "parent": "ultra-brain",
@@ -147,7 +147,7 @@
       "path": "contracts/ui_system.contract.json",
       "interface": ["ultra-brain-ui-system-interface"],
       "contract": [],
-      "current_version": "0.94.0",
+      "current_version": "0.95.0",
       "created_date": "2026-08-05",
       "updated_date": "2026-08-06"
     }

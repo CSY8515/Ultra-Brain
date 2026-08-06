@@ -16,12 +16,12 @@ async function render() {
   );
 }
 
-test("server renders the Ultra Brain v0.94 world UI", async () => {
+test("server renders the Ultra Brain v0.95 visual world UI", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, /<title>Ultra Brain v0\.94 · Ultra Brain<\/title>/i);
+  assert.match(html, /<title>Ultra Brain v0\.95 · Ultra Brain<\/title>/i);
   assert.match(html, /Ultra Brain/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site|codex-preview|react-loading-skeleton/i);
 });
@@ -36,6 +36,8 @@ test("the production entry has no disposable starter surface", async () => {
   assert.match(page, /<UltraBrainShell \/>/);
   assert.match(shell, /ultra-brain-world\.png/);
   assert.match(shell, /Open UI Studio/);
+  assert.match(shell, /worldEngine/);
+  assert.match(shell, /테마 브라우저/);
   assert.match(shell, /Automatic hierarchy propagation/);
   assert.match(shell, /Managed from Ultra Brain UI Studio/);
   assert.match(shell, /Child editor disabled/);
@@ -44,9 +46,9 @@ test("the production entry has no disposable starter surface", async () => {
   assert.match(shell, /UI_LOCK_KEYS/);
   assert.match(shell, /배치 편집기/);
   assert.match(shell, /CanvasEditor/);
-  assert.match(shell, /User Custom UI/);
+  assert.match(shell, /사용자 UI/);
   assert.match(shell, /Rollback/);
-  assert.match(layout, /Ultra Brain v0\.94/);
+  assert.match(layout, /Ultra Brain v0\.95/);
   assert.doesNotMatch(layout, /codex-preview|_sites-preview|Starter Project/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(new URL("public/_sites-preview", templateRoot)));

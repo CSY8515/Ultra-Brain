@@ -19,6 +19,10 @@
   --theme-texture: 1;
   --theme-blur: 0px;
   --theme-transparency: 1;
+  --world-background: radial-gradient(circle at 50% 44%, rgba(255,183,65,.2), transparent 22%), #020707;
+  --world-overlay: transparent;
+  --world-texture: transparent;
+  --world-lighting: rgba(255,203,108,.2);
   --space: 1;
   color-scheme: dark;
   font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -43,6 +47,20 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright);
 .custom-world-art { position: absolute; inset: 0; z-index: 1; background-position: center; background-size: cover; background-repeat: no-repeat; opacity: .24; mix-blend-mode: screen; pointer-events: none; filter: saturate(.8) contrast(.9); }
 .custom-world-art.is-user-custom { z-index: 2; opacity: .9; mix-blend-mode: normal; filter: saturate(var(--theme-saturation)) contrast(var(--theme-contrast)) brightness(var(--theme-brightness)) hue-rotate(var(--theme-hue)); }
 .world-texture { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: var(--ui-texture); opacity: calc(.9 * var(--theme-texture)); mix-blend-mode: soft-light; }
+.world-atmosphere { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: var(--world-background); opacity: .92; transition: background .65s ease, opacity .45s ease; }
+.world-ambient { position: absolute; inset: -12%; z-index: 1; pointer-events: none; background: var(--world-overlay); opacity: calc(.78 * var(--theme-lighting)); mix-blend-mode: screen; transform-origin: 50% 45%; transition: background .65s ease, opacity .45s ease; }
+.world-theme-texture { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: var(--world-texture); opacity: calc(.72 * var(--theme-texture)); mix-blend-mode: soft-light; transition: background .65s ease, opacity .45s ease; }
+.world-theme-lighting { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(circle at 50% 43%, var(--world-lighting), transparent 30%); opacity: calc(.72 * var(--theme-lighting) * var(--theme-glow)); mix-blend-mode: screen; transition: background .65s ease, opacity .45s ease; }
+.world-layout-oceanic .world-theme-lighting { background: linear-gradient(180deg, transparent 38%, var(--world-lighting), transparent 78%); }
+.world-layout-molten .world-theme-lighting { background: radial-gradient(circle at 50% 47%, var(--world-lighting), transparent 24%); }
+.world-layout-editorial .world-theme-texture { mix-blend-mode: multiply; }
+.world-layout-minimal .world-theme-texture { opacity: calc(.42 * var(--theme-texture)); }
+.world-motion-orbit .world-ambient { animation: world-orbit 18s linear infinite; }
+.world-motion-nebula .world-ambient { animation: world-nebula 22s ease-in-out infinite alternate; }
+.world-motion-ripple .world-ambient { animation: world-ripple 8s ease-in-out infinite; }
+.world-motion-wind .world-ambient { animation: world-wind 7s ease-in-out infinite alternate; }
+.world-motion-flow .world-ambient { animation: world-flow 6s ease-in-out infinite alternate; }
+.world-motion-paper-drift .world-ambient { animation: world-paper 14s ease-in-out infinite alternate; }
 :root[data-theme="light"] .world-vignette { background: linear-gradient(180deg, rgba(239,235,216,.34), transparent 25%, transparent 73%, rgba(237,230,204,.36)); mix-blend-mode: screen; }
 
 .world-loading { position: fixed; inset: 0; z-index: 90; display: grid; place-content: center; gap: 18px; text-align: center; background: #040909; color: #aeb9af; letter-spacing: .12em; font-size: 12px; }
@@ -161,6 +179,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright);
 .theme-detail-card strong { font-size: 12px; }
 .detail-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
 .theme-detail-card p { margin: 11px 0 0; color: var(--text-soft); font-size: 10px; line-height: 1.6; }
+.theme-world-preview { position: relative; min-height: 86px; margin-top: 12px; overflow: hidden; border: 1px solid var(--line); background-position: center; background-size: cover; background-blend-mode: screen; }
+.theme-world-preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.64)); }
+.theme-world-preview span { position: absolute; z-index: 1; left: 10px; right: 10px; bottom: 8px; color: var(--text); font-size: 9px; letter-spacing: .05em; }
 .preset-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
 .preset-row button { display: grid; gap: 4px; padding: 9px; border: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer; }
 .preset-row button:hover, .preset-row button.is-selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
@@ -358,6 +379,12 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .custom-theme-list small { color: var(--text-soft); font-size: 8px; }
 
 @keyframes breathe { 50% { scale: .86; opacity: .55; } }
+@keyframes world-orbit { from { rotate: 0deg; } to { rotate: 360deg; } }
+@keyframes world-nebula { from { translate: -1.5% -1%; scale: 1; } to { translate: 1.5% 1%; scale: 1.04; } }
+@keyframes world-ripple { 0%, 100% { scale: 1; opacity: .58; } 50% { scale: 1.055; opacity: .92; } }
+@keyframes world-wind { from { translate: -1.2% 0; transform: skewX(-.4deg); } to { translate: 1.2% .5%; transform: skewX(.4deg); } }
+@keyframes world-flow { from { translate: -1% 0; } to { translate: 1% 1%; } }
+@keyframes world-paper { from { translate: 0 -1%; } to { translate: 0 1%; } }
 
 :root[data-motion="off"] * { scroll-behavior: auto !important; animation: none !important; transition-duration: .01ms !important; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; animation: none !important; transition-duration: .01ms !important; } }

@@ -23,7 +23,7 @@ import {
 } from "../lib/theme-engine";
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
-const CURRENT_UI_VERSION = "0.94";
+const CURRENT_UI_VERSION = "0.95";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
 const LAYOUT_LABELS = { topbar: "상단 바", center: "중앙 타이틀", seed: "OS Ecosystem", rail: "탐색 레일" } as const;
 const PROPAGATION_TARGET_LABELS: Record<string, string> = {
@@ -173,6 +173,12 @@ export function UltraBrainShell() {
     root.style.setProperty("--theme-texture", String(profile.adjustments.texture));
     root.style.setProperty("--theme-blur", `${profile.adjustments.blur}px`);
     root.style.setProperty("--theme-transparency", String(profile.adjustments.transparency));
+    root.style.setProperty("--world-background", profile.worldEngine.background);
+    root.style.setProperty("--world-overlay", profile.worldEngine.overlay);
+    root.style.setProperty("--world-texture", profile.worldEngine.texture);
+    root.style.setProperty("--world-lighting", profile.worldEngine.lighting);
+    root.dataset.worldLayout = profile.worldEngine.layout;
+    root.dataset.worldMotion = profile.worldEngine.motion;
   }, [activePreference, profile]);
 
   useEffect(() => {
@@ -309,7 +315,7 @@ export function UltraBrainShell() {
     setRollbackStack(nextRollbacks);
     persist(result.next, nextLayout, nextRollbacks, customBackground);
     setPanel(null);
-    setToast(`UI saved · revision ${result.next.revision}`);
+    setToast(`UI 저장 · 리비전 ${result.next.revision}`);
   }
 
   function rollbackLast() {
@@ -326,7 +332,7 @@ export function UltraBrainShell() {
     setCustomBackground(point.customBackground || null);
     setRollbackStack(rest);
     persist(next, normaliseLayout(point.layout || DEFAULT_LAYOUT), rest, point.customBackground || null);
-    setToast("Previous UI state restored");
+    setToast("이전 UI 상태로 되돌렸습니다");
   }
 
   function resetLayout() {
@@ -398,7 +404,7 @@ export function UltraBrainShell() {
         context.drawImage(image, 0, 0, 1, 1);
         const pixel = context.getImageData(0, 0, 1, 1).data;
         updateDraft({ accent: hexFromRgb(pixel[0], pixel[1], pixel[2]) });
-        setToast("Image imported · accent sampled");
+        setToast("이미지를 가져오고 대표 색상을 추출했습니다");
       };
       image.src = source;
     };
@@ -412,7 +418,7 @@ export function UltraBrainShell() {
     }
     setCustomBackground(preview);
     updateDraft({ themePreset: "custom" });
-    setToast(`${name} User Custom UI를 미리보기에 적용했습니다`);
+    setToast(`${name} 사용자 UI를 미리보기에 적용했습니다`);
   }
 
   const shellStyle = { "--ui-contrast": profile.adjustments.contrast } as CSSProperties;
@@ -425,9 +431,13 @@ export function UltraBrainShell() {
   if (!hydrated) return <div className="world-loading" aria-label="Ultra Brain 로딩"><div className="loading-mark" /><p>Ultra Brain을 여는 중</p><span className="loading-line" /></div>;
 
   return (
-    <main className="world-shell" aria-label="Ultra Brain" style={shellStyle}>
+    <main className={`world-shell world-layout-${profile.worldEngine.layout} world-motion-${profile.worldEngine.motion}`} aria-label="Ultra Brain" style={shellStyle}>
       <img className={`world-art ${loaded ? "is-loaded" : ""}`} src="/ultra-brain-world.png" alt="World tree with a central sun sphere and OS Ecosystem seed" onLoad={() => setLoaded(true)} />
       {customBackground && <div className="custom-world-art is-user-custom" style={{ backgroundImage: `url(${customBackground})` }} aria-hidden="true" />}
+      <div className="world-atmosphere" aria-hidden="true" />
+      <div className="world-ambient" aria-hidden="true" />
+      <div className="world-theme-texture" aria-hidden="true" />
+      <div className="world-theme-lighting" aria-hidden="true" />
       <div className="world-vignette" aria-hidden="true" />
       <div className="world-texture" aria-hidden="true" />
 
@@ -483,18 +493,18 @@ export function UltraBrainShell() {
           <h2>Shape the world</h2>
           <p className="drawer-intro">Preview visual changes in place, then save a governed UI revision. Changes stay inside Ultra Brain until you confirm.</p>
           <div className="studio-tabs" role="tablist" aria-label="UI Studio sections">
-            {(["themes", "layout", "custom", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "Theme" : tab === "layout" ? "배치" : tab === "custom" ? "User Custom" : tab === "propagation" ? "Propagation" : "Preview"}</button>)}
+            {(["themes", "layout", "custom", "propagation", "preview"] as StudioTab[]).map((tab) => <button key={tab} type="button" role="tab" aria-selected={studioTab === tab} className={studioTab === tab ? "is-selected" : ""} onClick={() => setStudioTab(tab)}>{tab === "themes" ? "테마" : tab === "layout" ? "배치" : tab === "custom" ? "사용자 UI" : tab === "propagation" ? "자동 적용" : "미리보기"}</button>)}
           </div>
 
           {studioTab === "themes" && <div className="studio-pane">
-            <div className="theme-mode-switch"><button type="button" className="is-selected">Official Theme</button><button type="button" onClick={() => setStudioTab("custom")}>User Custom UI</button></div>
-            <fieldset><legend>테마 프로필</legend><div className="theme-grid">{themeNames.map((theme) => { const item = themeRegistry[theme]; return <button key={theme} type="button" className={activePreference.theme === theme ? "is-selected" : ""} onClick={() => selectTheme(theme)}><span className={`theme-preview ${theme}`} /><strong>{item.label}</strong><small>{item.description}</small></button>; })}</div></fieldset>
+            <div className="theme-mode-switch"><button type="button" className="is-selected">공식 테마</button><button type="button" onClick={() => setStudioTab("custom")}>사용자 UI</button></div>
+            <fieldset><legend>테마 브라우저</legend><div className="theme-grid">{themeNames.map((theme) => { const item = themeRegistry[theme]; const world = profile.worldEngine && activePreference.theme === theme ? profile.worldEngine : resolveThemeProfile({ ...activePreference, theme }).worldEngine; return <button key={theme} type="button" className={activePreference.theme === theme ? "is-selected" : ""} onClick={() => selectTheme(theme)}><span className={`theme-preview ${theme}`} style={{ backgroundImage: `linear-gradient(145deg, ${item.surfaceStrong}, transparent 62%), url(/ultra-brain-world.png)`, filter: item.worldFilter }} /><strong>{item.label}</strong><small>{world.label} · {world.motion === "still" ? "정적" : "움직임"}</small></button>; })}</div></fieldset>
             <fieldset><legend>강조 색상</legend><div className="accent-row">{ACCENT_SWATCHES.map((accent) => <button key={accent} type="button" className={activePreference.accent.toLowerCase() === accent ? "is-selected" : ""} style={{ "--swatch": accent } as CSSProperties} onClick={() => updateDraft({ accent })} aria-label={`강조 색상 ${accent} 사용`} />)}<label className="accent-picker" aria-label="사용자 색상 선택"><input type="color" value={activePreference.accent} onChange={(event) => updateDraft({ accent: event.target.value })} /><span>직접 선택</span></label></div></fieldset>
             <fieldset><legend>사용자 테마</legend><label className="file-drop"><input type="file" accept="image/*" onChange={importBackground} /><span>이미지 가져오기</span><small>배경을 가져오고 대표 색상을 자동으로 추출합니다.</small></label>{customBackground && <button className="text-action" type="button" onClick={() => { setCustomBackground(null); setToast("가져온 배경을 제거했습니다"); }}>가져온 배경 제거</button>}</fieldset>
             <fieldset><legend>테마 프리셋</legend><div className="preset-row">{Object.values(themePresets).map((preset: { id: string; label: string; description: string }) => <button key={preset.id} type="button" className={activePreference.themePreset === preset.id ? "is-selected" : ""} onClick={() => selectThemePreset(preset.id)}><strong>{preset.label}</strong><small>{preset.description}</small></button>)}</div></fieldset>
-            <fieldset><legend>테마 상세 조정</legend><div className="adjustment-grid">{THEME_ADJUSTMENT_KEYS.map((key: ThemeAdjustmentKey) => { const range = THEME_ADJUSTMENT_RANGES[key]; const value = activePreference.themeAdjustments[key]; const locked = key === "texture" ? locks.texture : key === "lighting" || key === "shadow" || key === "glow" ? locks.lighting : locks.color; return <label key={key} className={locked ? "is-locked" : ""}><span>{THEME_ADJUSTMENT_LABELS[key]}</span><input type="range" min={range.min} max={range.max} step={range.step} value={value} disabled={locked} onChange={(event) => updateThemeAdjustment(key, Number(event.target.value))} aria-label={`${THEME_ADJUSTMENT_LABELS[key]} 조정`} /><output>{Number(value).toFixed(range.step < 1 ? 2 : 0)}{range.unit === "x" ? "×" : range.unit}</output></label>; })}</div><small className="field-hint">선택한 Theme의 그림체와 세계관은 유지하면서 표현만 조정합니다.</small></fieldset>
+            <fieldset><legend>테마 상세 조정</legend><div className="adjustment-grid">{THEME_ADJUSTMENT_KEYS.map((key: ThemeAdjustmentKey) => { const range = THEME_ADJUSTMENT_RANGES[key]; const value = activePreference.themeAdjustments[key]; const locked = key === "texture" ? locks.texture : key === "lighting" || key === "shadow" || key === "glow" ? locks.lighting : locks.color; return <label key={key} className={locked ? "is-locked" : ""}><span>{THEME_ADJUSTMENT_LABELS[key]}</span><input type="range" min={range.min} max={range.max} step={range.step} value={value} disabled={locked} onChange={(event) => updateThemeAdjustment(key, Number(event.target.value))} aria-label={`${THEME_ADJUSTMENT_LABELS[key]} 조정`} /><output>{Number(value).toFixed(range.step < 1 ? 2 : 0)}{range.unit === "x" ? "×" : range.unit}</output></label>; })}</div><small className="field-hint">선택한 테마의 그림체·세계관·이미지 월드는 유지하면서 표현만 조정합니다.</small></fieldset>
             <fieldset><legend>테마 패키지</legend><div className="theme-package-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{profile.package.name} · {profile.package.version}</strong></div><p>{profile.package.worldStyle}<br />상세 조정 {profile.package.adjustmentKeys.length}개 · 가져오기 준비 · 내보내기 준비</p></div><div className="package-actions"><label className="package-import"><input type="file" accept="application/json,.json" onChange={importThemePackage} /><span>패키지 가져오기</span></label><button className="text-action" type="button" onClick={exportThemePackage}>패키지 내보내기</button></div></fieldset>
-            <div className="theme-detail-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{themeRegistry[activePreference.theme].label} system</strong></div><p>Background · {profile.mode}<br />Layout · world-first<br />Font · {profile.font.split(",")[0]}<br />Radius · {profile.radius} · {themePresets[activePreference.themePreset]?.label || "Custom"} detail</p></div>
+            <div className="theme-detail-card"><div><span className="detail-swatch" style={{ background: profile.accent }} /><strong>{themeRegistry[activePreference.theme].label} · 이미지 월드</strong></div><div className="theme-world-preview" style={{ backgroundImage: `linear-gradient(145deg, ${profile.worldEngine.background}, transparent), url(/ultra-brain-world.png)` }}><span>{profile.worldEngine.assetLabel}</span></div><p>세계관 · {profile.worldEngine.label}<br />배치 · {profile.worldEngine.layout} · 움직임 · {profile.worldEngine.motion}<br />글꼴 · {profile.font.split(",")[0]} · 모서리 · {profile.radius}<br />{themePresets[activePreference.themePreset]?.label || "사용자 지정"} 상세 조정</p></div>
           </div>}
 
           {studioTab === "layout" && <div className="studio-pane">
@@ -550,7 +560,7 @@ export function UltraBrainShell() {
             <button className="rollback-action" type="button" onClick={rollbackLast} disabled={!rollbackStack.length}>Rollback last saved revision {rollbackStack.length ? `(${rollbackStack.length})` : ""}</button>
           </div>}
 
-          <div className="drawer-actions"><button className="secondary-action" type="button" onClick={closePanel}>Discard</button><button className="primary-action" type="button" onClick={saveStudio}>Save UI revision</button></div>
+          <div className="drawer-actions"><button className="secondary-action" type="button" onClick={closePanel}>취소</button><button className="primary-action" type="button" onClick={saveStudio}>UI 저장</button></div>
         </aside>
       </>}
 
