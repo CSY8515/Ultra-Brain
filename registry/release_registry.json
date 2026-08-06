@@ -292,6 +292,22 @@
       "current_version": "0.96.0",
       "created_date": "2026-08-06",
       "updated_date": "2026-08-06"
+    },
+    {
+      "id": "ultra-brain-v0-97-professional-ui-studio-creator-experience",
+      "entity_type": "release",
+      "name": "Ultra Brain v0.97 Professional UI Studio & Creator Experience",
+      "scope": "Correction of world-package theme application and scoped hover behavior, plus collapsible beginner-to-expert toolboxes, touch-pen and mouse workflows, Korean-first creator actions, import and drawing systems.",
+      "status": "released",
+      "owner_layer": "Ultra Brain",
+      "parent": "ultra-brain",
+      "repository": "https://github.com/CSY8515/Ultra-Brain.git",
+      "path": "RELEASE_NOTES_v0.97.md",
+      "interface": ["ultra-brain-ui-system-interface"],
+      "contract": ["ultra-brain-ui-system-contract"],
+      "current_version": "0.97.0",
+      "created_date": "2026-08-06",
+      "updated_date": "2026-08-06"
     }
   ]
 }

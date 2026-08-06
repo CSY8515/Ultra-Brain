@@ -8,11 +8,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol = requestHeaders.get("x-forwarded-proto") || (host.startsWith("localhost") ? "http" : "https");
   const origin = `${protocol}://${host}`;
   return {
-    title: { default: "Ultra Brain v0.96", template: "%s · Ultra Brain" },
-    description: "Ultra Brain v0.96 UI Builder, Asset and Revision System",
+    title: { default: "Ultra Brain v0.97", template: "%s · Ultra Brain" },
+    description: "Ultra Brain v0.97 Professional UI Studio and Creator Experience",
     icons: { icon: "/favicon.png", shortcut: "/favicon.png" },
-    openGraph: { title: "Ultra Brain v0.96", description: "UI Builder · Asset and Revision System", images: [`${origin}/og.png`] },
-    twitter: { card: "summary_large_image", title: "Ultra Brain v0.96", description: "UI Builder · Asset and Revision System", images: [`${origin}/og.png`] },
+    openGraph: { title: "Ultra Brain v0.97", description: "Professional UI Studio · Creator Experience", images: [`${origin}/og.png`] },
+    twitter: { card: "summary_large_image", title: "Ultra Brain v0.97", description: "Professional UI Studio · Creator Experience", images: [`${origin}/og.png`] },
   };
 }
 

@@ -3,6 +3,20 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.97] - 2026-08-06
+
+### Added
+
+- Added collapsible beginner, intermediate, advanced, expert, touch-pen and mouse toolboxes.
+- Added Korean-first creator actions for new screens, imports, component placement, layout, drawing, save and apply.
+- Added pencil, marker, airbrush, pressure-aware strokes, stabilizer, canvas rotation/pan, smart guide and context-menu workflows.
+
+### Corrected
+
+- Theme previews now use the selected world package composition and concept art instead of presenting a palette-only change.
+- Ecosystem hover is scoped to the seed interaction and no longer changes the whole world view.
+- Removed beginner-facing English explanations from the creator surface while preserving professional terms in advanced levels.
+
 ## [v0.96] - 2026-08-06
 
 ### Added

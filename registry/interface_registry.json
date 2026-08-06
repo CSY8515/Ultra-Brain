@@ -139,7 +139,7 @@
       "id": "ultra-brain-ui-system-interface",
       "entity_type": "interface",
       "name": "Ultra Brain Official UI System Interface",
-      "scope": "v0.96 boundary for Official Theme world packages, UI Builder canvas editing, component states, Asset Library, templates, responsive preview, revision history, rollback, hierarchy propagation and lock/override references.",
+      "scope": "v0.97 boundary for world-package themes, professional UI Builder creator toolboxes, touch-pen and mouse workflows, Asset Library, responsive preview, revision history, rollback and hierarchy propagation.",
       "status": "active",
       "owner_layer": "Ultra Brain",
       "parent": "ultra-brain",
@@ -147,7 +147,7 @@
       "path": "interfaces/ui_system.interface.json",
       "interface": [],
       "contract": ["ultra-brain-ui-system-contract"],
-      "current_version": "0.96.0",
+      "current_version": "0.97.0",
       "created_date": "2026-08-05",
       "updated_date": "2026-08-06"
     }

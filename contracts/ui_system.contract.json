@@ -1,7 +1,7 @@
 {
   "id": "ultra-brain-ui-system-contract",
   "name": "Ultra Brain Official UI System Contract",
-  "version": "0.96.0",
+  "version": "0.97.0",
   "status": "approved",
   "owner_layer": "Ultra Brain",
   "parties": ["User", "Ultra Brain", "OS Ecosystem"],
@@ -18,7 +18,9 @@
     "OS Ecosystem, Living OS, and Universal Learning Engine retain repository and runtime ownership.",
     "A successful save records the previous validated preference as a rollback point.",
     "UI Builder saves create a revision, preserve the approved concept-art world asset, and validate component states, responsive preview and asset ownership before apply.",
-    "Rollback creates a new rollback revision; emergency restore can select only the last validated manual or applied revision."
+    "Rollback creates a new rollback revision; emergency restore can select only the last validated manual or applied revision.",
+    "Beginner-facing creator actions use Korean-first wording, while advanced and expert toolboxes may expose professional UI vocabulary.",
+    "World Theme selection resolves the selected concept-art asset, atmosphere, composition and component treatment as one package; hover effects remain scoped to their component."
   ],
   "failure_semantics": [
     "Unknown fields, unsafe values, incompatible versions, and missing registry identity fail closed.",
