@@ -8,7 +8,7 @@ const CANVAS_HEIGHT = 760;
 const STORAGE_KEY = "ultra-brain.user-custom/v3";
 
 type UiTool = "select" | "button" | "text" | "card" | "panel" | "image" | "icon";
-type DrawTool = "pen" | "pencil" | "brush" | "marker" | "airbrush" | "eraser" | "line" | "curve" | "rectangle" | "circle" | "triangle" | "text" | "fill" | "pan";
+type DrawTool = "pen" | "pencil" | "brush" | "marker" | "airbrush" | "charcoal" | "watercolor" | "ink" | "chalk" | "spray" | "eraser" | "line" | "curve" | "rectangle" | "circle" | "triangle" | "text" | "fill" | "pan";
 type CanvasPoint = { x: number; y: number; pressure: number; tiltX: number; tiltY: number; twist: number; time: number };
 type ImageFilters = { brightness: number; contrast: number; saturation: number; hue: number; blur: number };
 type Crop = { left: number; top: number; right: number; bottom: number };
@@ -50,19 +50,19 @@ type Snapshot = { nodes: CanvasNode[]; background: string };
 type Revision = Snapshot & { id: string; name: string; createdAt: string };
 type Props = { baseTheme: string; onUseTheme: (preview: string, name: string) => void; onToast: (message: string) => void };
 
-const PAINT_TOOLS: DrawTool[] = ["pen", "pencil", "brush", "marker", "airbrush", "eraser"];
+const PAINT_TOOLS: DrawTool[] = ["pen", "pencil", "brush", "marker", "airbrush", "charcoal", "watercolor", "ink", "chalk", "spray", "eraser"];
 const UI_ACTIONS: Array<{ id: UiTool; label: string }> = [
   { id: "select", label: "선택·이동" },
   { id: "button", label: "버튼 추가" },
   { id: "text", label: "글자 추가" },
   { id: "card", label: "카드 추가" },
   { id: "panel", label: "패널 추가" },
-  { id: "image", label: "그림 가져오기" },
-  { id: "icon", label: "아이콘 추가" },
 ];
 const DRAW_TOOLS: Array<{ id: DrawTool; label: string }> = [
   { id: "pen", label: "펜" }, { id: "pencil", label: "연필" }, { id: "brush", label: "붓" },
-  { id: "marker", label: "마커" }, { id: "airbrush", label: "에어브러시" }, { id: "eraser", label: "지우개" },
+  { id: "marker", label: "마커" }, { id: "airbrush", label: "에어브러시" }, { id: "charcoal", label: "목탄" },
+  { id: "watercolor", label: "수채" }, { id: "ink", label: "잉크" }, { id: "chalk", label: "분필" },
+  { id: "spray", label: "스프레이" }, { id: "eraser", label: "지우개" },
   { id: "line", label: "직선" }, { id: "curve", label: "곡선" }, { id: "rectangle", label: "사각형" },
   { id: "circle", label: "원" }, { id: "triangle", label: "삼각형" }, { id: "text", label: "글자" },
   { id: "fill", label: "영역 채우기" }, { id: "pan", label: "캔버스 이동" },
@@ -98,7 +98,7 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
   const backgroundRef = useRef("#061011");
   const imageCache = useRef(new Map<string, HTMLImageElement>());
   const activeRef = useRef<{ tool: DrawTool; start: CanvasPoint; points: CanvasPoint[]; pointerId: number } | null>(null);
-  const dragRef = useRef<{ id: string; start: CanvasPoint; origin: { x: number; y: number }; before: Snapshot } | null>(null);
+  const dragRef = useRef<{ id: string; mode: "move" | "resize" | "rotate"; start: CanvasPoint; origin: { x: number; y: number; width: number; height: number; rotation: number }; before: Snapshot } | null>(null);
   const panRef = useRef<{ start: { x: number; y: number }; origin: { x: number; y: number }; pointerId: number } | null>(null);
   const penPointerRef = useRef<number | null>(null);
   const [nodes, setNodes] = useState<CanvasNode[]>([]);
@@ -129,11 +129,12 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
   const [previewing, setPreviewing] = useState(false);
   const [draft, setDraft] = useState<CanvasNode | null>(null);
   const [inputDevice, setInputDevice] = useState("입력 장치 대기");
-  const [textValue, setTextValue] = useState("Ultra Brain");
+  const [textValue, setTextValue] = useState("");
   const [fontSize, setFontSize] = useState(32);
   const [customName, setCustomName] = useState(`${baseTheme} 사용자 UI`);
   const [revisionName, setRevisionName] = useState("UI 변경");
   const [navigationTarget, setNavigationTarget] = useState<"ultra-brain" | "os-ecosystem">("os-ecosystem");
+  const [uiName, setUiName] = useState(`${baseTheme} 사용자 UI`);
   const [paintTick, setPaintTick] = useState(0);
 
   const selected = useMemo(() => nodes.filter((node) => selectedIds.includes(node.id)), [nodes, selectedIds]);
@@ -206,6 +207,10 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
     const next = nodesRef.current.map((node) => selectedIds.includes(node.id) && !node.locked ? { ...node, ...patch } : node);
     commit(next, backgroundRef.current, message);
   }
+  function updateSelectedText(value: string) {
+    setTextValue(value);
+    if (selectedOne?.kind === "text") updateNode(selectedOne.id, { text: value, name: value || "글자" });
+  }
   function newScreen() { commit([], "#061011", "새 화면을 만들었습니다"); setSelectedIds([]); }
   function duplicateSelected() {
     const copies = selected.filter((node) => !node.locked).map((node) => ({ ...node, id: makeId("copy"), name: `${node.name} 복사본`, x: node.x + 24, y: node.y + 24, locked: false }));
@@ -254,6 +259,7 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
     };
     commit([...nodesRef.current, node], backgroundRef.current, `${labels[kind]}을(를) 추가했습니다`);
     setSelectedIds([node.id]);
+    setUiTool("select");
   }
 
   function importImage(event: ChangeEvent<HTMLInputElement>) {
@@ -272,6 +278,14 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
       };
       reader.readAsDataURL(file);
     });
+    event.target.value = "";
+  }
+  function importBackground(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { commit(nodesRef.current, String(reader.result), "배경 이미지를 적용했습니다"); setSelectedIds([]); };
+    reader.readAsDataURL(file);
     event.target.value = "";
   }
 
@@ -301,7 +315,7 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
     context.fillStyle = node.color;
     context.lineJoin = "round";
     context.lineCap = node.tool === "marker" ? "butt" : "round";
-    const toolAlpha = node.tool === "pencil" ? .62 : node.tool === "marker" ? .38 : node.tool === "airbrush" ? .22 : 1;
+    const toolAlpha = node.tool === "pencil" ? .62 : node.tool === "marker" ? .38 : node.tool === "airbrush" ? .22 : node.tool === "watercolor" ? .34 : node.tool === "charcoal" ? .72 : node.tool === "chalk" ? .56 : node.tool === "spray" ? .24 : 1;
     if (node.tool === "airbrush") {
       const step = Math.max(1, Math.round((node.spacing || 8) / 3));
       points.forEach((point, index) => {
@@ -415,6 +429,14 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
     selected.forEach((node) => {
       context.save(); context.translate(node.x + node.width / 2, node.y + node.height / 2); context.rotate((node.rotation * Math.PI) / 180); context.translate(-(node.x + node.width / 2), -(node.y + node.height / 2));
       context.strokeStyle = node.locked ? "#d98d78" : "#f0d58a"; context.lineWidth = 2 / zoom; context.setLineDash([7 / zoom, 5 / zoom]); context.strokeRect(node.x - 7, node.y - 7, node.width + 14, node.height + 14); context.setLineDash([]); context.restore();
+      if (!node.locked) {
+        context.fillStyle = "#f0d58a";
+        context.strokeStyle = "#111";
+        context.lineWidth = 1 / zoom;
+        const handles = [[node.x + node.width, node.y + node.height], [node.x + node.width, node.y - 34]];
+        handles.forEach(([x, y]) => { context.beginPath(); context.arc(x, y, 7 / zoom, 0, Math.PI * 2); context.fill(); context.stroke(); });
+        context.beginPath(); context.moveTo(node.x + node.width, node.y - 7); context.lineTo(node.x + node.width, node.y - 28); context.stroke();
+      }
     });
     context.restore();
   }, [applyView, grid, previewing, safeArea, selected, zoom]);
@@ -455,6 +477,14 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
   function hitNode(point: CanvasPoint) {
     return [...nodesRef.current].reverse().find((node) => { const bounds = nodeBounds(node); return node.visible && point.x >= bounds.x - 16 && point.x <= bounds.x + bounds.width + 16 && point.y >= bounds.y - 16 && point.y <= bounds.y + bounds.height + 16; });
   }
+  function transformHandle(point: CanvasPoint, node: CanvasNode): "resize" | "rotate" | null {
+    const bounds = nodeBounds(node);
+    const resizeDistance = Math.hypot(point.x - (bounds.x + bounds.width), point.y - (bounds.y + bounds.height));
+    const rotateDistance = Math.hypot(point.x - (bounds.x + bounds.width), point.y - (bounds.y - 34));
+    if (resizeDistance < 24) return "resize";
+    if (rotateDistance < 24) return "rotate";
+    return null;
+  }
   function makeDraft(tool: DrawTool, start: CanvasPoint, end: CanvasPoint, points: CanvasPoint[]): CanvasNode {
     const x = Math.min(start.x, end.x); const y = Math.min(start.y, end.y); const width = Math.max(1, Math.abs(end.x - start.x)); const height = Math.max(1, Math.abs(end.y - start.y));
     return {
@@ -474,8 +504,9 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
       if (uiTool === "select") {
         const hit = hitNode(point); const additive = event.shiftKey || event.ctrlKey || event.metaKey;
         if (!hit) { if (!additive) setSelectedIds([]); return; }
+        const selectedHandle = selectedOne?.id === hit.id ? transformHandle(point, hit) : null;
         setSelectedIds((current) => additive ? (current.includes(hit.id) ? current.filter((id) => id !== hit.id) : [...current, hit.id]) : [hit.id]);
-        if (!hit.locked) dragRef.current = { id: hit.id, start: point, origin: { x: hit.x, y: hit.y }, before: snapshot() };
+        if (!hit.locked) dragRef.current = { id: hit.id, mode: selectedHandle || "move", start: point, origin: { x: hit.x, y: hit.y, width: hit.width, height: hit.height, rotation: hit.rotation }, before: snapshot() };
         return;
       }
       if (uiTool === "image") return;
@@ -497,7 +528,17 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
     const point = eventPoint(event);
     if (dragRef.current) {
       const drag = dragRef.current; const dx = point.x - drag.start.x; const dy = point.y - drag.start.y;
-      const next = nodesRef.current.map((node) => node.id === drag.id && !node.locked ? { ...node, x: drag.origin.x + dx, y: drag.origin.y + dy } : node);
+      const next = nodesRef.current.map((node) => {
+        if (node.id !== drag.id || node.locked) return node;
+        if (drag.mode === "resize") return { ...node, width: Math.max(24, drag.origin.width + dx), height: Math.max(24, drag.origin.height + dy) };
+        if (drag.mode === "rotate") {
+          const center = { x: drag.origin.x + drag.origin.width / 2, y: drag.origin.y + drag.origin.height / 2 };
+          const startAngle = Math.atan2(drag.start.y - center.y, drag.start.x - center.x);
+          const nextAngle = Math.atan2(point.y - center.y, point.x - center.x);
+          return { ...node, rotation: Math.round(drag.origin.rotation + ((nextAngle - startAngle) * 180) / Math.PI) };
+        }
+        return { ...node, x: drag.origin.x + dx, y: drag.origin.y + dy };
+      });
       nodesRef.current = next; setNodes(next); return;
     }
     const active = activeRef.current;
@@ -577,7 +618,7 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
     renderContent(canvas, nodesRef.current, backgroundRef.current, null, false);
     return canvas;
   }
-  function createCustomTheme() { const preview = exportCanvas().toDataURL("image/png"); onUseTheme(preview, customName || `${baseTheme} 사용자 UI`); onToast("안내선 없이 사용자 UI를 저장했습니다"); }
+  function createCustomTheme() { const preview = exportCanvas().toDataURL("image/png"); const name = uiName.trim() || customName || `${baseTheme} 사용자 UI`; onUseTheme(preview, name); onToast("안내선 없이 사용자 UI를 저장했습니다"); }
   function downloadDrawing() {
     const link = document.createElement("a"); link.download = `${customName || "ultra-brain-ui"}.png`; link.href = exportCanvas().toDataURL("image/png"); link.click(); onToast("완성 이미지를 저장했습니다");
   }
@@ -604,33 +645,33 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
   };
 
   return <div className={`canvas-editor v983-canvas-editor ${previewing ? "is-previewing" : ""}`}>
-    <header className="v983-editor-intro"><div><small>UI Studio · 사용자 지정 UI</small><h3>내 화면 만들기</h3><p>도구함을 열어 작업하세요. 선택한 도구를 다시 누르면 완전히 해제됩니다.</p></div><div className="v983-device-status"><span className="health-dot" />{inputDevice}</div></header>
+    <header className="v983-editor-intro"><div><small>UI Studio · 사용자 지정 UI</small><h3>내 화면 만들기</h3><p>요소를 고른 뒤 캔버스에서 바로 움직이고 크기·회전을 조절하세요.</p></div><div className="v983-name-apply"><label>UI 이름<input value={uiName} onChange={(event) => setUiName(event.target.value)} aria-label="UI 이름" /></label><button type="button" className="v983-apply-button" aria-label="사용자 UI로 적용" onClick={() => { createCustomTheme(); onToast("만든 UI를 실제 화면에 적용했습니다"); }}>UI 적용</button><div className="v983-device-status"><span className="health-dot" />{inputDevice}</div></div></header>
     <div className="builder-workspace v983-workspace">
       <aside className="builder-tool-panel v983-tool-panels" aria-label="편집 도구함">
         <section className={`toolbox-section v983-toolbox ${uiOpen ? "is-open" : ""}`}>
           <button type="button" className="toolbox-heading" aria-expanded={uiOpen} aria-controls="v983-ui-tools" onClick={() => setUiOpen((value) => !value)}><strong><span aria-hidden="true">{uiOpen ? "▼" : "▶"}</span>UI/UX 도구함</strong><small>화면 요소·배치·저장</small></button>
           {uiOpen && <div className="toolbox-content" id="v983-ui-tools">
-            <div className="v983-tool-group"><strong>화면</strong><div className="toolbox-chip-row"><button type="button" onClick={newScreen}>새 화면</button><button type="button" onClick={duplicateSelected} disabled={!selectedIds.length}>복제</button><button type="button" onClick={deleteSelected} disabled={!selectedIds.length}>삭제</button><label className="builder-file-action"><input type="file" multiple accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={importImage} /><span>그림 가져오기</span></label></div></div>
-            <div className="v983-tool-group"><strong>요소 추가·선택</strong><div className="toolbox-chip-row">{UI_ACTIONS.map((item) => item.id === "image" ? null : <button key={item.id} type="button" aria-pressed={uiTool === item.id} className={uiTool === item.id ? "is-selected" : ""} onClick={() => chooseUiTool(item.id)}>{item.label}</button>)}</div><label>버튼 연결<select value={navigationTarget} onChange={(event) => setNavigationTarget(event.target.value as "ultra-brain" | "os-ecosystem")}><option value="ultra-brain">Ultra Brain</option><option value="os-ecosystem">OS Ecosystem</option></select></label><label>글자 내용<input value={textValue} onChange={(event) => setTextValue(event.target.value)} /></label><label>글자 크기<input type="range" min="12" max="96" value={fontSize} onChange={(event) => setFontSize(Number(event.target.value))} /><output>{fontSize}px</output></label></div>
+            <div className="v983-tool-group"><strong>화면</strong><div className="toolbox-chip-row"><button type="button" onClick={newScreen}>새 화면</button></div></div>
+            <div className="v983-tool-group"><strong>요소 추가·선택</strong><div className="toolbox-chip-row">{UI_ACTIONS.map((item) => item.id === "image" ? null : <button key={item.id} type="button" aria-pressed={uiTool === item.id} className={uiTool === item.id ? "is-selected" : ""} onClick={() => chooseUiTool(item.id)}>{item.label}</button>)}</div><label>버튼 연결<select value={navigationTarget} onChange={(event) => setNavigationTarget(event.target.value as "ultra-brain" | "os-ecosystem")}><option value="ultra-brain">Ultra Brain</option><option value="os-ecosystem">OS Ecosystem</option></select></label><label>글자 내용<input value={selectedOne?.kind === "text" ? selectedOne.text || "" : textValue} onChange={(event) => updateSelectedText(event.target.value)} placeholder="여기에 글자를 입력하세요" /></label><label>글자 크기<input type="range" min="12" max="96" value={selectedOne?.kind === "text" ? selectedOne.size : fontSize} onChange={(event) => selectedOne?.kind === "text" ? updateNode(selectedOne.id, { size: Number(event.target.value) }) : setFontSize(Number(event.target.value))} /><output>{selectedOne?.kind === "text" ? selectedOne.size : fontSize}px</output></label></div>
             <div className="v983-tool-group"><strong>선택한 요소</strong><span>{selectedIds.length ? `${selectedIds.length}개 선택됨` : "캔버스에서 요소를 선택하세요"}</span><div className="toolbox-inline-actions"><button type="button" onClick={() => updateSelected({ width: Math.max(20, (selectedOne?.width || 240) - 20) })} disabled={!selectedIds.length}>너비 줄이기</button><button type="button" onClick={() => updateSelected({ width: (selectedOne?.width || 240) + 20 })} disabled={!selectedIds.length}>너비 늘리기</button><button type="button" onClick={() => updateSelected({ height: Math.max(20, (selectedOne?.height || 66) - 12) })} disabled={!selectedIds.length}>높이 줄이기</button><button type="button" onClick={() => updateSelected({ height: (selectedOne?.height || 66) + 12 })} disabled={!selectedIds.length}>높이 늘리기</button><button type="button" onClick={() => updateSelected({ rotation: (selectedOne?.rotation || 0) - 15 })} disabled={!selectedIds.length}>왼쪽 회전</button><button type="button" onClick={() => updateSelected({ rotation: (selectedOne?.rotation || 0) + 15 })} disabled={!selectedIds.length}>오른쪽 회전</button></div><label>투명도<input type="range" min=".1" max="1" step=".05" value={selectedOne?.opacity || 1} disabled={!selectedOne || selectedOne.locked} onChange={(event) => updateSelected({ opacity: Number(event.target.value) })} /><output>{Math.round((selectedOne?.opacity || 1) * 100)}%</output></label><div className="toolbox-inline-actions"><button type="button" onClick={() => alignSelected("x")} disabled={selectedIds.length < 2}>가로 맞춤</button><button type="button" onClick={() => alignSelected("y")} disabled={selectedIds.length < 2}>세로 맞춤</button><button type="button" onClick={groupSelected} disabled={selectedIds.length < 2}>묶기</button><button type="button" onClick={() => selectedOne && updateNode(selectedOne.id, { locked: !selectedOne.locked }, selectedOne.locked ? "잠금을 풀었습니다" : "요소를 잠갔습니다", true)} disabled={!selectedOne}>{selectedOne?.locked ? "잠금 풀기" : "잠그기"}</button></div></div>
             <div className="v983-tool-group"><strong>배치·레이어</strong><div className="toolbox-inline-actions"><button type="button" onClick={() => reorderSelected(1)} disabled={!selectedIds.length}>앞으로</button><button type="button" onClick={() => reorderSelected(-1)} disabled={!selectedIds.length}>뒤로</button><button type="button" className={grid ? "is-selected" : ""} aria-pressed={grid} onClick={() => setGrid((value) => !value)}>격자</button><button type="button" className={snap ? "is-selected" : ""} aria-pressed={snap} onClick={() => setSnap((value) => !value)}>딱 맞추기</button><button type="button" className={safeArea ? "is-selected" : ""} aria-pressed={safeArea} onClick={() => setSafeArea((value) => !value)}>안전 영역</button></div><div className="v983-layer-list">{nodes.slice().reverse().map((node) => <div key={node.id} className={selectedIds.includes(node.id) ? "is-selected" : ""}><button type="button" onClick={() => setSelectedIds([node.id])}>{node.name}</button><button type="button" onClick={() => updateNode(node.id, { visible: !node.visible }, node.visible ? "레이어를 숨겼습니다" : "레이어를 표시했습니다", true)} aria-label={`${node.name} ${node.visible ? "숨기기" : "표시"}`}>{node.visible ? "표시" : "숨김"}</button></div>)}</div></div>
-            <div className="v983-tool-group"><strong>실행·변경 기록</strong><div className="toolbox-inline-actions"><button type="button" onClick={undo} disabled={!history.length}>되돌리기</button><button type="button" onClick={redo} disabled={!redoStack.length}>다시 실행</button><button type="button" className={previewing ? "is-selected" : ""} onClick={() => setPreviewing((value) => !value)}>{previewing ? "편집으로 돌아가기" : "미리보기"}</button><button type="button" onClick={saveDraft}>작업 저장</button></div><label>변경 기록 이름<input value={revisionName} onChange={(event) => setRevisionName(event.target.value)} /></label><button type="button" onClick={saveRevision}>되돌릴 기록 만들기</button><div className="v983-revision-list">{revisions.slice(0, 8).map((revision) => <button type="button" key={revision.id} onClick={() => rollback(revision)}><strong>{revision.name}</strong><small>{new Date(revision.createdAt).toLocaleString("ko-KR")}</small></button>)}</div><label>사용자 UI 이름<input value={customName} onChange={(event) => setCustomName(event.target.value)} /></label><button type="button" className="canvas-primary-action" onClick={createCustomTheme}>사용자 UI로 적용</button></div>
           </div>}
         </section>
 
         <section className={`toolbox-section v983-toolbox ${drawingOpen ? "is-open" : ""}`}>
           <button type="button" className="toolbox-heading" aria-expanded={drawingOpen} aria-controls="v983-drawing-tools" onClick={() => setDrawingOpen((value) => !value)}><strong><span aria-hidden="true">{drawingOpen ? "▼" : "▶"}</span>그리기용 도구함</strong><small>그리기·이미지 편집·보정</small></button>
           {drawingOpen && <div className="toolbox-content" id="v983-drawing-tools">
-            <div className="v983-tool-group"><strong>직접 그리기</strong><div className="toolbox-chip-row drawing-tools">{DRAW_TOOLS.map((item) => <button key={item.id} type="button" aria-pressed={drawTool === item.id} className={drawTool === item.id ? "is-selected" : ""} onClick={() => chooseDrawTool(item.id)}>{item.label}</button>)}</div></div>
+            <div className="v983-tool-group"><strong>직접 그리기</strong><div className="toolbox-chip-row drawing-tools">{DRAW_TOOLS.filter((item) => PAINT_TOOLS.includes(item.id) || item.id === "fill" || item.id === "pan").map((item) => <button key={item.id} type="button" aria-pressed={drawTool === item.id} className={drawTool === item.id ? "is-selected" : ""} onClick={() => chooseDrawTool(item.id)}>{item.label}</button>)}</div></div>
             <div className="v983-tool-group"><strong>붓 설정</strong><label>색상<input type="color" value={color} onChange={(event) => setColor(event.target.value)} /></label><label>크기<input type="range" min="1" max="120" value={size} onChange={(event) => setSize(Number(event.target.value))} /><output>{size}px</output></label><label>투명도<input type="range" min=".05" max="1" step=".05" value={opacity} onChange={(event) => setOpacity(Number(event.target.value))} /><output>{Math.round(opacity * 100)}%</output></label><label>잉크 양<input type="range" min=".1" max="1" step=".05" value={flow} onChange={(event) => setFlow(Number(event.target.value))} /><output>{Math.round(flow * 100)}%</output></label><label>가장자리 선명도<input type="range" min=".05" max="1" step=".05" value={hardness} onChange={(event) => setHardness(Number(event.target.value))} /><output>{Math.round(hardness * 100)}%</output></label><label>분사 간격<input type="range" min="1" max="30" value={spacing} onChange={(event) => setSpacing(Number(event.target.value))} /><output>{spacing}</output></label><label>선 안정화<input type="range" min="0" max=".85" step=".05" value={stabilizer} onChange={(event) => setStabilizer(Number(event.target.value))} /><output>{Math.round(stabilizer * 100)}%</output></label><div className="toolbox-inline-actions"><button type="button" className={pressureEnabled ? "is-selected" : ""} aria-pressed={pressureEnabled} onClick={() => setPressureEnabled((value) => !value)}>펜 압력 {pressureEnabled ? "사용" : "끄기"}</button><button type="button" className={shapeFill ? "is-selected" : ""} aria-pressed={shapeFill} onClick={() => setShapeFill((value) => !value)}>도형 채우기 {shapeFill ? "사용" : "끄기"}</button></div></div>
             <div className="v983-tool-group"><strong>그림 편집·보정</strong>{selectedImage ? <><span>{selectedImage.name}</span><label>밝기<input type="range" min=".2" max="2" step=".05" value={(selectedImage.filters || DEFAULT_FILTERS).brightness} onChange={(event) => updateSelectedFilter("brightness", Number(event.target.value))} /></label><label>명암<input type="range" min=".2" max="2" step=".05" value={(selectedImage.filters || DEFAULT_FILTERS).contrast} onChange={(event) => updateSelectedFilter("contrast", Number(event.target.value))} /></label><label>채도<input type="range" min="0" max="2" step=".05" value={(selectedImage.filters || DEFAULT_FILTERS).saturation} onChange={(event) => updateSelectedFilter("saturation", Number(event.target.value))} /></label><label>색상<input type="range" min="-180" max="180" value={(selectedImage.filters || DEFAULT_FILTERS).hue} onChange={(event) => updateSelectedFilter("hue", Number(event.target.value))} /><output>{(selectedImage.filters || DEFAULT_FILTERS).hue}°</output></label><label>흐림<input type="range" min="0" max="20" value={(selectedImage.filters || DEFAULT_FILTERS).blur} onChange={(event) => updateSelectedFilter("blur", Number(event.target.value))} /><output>{(selectedImage.filters || DEFAULT_FILTERS).blur}px</output></label><label>가로 자르기<input type="range" min="0" max="80" value={Math.round(((selectedImage.crop?.left || 0) + (selectedImage.crop?.right || 0)) * 100)} onChange={(event) => updateCrop("horizontal", Number(event.target.value))} /></label><label>세로 자르기<input type="range" min="0" max="80" value={Math.round(((selectedImage.crop?.top || 0) + (selectedImage.crop?.bottom || 0)) * 100)} onChange={(event) => updateCrop("vertical", Number(event.target.value))} /></label><label>그림자<input type="range" min="0" max="50" value={selectedImage.shadow || 0} onChange={(event) => updateNode(selectedImage.id, { shadow: Number(event.target.value) })} /></label><label>광원<input type="range" min="0" max=".45" step=".05" value={selectedImage.lighting || 0} onChange={(event) => updateNode(selectedImage.id, { lighting: Number(event.target.value) })} /></label><label>질감<input type="range" min="0" max=".35" step=".05" value={selectedImage.texture || 0} onChange={(event) => updateNode(selectedImage.id, { texture: Number(event.target.value) })} /></label><label>합성 방식<select value={selectedImage.blendMode || "source-over"} onChange={(event) => updateNode(selectedImage.id, { blendMode: event.target.value as GlobalCompositeOperation })}><option value="source-over">일반</option><option value="multiply">곱하기</option><option value="screen">밝게 합치기</option><option value="overlay">겹쳐 합치기</option></select></label><div className="toolbox-inline-actions"><button type="button" onClick={removeImageBackground}>배경 제거</button><button type="button" className={selectedImage.mask === "ellipse" ? "is-selected" : ""} onClick={() => updateNode(selectedImage.id, { mask: selectedImage.mask === "ellipse" ? "none" : "ellipse" })}>원형 마스크</button><button type="button" onClick={() => commit(nodesRef.current, selectedImage.src || backgroundRef.current, "그림을 배경으로 사용합니다")}>배경으로 사용</button><button type="button" onClick={() => updateNode(selectedImage.id, { filters: { ...DEFAULT_FILTERS }, crop: { ...DEFAULT_CROP }, mask: "none", shadow: 0, lighting: 0, texture: 0, blendMode: "source-over" }, "그림 보정을 초기화했습니다")}>보정 초기화</button></div></> : <span>그림 레이어를 선택하면 자르기·색 보정·배경 제거·마스크·합성을 사용할 수 있습니다.</span>}</div>
             <div className="v983-tool-group"><strong>캔버스 보기</strong><div className="toolbox-inline-actions"><button type="button" onClick={() => setZoom((value) => Math.min(4, value * 1.2))}>확대</button><button type="button" onClick={() => setZoom((value) => Math.max(.25, value / 1.2))}>축소</button><button type="button" onClick={() => { setZoom(1); setViewOffset({ x: 0, y: 0 }); setViewRotation(0); }}>화면 맞춤</button><button type="button" onClick={() => setViewRotation((value) => value - 15)}>왼쪽 회전</button><button type="button" onClick={() => setViewRotation((value) => value + 15)}>오른쪽 회전</button><button type="button" onClick={() => { setViewOffset({ x: 0, y: 0 }); setViewRotation(0); }}>보기 초기화</button></div><span>확대 {Math.round(zoom * 100)}% · 회전 {viewRotation}°</span></div>
-            <div className="v983-tool-group"><strong>그림 파일</strong><label className="builder-file-action"><input type="file" multiple accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={importImage} /><span>가져오기</span></label><div className="toolbox-inline-actions"><button type="button" onClick={undo} disabled={!history.length}>되돌리기</button><button type="button" onClick={redo} disabled={!redoStack.length}>다시 실행</button><button type="button" onClick={downloadDrawing}>PNG 저장</button></div></div>
+            <div className="v983-tool-group"><strong>그림 파일</strong><div className="toolbox-inline-actions"><button type="button" onClick={downloadDrawing}>PNG 저장</button></div></div>
           </div>}
         </section>
       </aside>
 
       <div className="builder-canvas-column v983-canvas-column">
+        <div className="v983-shared-actions" aria-label="공용 작업 기능"><div className="v983-insert-tools"><label className="builder-file-action"><input type="file" accept="image/*" onChange={importBackground} /><span>배경 이미지</span></label><label className="builder-file-action"><input type="file" accept="image/*" onChange={importImage} /><span>이미지 삽입</span></label><button type="button" onClick={() => addComponent("icon")}>아이콘 삽입</button><button type="button" className={drawTool === "rectangle" ? "is-selected" : ""} onClick={() => chooseDrawTool("rectangle")}>도형</button><button type="button" className={drawTool === "line" ? "is-selected" : ""} onClick={() => chooseDrawTool("line")}>선</button></div><div className="v983-common-tools"><button type="button" onClick={undo} disabled={!history.length}>되돌리기</button><button type="button" onClick={redo} disabled={!redoStack.length}>다시 실행</button><button type="button" onClick={deleteSelected} disabled={!selectedIds.length}>삭제</button><button type="button" className={previewing ? "is-selected" : ""} onClick={() => setPreviewing((value) => !value)}>{previewing ? "편집으로 돌아가기" : "미리보기"}</button></div></div>
         <div className={`canvas-stage v983-canvas-stage ${drawTool === "pan" ? "is-panning" : ""}`}>
           <canvas ref={contentRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} aria-hidden="true" />
           <canvas ref={overlayRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointer} onPointerCancel={cancelPointer} aria-label="사용자 UI 작업 캔버스" />
@@ -638,6 +679,7 @@ export function CanvasEditorV983({ baseTheme, onUseTheme, onToast }: Props) {
           {!nodes.length && !draft && <div className="canvas-empty">도구를 골라 그리거나 화면 요소를 추가하세요</div>}
         </div>
       </div>
+      <aside className="v983-properties-panel" aria-label="선택한 요소 속성"><section><div className="v983-panel-heading"><strong>속성</strong><span>{selectedOne ? "선택됨" : "선택 없음"}</span></div>{selectedOne ? <><label>이름<input value={selectedOne.name} onChange={(event) => updateNode(selectedOne.id, { name: event.target.value })} /></label>{selectedOne.kind === "text" && <label>글자<input value={selectedOne.text || ""} onChange={(event) => updateSelectedText(event.target.value)} /></label>}<div className="v983-property-grid"><label>가로 위치<input type="number" value={Math.round(selectedOne.x)} onChange={(event) => updateNode(selectedOne.id, { x: Number(event.target.value) })} /></label><label>세로 위치<input type="number" value={Math.round(selectedOne.y)} onChange={(event) => updateNode(selectedOne.id, { y: Number(event.target.value) })} /></label><label>너비<input type="number" min="24" value={Math.round(selectedOne.width)} onChange={(event) => updateNode(selectedOne.id, { width: Math.max(24, Number(event.target.value)) })} /></label><label>높이<input type="number" min="24" value={Math.round(selectedOne.height)} onChange={(event) => updateNode(selectedOne.id, { height: Math.max(24, Number(event.target.value)) })} /></label></div><label>회전<input type="range" min="-180" max="180" value={Math.round(selectedOne.rotation)} onChange={(event) => updateNode(selectedOne.id, { rotation: Number(event.target.value) })} /></label><label>색상<input type="color" value={selectedOne.color} onChange={(event) => updateSelected({ color: event.target.value })} /></label><label>투명도<input type="range" min=".05" max="1" step=".05" value={selectedOne.opacity} onChange={(event) => updateSelected({ opacity: Number(event.target.value) })} /></label><button type="button" className={selectedOne.locked ? "is-selected" : ""} onClick={() => updateNode(selectedOne.id, { locked: !selectedOne.locked }, undefined, true)}>{selectedOne.locked ? "잠금 풀기" : "잠그기"}</button></> : <p>캔버스에서 요소를 누르면 위치·크기·회전·색상을 조절할 수 있습니다.</p>}</section><section><div className="v983-panel-heading"><strong>레이어</strong><span>{nodes.length}개</span></div><div className="v983-layer-list">{nodes.slice().reverse().map((node) => <div key={node.id} className={selectedIds.includes(node.id) ? "is-selected" : ""}><button type="button" onClick={() => { setUiTool("select"); setDrawTool(null); setSelectedIds([node.id]); }}>{node.name || "이름 없는 요소"}</button><button type="button" onClick={() => updateNode(node.id, { visible: !node.visible }, undefined, true)} aria-label={`${node.name} ${node.visible ? "숨기기" : "표시"}`}>{node.visible ? "표시" : "숨김"}</button></div>)}</div></section></aside>
     </div>
   </div>;
 }

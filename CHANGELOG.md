@@ -3,6 +3,14 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.986] - 2026-08-07
+
+### Stabilized
+
+- Corrected UI Studio workbench interaction, selection, text editing, direct manipulation, and common controls.
+- Kept the two-toolbox layout simple while exposing properties and layers beside the workbench.
+- Preserved world-theme and downstream propagation behavior.
+
 ## [v0.985] - 2026-08-07
 
 ### Corrected

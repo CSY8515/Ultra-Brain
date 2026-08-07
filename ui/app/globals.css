@@ -503,7 +503,7 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .topbar-left { gap: 0; }
 .studio-launch { min-height: 40px; }
 
-/* v0.985: two clear, task-first toolboxes with downstream world propagation. */
+/* v0.986: stable, task-first UI Studio with direct manipulation and downstream world propagation. */
 .v983-canvas-editor { display: grid; gap: 14px; min-height: 0; color: var(--text); }
 .v983-device-status { display: flex; align-items: center; gap: 8px; color: var(--text-soft); font-size: 12px; }
 .v983-device-status strong { color: var(--accent); }
@@ -572,10 +572,14 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .v983-editor-intro { display: flex; align-items: end; justify-content: space-between; gap: 18px; min-width: 0; }
 .v983-editor-intro h3 { margin: 3px 0 0; font: 500 22px/1.1 Georgia, serif; }
 .v983-editor-intro p { margin: 5px 0 0; color: var(--text-soft); font-size: 10px; }
+.v983-name-apply { display: flex; align-items: end; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.v983-name-apply label { display: grid; gap: 4px; color: var(--text-soft); font-size: 9px; }
+.v983-name-apply input { min-width: 190px; min-height: 34px; padding: 6px 8px; border: 1px solid var(--line); background: var(--surface-strong); color: var(--text); }
+.v983-apply-button { min-height: 42px; padding: 0 24px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 22%, var(--surface)); color: var(--accent-bright); font-weight: 700; cursor: pointer; }
 .v983-device-status { flex: 0 0 auto; padding: 7px 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, transparent); font-size: 10px; }
 .v983-workspace {
   display: grid;
-  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr) minmax(240px, 280px);
   gap: 12px;
   min-width: 0;
   min-height: 0;
@@ -597,6 +601,25 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
   padding: 0 5px 0 0;
   scrollbar-gutter: stable;
 }
+.v983-shared-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 92%, transparent); }
+.v983-insert-tools, .v983-common-tools { display: flex; gap: 5px; flex-wrap: wrap; }
+.v983-shared-actions button, .v983-shared-actions .builder-file-action { min-height: 32px; padding: 5px 9px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface-strong) 84%, transparent); color: var(--text-soft); font-size: 10px; cursor: pointer; }
+.v983-shared-actions button:hover, .v983-shared-actions button:focus-visible, .v983-shared-actions button.is-selected, .v983-shared-actions .builder-file-action:hover { border-color: var(--accent); color: var(--accent-bright); outline: none; }
+.v983-shared-actions .builder-file-action { display: inline-grid; place-items: center; }
+.v983-shared-actions .builder-file-action input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.v983-properties-panel { display: grid; gap: 9px; align-content: start; min-width: 0; max-height: 100%; overflow-y: auto; padding-left: 2px; }
+.v983-properties-panel section { display: grid; gap: 8px; padding: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 91%, transparent); }
+.v983-panel-heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.v983-panel-heading strong { color: var(--accent-bright); font-size: 12px; }
+.v983-panel-heading span, .v983-properties-panel p { color: var(--text-soft); font-size: 9px; }
+.v983-properties-panel label { display: grid; gap: 4px; color: var(--text-soft); font-size: 9px; }
+.v983-properties-panel input[type="number"], .v983-properties-panel input:not([type]), .v983-properties-panel input[type="text"] { width: 100%; min-height: 28px; padding: 4px 6px; border: 1px solid var(--line); background: var(--surface-strong); color: var(--text); }
+.v983-properties-panel input[type="color"] { width: 100%; height: 30px; padding: 0; border: 1px solid var(--line); background: transparent; }
+.v983-properties-panel input[type="range"] { width: 100%; accent-color: var(--accent); }
+.v983-property-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.v983-properties-panel button { min-height: 30px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface-strong) 84%, transparent); color: var(--text-soft); cursor: pointer; font-size: 9px; }
+.v983-properties-panel button:hover, .v983-properties-panel button.is-selected { border-color: var(--accent); color: var(--accent-bright); }
+.v983-properties-panel .v983-layer-list { max-height: 260px; }
 .v983-toolbox { display: block; min-width: 0; padding: 0 !important; overflow: hidden; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 91%, transparent); }
 .v983-toolbox.is-open { border-color: color-mix(in srgb, var(--accent) 72%, var(--line)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent); }
 .v983-toolbox > .toolbox-heading {
@@ -690,6 +713,7 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 @media (max-width: 900px) {
   .settings-drawer.is-canvas { padding: 12px; }
   .v983-workspace { grid-template-columns: 210px minmax(0, 1fr); gap: 8px; }
+  .v983-properties-panel { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .v983-toolbox .drawing-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .v983-canvas-stage { width: 100%; }
 }
@@ -699,6 +723,7 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
   .v983-editor-intro { display: grid; }
   .v983-workspace { grid-template-columns: 1fr; height: auto; overflow: visible; }
   .v983-tool-panels { max-height: none; overflow: visible; padding-right: 0; }
+  .v983-properties-panel { grid-column: auto; grid-template-columns: 1fr; max-height: none; overflow: visible; }
   .v983-canvas-column { min-height: 360px; }
   .v983-canvas-stage { width: 100%; min-height: 0; }
   .v983-toolbox .drawing-tools { grid-template-columns: repeat(3, minmax(0, 1fr)); }
