@@ -10,6 +10,7 @@ adjustments remain available independently from theme selection.
 from __future__ import annotations
 
 import base64
+from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import Final
@@ -168,6 +169,25 @@ ADJUSTMENTS: Final = {
     "투명도": (0.45, 1.0, 1.0),
 }
 
+LOCK_LABELS: Final = {
+    "layout": "배치 잠금",
+    "background": "배경 잠금",
+    "component": "요소 잠금",
+    "color": "색상 잠금",
+    "texture": "질감 잠금",
+    "lighting": "광원 잠금",
+}
+
+LAYOUT_LABELS: Final = {
+    "brain": "Ultra Brain",
+    "ecosystem": "OS Ecosystem",
+}
+
+LAYOUT_DEFAULTS: Final = {
+    "brain": {"x": 0, "y": 0, "scale": 1.0, "visible": True, "pinned": False},
+    "ecosystem": {"x": 0, "y": 0, "scale": 1.0, "visible": True, "pinned": False},
+}
+
 
 def load_existing_ui() -> None:
     """Verify that the official UI source and world assets are available."""
@@ -188,13 +208,86 @@ def world_art_data_uri(filename: str) -> str:
     return "data:image/png;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
 
 
+def adjustment_defaults() -> dict[str, float]:
+    return {key: default for key, (_, _, default) in ADJUSTMENTS.items()}
+
+
+def file_to_data_uri(uploaded_file) -> str:
+    """Turn a user-provided image into a session-local preview asset."""
+
+    mime = uploaded_file.type or "image/png"
+    encoded = base64.b64encode(uploaded_file.getvalue()).decode("ascii")
+    return f"data:{mime};base64,{encoded}"
+
+
+def snapshot_applied_state() -> dict:
+    return {
+        "theme": st.session_state["theme"],
+        "adjustments": deepcopy(st.session_state["applied_adjustments"]),
+        "accent": st.session_state["accent"],
+        "custom_background": st.session_state.get("custom_background"),
+        "layout": deepcopy(st.session_state["layout"]),
+        "locks": deepcopy(st.session_state["locks"]),
+        "ecosystem_locked": st.session_state.get("ecosystem_locked", False),
+        "propagation_override": st.session_state.get("propagation_override", False),
+    }
+
+
+def sync_draft_from_applied() -> None:
+    st.session_state["draft_theme"] = st.session_state["theme"]
+    st.session_state["draft_adjustments"] = deepcopy(st.session_state["applied_adjustments"])
+    st.session_state["draft_accent"] = st.session_state["accent"]
+    st.session_state["draft_custom_background"] = st.session_state.get("custom_background")
+    st.session_state["draft_layout"] = deepcopy(st.session_state["layout"])
+    st.session_state["draft_locks"] = deepcopy(st.session_state["locks"])
+
+
 def reset_adjustments() -> None:
-    for key, (_, _, default) in ADJUSTMENTS.items():
-        st.session_state[f"adjustment_{key}"] = default
+    st.session_state["draft_adjustments"] = adjustment_defaults()
 
 
-def build_css(theme: dict[str, str]) -> str:
-    values = {key: st.session_state.get(f"adjustment_{key}", default) for key, (_, _, default) in ADJUSTMENTS.items()}
+def save_studio() -> None:
+    history = [snapshot_applied_state(), *st.session_state.get("revision_stack", [])]
+    st.session_state["revision_stack"] = history[:8]
+    st.session_state["theme"] = st.session_state["draft_theme"]
+    st.session_state["applied_adjustments"] = deepcopy(st.session_state["draft_adjustments"])
+    st.session_state["accent"] = st.session_state["draft_accent"]
+    st.session_state["custom_background"] = st.session_state.get("draft_custom_background")
+    st.session_state["layout"] = deepcopy(st.session_state["draft_layout"])
+    st.session_state["locks"] = deepcopy(st.session_state["draft_locks"])
+    st.session_state["studio_open"] = False
+    st.session_state["status_message"] = f"UI 저장 완료 · {st.session_state['theme']} 세계 적용"
+
+
+def cancel_studio() -> None:
+    sync_draft_from_applied()
+    st.session_state["studio_open"] = False
+
+
+def rollback_last() -> None:
+    history = st.session_state.get("revision_stack", [])
+    if not history:
+        st.session_state["status_message"] = "되돌릴 저장 지점이 없습니다"
+        return
+    previous = history.pop(0)
+    st.session_state["revision_stack"] = history
+    st.session_state["theme"] = previous["theme"]
+    st.session_state["applied_adjustments"] = previous["adjustments"]
+    st.session_state["accent"] = previous["accent"]
+    st.session_state["custom_background"] = previous.get("custom_background")
+    st.session_state["layout"] = previous["layout"]
+    st.session_state["locks"] = previous["locks"]
+    st.session_state["ecosystem_locked"] = previous.get("ecosystem_locked", False)
+    st.session_state["propagation_override"] = previous.get("propagation_override", False)
+    sync_draft_from_applied()
+    st.session_state["status_message"] = "이전 UI로 되돌렸습니다"
+
+
+def build_css(theme: dict[str, str], art_uri: str) -> str:
+    values = st.session_state.get("applied_adjustments", adjustment_defaults())
+    layout = st.session_state.get("layout", LAYOUT_DEFAULTS)
+    brain = layout["brain"]
+    ecosystem = layout["ecosystem"]
     return f"""
     <style>
       :root {{
@@ -215,6 +308,12 @@ def build_css(theme: dict[str, str]) -> str:
         --ub-texture: {values['질감']};
         --ub-blur: {values['흐림']}px;
         --ub-transparency: {values['투명도']};
+        --ub-brain-x: {brain['x']}px;
+        --ub-brain-y: {brain['y']}px;
+        --ub-brain-scale: {brain['scale']};
+        --ub-ecosystem-x: {ecosystem['x']}px;
+        --ub-ecosystem-y: {ecosystem['y']}px;
+        --ub-ecosystem-scale: {ecosystem['scale']};
       }}
       html, body, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"] {{
         background:#020707 !important; color:var(--ub-text) !important;
@@ -223,7 +322,7 @@ def build_css(theme: dict[str, str]) -> str:
       [data-testid="stMainBlockContainer"] {{ max-width:none !important; padding:0 !important; }}
       [data-testid="stMainBlockContainer"] > div {{ padding:0 !important; }}
       .ub-shell {{ position:relative; min-height:calc(100vh - 1px); width:100%; overflow:hidden; isolation:isolate; background:#020707; }}
-      .ub-world-art {{ position:absolute; inset:0; z-index:0; width:100%; height:100%; background-image:url('{world_art_data_uri(theme['asset'])}'); background-position:center; background-repeat:no-repeat; background-size:contain; filter:{theme['filter']} brightness(var(--ub-brightness)) contrast(var(--ub-contrast)) saturate(var(--ub-saturation)) hue-rotate(var(--ub-hue)); opacity:var(--ub-transparency); transform:scale(1.002); }}
+      .ub-world-art {{ position:absolute; inset:0; z-index:0; width:100%; height:100%; background-image:url('{art_uri}'); background-position:center; background-repeat:no-repeat; background-size:contain; filter:{theme['filter']} brightness(var(--ub-brightness)) contrast(var(--ub-contrast)) saturate(var(--ub-saturation)) hue-rotate(var(--ub-hue)); opacity:var(--ub-transparency); transform:scale(1.002); }}
       .ub-world-art::after {{ content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 44%, transparent 38%, rgba(0,3,4,calc(.34 * var(--ub-shadow))) 100%); pointer-events:none; }}
       .ub-vignette {{ position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg,rgba(1,5,7,.18),transparent 18%,transparent 78%,rgba(1,3,4,.28)); }}
       .ub-world-light {{ position:absolute; inset:0; z-index:2; pointer-events:none; background:radial-gradient(circle at 50% 44%, var(--ub-accent), transparent 28%); opacity:calc(.12 * var(--ub-lighting) * var(--ub-glow)); mix-blend-mode:screen; }}
@@ -231,10 +330,10 @@ def build_css(theme: dict[str, str]) -> str:
       .ub-launch-slot {{ position:absolute; z-index:10; top:22px; left:24px; }}
       .ub-launch-slot button {{ min-height:38px; border:1px solid var(--ub-line); background:var(--ub-surface); color:var(--ub-text); font:600 10px Arial,sans-serif; letter-spacing:.08em; }}
       .ub-launch-slot button:hover {{ border-color:var(--ub-accent); color:var(--ub-accent-bright); }}
-      .ub-world-center {{ position:absolute; z-index:5; top:37%; left:50%; width:min(420px,42vw); transform:translate(-50%,-50%); text-align:center; pointer-events:none; text-shadow:0 2px 18px rgba(0,0,0,.98),0 0 22px rgba(0,0,0,.82); }}
+      .ub-world-center {{ position:absolute; z-index:5; top:37%; left:50%; width:min(420px,42vw); transform:translate(calc(-50% + var(--ub-brain-x)), calc(-50% + var(--ub-brain-y))) scale(var(--ub-brain-scale)); text-align:center; pointer-events:none; text-shadow:0 2px 18px rgba(0,0,0,.98),0 0 22px rgba(0,0,0,.82); opacity:{1 if brain['visible'] else 0}; }}
       .ub-world-center h1 {{ margin:10px 0; color:var(--ub-accent-bright); font:500 clamp(27px,2.8vw,38px)/1 Georgia,serif; letter-spacing:.045em; }}
       .ub-rule {{ display:block; width:72%; height:1px; margin:0 auto; background:linear-gradient(90deg,transparent,var(--ub-accent),transparent); box-shadow:0 0 calc(12px * var(--ub-glow)) var(--ub-accent); }}
-      .ub-ecosystem {{ position:absolute; z-index:6; left:50%; bottom:12.5%; width:clamp(190px,18vw,280px); min-height:150px; transform:translateX(-50%); display:grid; place-items:center; color:var(--ub-text); text-decoration:none; border-radius:50%; transition:transform .35s ease, filter .35s ease; }}
+      .ub-ecosystem {{ position:absolute; z-index:6; left:50%; bottom:12.5%; width:clamp(190px,18vw,280px); min-height:150px; transform:translate(calc(-50% + var(--ub-ecosystem-x)), var(--ub-ecosystem-y)) scale(var(--ub-ecosystem-scale)); display:grid; place-items:center; color:var(--ub-text); text-decoration:none; border-radius:50%; transition:transform .35s ease, filter .35s ease; opacity:{1 if ecosystem['visible'] else 0}; pointer-events:{'auto' if ecosystem['visible'] else 'none'}; }}
       .ub-ecosystem::before {{ content:""; position:absolute; inset:0; border:1px solid transparent; border-radius:50%; background:radial-gradient(circle,transparent 45%,color-mix(in srgb,var(--ub-accent) 15%,transparent) 72%,transparent 73%); opacity:0; transition:.35s ease; }}
       .ub-ecosystem span {{ position:relative; color:var(--ub-text); font:500 clamp(14px,1.45vw,19px)/1.1 Georgia,serif; text-shadow:0 2px 12px #000,0 2px 22px #000; }}
       .ub-ecosystem:hover, .ub-ecosystem:focus-visible {{ transform:translateX(-50%) scale(1.055); filter:brightness(1.08); outline:none; }}
@@ -255,39 +354,83 @@ def build_css(theme: dict[str, str]) -> str:
 
 
 def render_studio(theme: dict[str, str]) -> None:
-    """Render the v0.98 controls without exposing a permanent sidebar."""
+    """Render the complete v0.98 Studio without exposing a permanent sidebar."""
 
     st.markdown('<section class="ub-studio-panel" aria-label="UI 스튜디오">', unsafe_allow_html=True)
     st.markdown('<div class="ub-panel-title"><h2>UI 스튜디오</h2><small>Ultra Brain 기준 화면</small></div>', unsafe_allow_html=True)
-    st.markdown('<p>테마를 고르면 색만 바뀌지 않습니다. 해당 세계의 이미지, 돔 내부, 장식, 빛과 질감이 함께 바뀝니다.</p>', unsafe_allow_html=True)
-    tab_theme, tab_adjust, tab_apply = st.tabs(["테마", "기본 조정", "자동 적용"])
+    st.markdown('<p>테마를 고르면 색만 바뀌지 않습니다. 해당 세계의 이미지, 돔 내부, 장식, 빛과 질감이 함께 바뀝니다. 저장하기 전에는 현재 화면을 바꾸지 않습니다.</p>', unsafe_allow_html=True)
+    tab_theme, tab_adjust, tab_custom, tab_layout, tab_apply = st.tabs(["테마", "기본 조정", "사용자 지정 UI", "배치·잠금", "자동 적용"])
     with tab_theme:
-        selected = st.selectbox("테마 선택", list(THEMES), index=list(THEMES).index(st.session_state["theme"]))
-        if selected != st.session_state["theme"]:
-            st.session_state["theme"] = selected
-            st.rerun()
+        selected = st.selectbox("테마 선택", list(THEMES), index=list(THEMES).index(st.session_state["draft_theme"]), key="draft_theme_selector")
+        st.session_state["draft_theme"] = selected
         current = THEMES[selected]
         st.markdown(f'<div class="ub-world-note"><strong>{current["world"]}</strong><br />{current["detail"]}<br /><span class="ub-help">Ultra Brain → Meta OS → OS Ecosystem → 하위 요소의 단계 구조는 유지됩니다.</span></div>', unsafe_allow_html=True)
-        st.session_state["accent"] = st.color_picker("강조 색", st.session_state.get("accent", current["accent"]))
+        st.image(PUBLIC_ROOT / current["asset"], caption=f"{selected} 세계 미리보기 · 돔 내부와 장식 포함", width="stretch")
+        st.session_state["draft_accent"] = st.color_picker("강조 색", st.session_state["draft_accent"], key="draft_accent_picker")
+        st.caption("테마 선택 → 복사본 미리보기 → UI 저장 순서로 적용합니다.")
     with tab_adjust:
-        st.caption("테마와 관계없이 기본 화면에 바로 적용되는 조정입니다.")
+        st.caption("테마와 관계없이 모든 화면에 적용되는 기본 조정입니다.")
+        draft = st.session_state["draft_adjustments"]
         for key, (minimum, maximum, default) in ADJUSTMENTS.items():
-            state_key = f"adjustment_{key}"
-            st.session_state[state_key] = st.slider(key, minimum, maximum, st.session_state.get(state_key, default), step=0.01 if key != "색조" else 1.0)
+            lock_key = "texture" if key == "질감" else "lighting" if key in {"광원", "그림자", "발광"} else "color"
+            locked = st.session_state["draft_locks"].get(lock_key, False)
+            draft[key] = st.slider(key, minimum, maximum, draft[key], step=0.01 if key != "색조" else 1.0, disabled=locked, key=f"draft_adjustment_{key}")
         if st.button("기본값으로 되돌리기", key="reset_adjustments"):
             reset_adjustments()
             st.rerun()
+        st.info("기본 조정은 공식 테마·사용자 테마·사용자 UI에 공통으로 적용됩니다.")
+    with tab_custom:
+        st.markdown("#### 사용자 UI 만들기")
+        st.caption("내 이미지나 배경을 가져와 현재 세계의 UI 자산으로 미리 보고 저장합니다.")
+        st.text_input("사용자 UI 이름", value=st.session_state.get("custom_name", "나의 UI 세계"), key="custom_name")
+        uploaded = st.file_uploader("그림·배경 가져오기", type=["png", "jpg", "jpeg", "webp"], key="custom_upload")
+        if uploaded is not None:
+            st.session_state["draft_custom_background"] = file_to_data_uri(uploaded)
+        if st.session_state.get("draft_custom_background"):
+            st.image(st.session_state["draft_custom_background"], caption="사용자 UI 미리보기", width="stretch")
+            if st.button("가져온 이미지 제거", key="remove_custom_background"):
+                st.session_state["draft_custom_background"] = None
+                st.rerun()
+        else:
+            st.info("이미지를 가져오면 저장 전 미리보기로 확인할 수 있습니다.")
+    with tab_layout:
+        st.markdown("#### 배치와 잠금")
+        for lock_key, label in LOCK_LABELS.items():
+            st.session_state["draft_locks"][lock_key] = st.checkbox(label, value=st.session_state["draft_locks"].get(lock_key, False), key=f"draft_lock_{lock_key}")
+        for item_key, label in LAYOUT_LABELS.items():
+            item = st.session_state["draft_layout"][item_key]
+            st.markdown(f"**{label}**")
+            disabled = st.session_state["draft_locks"]["layout"] or st.session_state["draft_locks"]["component"]
+            item["x"] = st.slider("가로 위치", -80, 80, int(item["x"]), key=f"layout_x_{item_key}", disabled=disabled)
+            item["y"] = st.slider("세로 위치", -60, 60, int(item["y"]), key=f"layout_y_{item_key}", disabled=disabled)
+            item["scale"] = st.slider("크기", 0.72, 1.32, float(item["scale"]), step=0.01, key=f"layout_scale_{item_key}", disabled=disabled)
+            item["visible"] = st.checkbox("표시", value=item["visible"], key=f"layout_visible_{item_key}", disabled=st.session_state["draft_locks"]["component"])
+            item["pinned"] = st.checkbox("고정", value=item["pinned"], key=f"layout_pinned_{item_key}", disabled=st.session_state["draft_locks"]["layout"])
     with tab_apply:
         st.markdown('<div class="ub-world-note"><strong>자동 적용 범위</strong><br />잠금하지 않은 설정은 OS Ecosystem과 하위 계층으로 전달됩니다.<br />잠금한 대상은 현재 모습을 유지합니다.</div>', unsafe_allow_html=True)
-        st.session_state["ecosystem_locked"] = st.checkbox("OS Ecosystem 잠금", value=st.session_state.get("ecosystem_locked", False))
-        st.session_state["propagation_override"] = st.checkbox("OS Ecosystem 예외 적용", value=st.session_state.get("propagation_override", False))
+        st.session_state["ecosystem_locked"] = st.checkbox("OS Ecosystem 잠금", value=st.session_state.get("ecosystem_locked", False), key="ecosystem_lock_control")
+        st.session_state["propagation_override"] = st.checkbox("OS Ecosystem 예외 적용", value=st.session_state.get("propagation_override", False), key="propagation_override_control")
         st.markdown('<div class="ub-help">현재 연결된 범위: OS Ecosystem. 하위 전용 편집기는 만들지 않고, Ultra Brain 기준 설정을 자동 적용합니다.</div>', unsafe_allow_html=True)
+    st.divider()
+    save_col, cancel_col, rollback_col = st.columns(3)
+    with save_col:
+        if st.button("UI 저장", key="save_studio", type="primary"):
+            save_studio()
+            st.rerun()
+    with cancel_col:
+        if st.button("취소", key="cancel_studio"):
+            cancel_studio()
+            st.rerun()
+    with rollback_col:
+        if st.button("이전 UI로 되돌리기", key="rollback_last", disabled=not st.session_state.get("revision_stack")):
+            rollback_last()
+            st.rerun()
     st.markdown('</section>', unsafe_allow_html=True)
 
 
 def render_world(theme: dict[str, str]) -> None:
-    art = world_art_data_uri(theme["asset"])
-    st.markdown(build_css(theme), unsafe_allow_html=True)
+    art = st.session_state.get("custom_background") or world_art_data_uri(theme["asset"])
+    st.markdown(build_css(theme, art), unsafe_allow_html=True)
     st.markdown('<div class="ub-shell">', unsafe_allow_html=True)
     st.markdown(f'<div class="ub-world-art" style="background-image:url(\'{art}\')"></div><div class="ub-vignette"></div><div class="ub-world-light"></div><div class="ub-world-texture"></div>', unsafe_allow_html=True)
     st.markdown('<div class="ub-launch-slot">', unsafe_allow_html=True)
@@ -306,10 +449,22 @@ def main() -> None:
     st.set_page_config(page_title=f"Ultra Brain v{VERSION}", page_icon="✦", layout="wide", initial_sidebar_state="collapsed")
     load_existing_ui()
     st.session_state.setdefault("theme", "Official")
+    st.session_state.setdefault("draft_theme", st.session_state["theme"])
     st.session_state.setdefault("studio_open", False)
     st.session_state.setdefault("accent", THEMES["Official"]["accent"])
-    for key, (_, _, default) in ADJUSTMENTS.items():
-        st.session_state.setdefault(f"adjustment_{key}", default)
+    st.session_state.setdefault("applied_adjustments", adjustment_defaults())
+    st.session_state.setdefault("draft_adjustments", deepcopy(st.session_state["applied_adjustments"]))
+    st.session_state.setdefault("draft_accent", st.session_state["accent"])
+    st.session_state.setdefault("custom_background", None)
+    st.session_state.setdefault("draft_custom_background", st.session_state.get("custom_background"))
+    st.session_state.setdefault("layout", deepcopy(LAYOUT_DEFAULTS))
+    st.session_state.setdefault("draft_layout", deepcopy(st.session_state["layout"]))
+    st.session_state.setdefault("locks", {key: False for key in LOCK_LABELS})
+    st.session_state.setdefault("draft_locks", deepcopy(st.session_state["locks"]))
+    st.session_state.setdefault("revision_stack", [])
+    st.session_state.setdefault("ecosystem_locked", False)
+    st.session_state.setdefault("propagation_override", False)
+    st.session_state.setdefault("status_message", "")
     theme = THEMES[st.session_state["theme"]]
     render_world(theme)
 
