@@ -7,6 +7,7 @@ not an operational Meta OS runtime.
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 import subprocess
@@ -22,6 +23,7 @@ REPOSITORY = "https://github.com/CSY8515/Ultra-Brain.git"
 OS_ECOSYSTEM_REPOSITORY = "https://github.com/CSY8515/OS-Ecosystem.git"
 REGISTRY_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0.0"
+CURRENT_VERSION = "0.984"
 MILESTONE_VERSION = "0.97"
 SAFETY_VERSION = "0.2.0"
 ENHANCEMENT_VERSION = "0.3.0"
@@ -91,6 +93,7 @@ REQUIRED_DOCUMENTS = (
     "RELEASE_NOTES_v0.95.md",
     "RELEASE_NOTES_v0.96.md",
     "RELEASE_NOTES_v0.97.md",
+    "RELEASE_NOTES_v0.984.md",
 )
 
 REGISTRY_FILES = (
@@ -220,8 +223,67 @@ def validate_required_artifacts(errors: list[str]) -> None:
             errors.append(f"document is empty: {relative}")
 
     version_path = ROOT / "VERSION"
-    if version_path.is_file() and version_path.read_text(encoding="utf-8").strip() != MILESTONE_VERSION:
-        errors.append(f"VERSION must contain exactly {MILESTONE_VERSION}")
+    if version_path.is_file() and version_path.read_text(encoding="utf-8").strip() != CURRENT_VERSION:
+        errors.append(f"VERSION must contain exactly {CURRENT_VERSION}")
+
+
+def validate_streamlit_world_themes(errors: list[str]) -> None:
+    """Validate the production Streamlit theme registry and Calm world asset."""
+
+    app_path = ROOT / "app.py"
+    if not app_path.is_file():
+        errors.append("missing Streamlit production entry: app.py")
+        return
+
+    try:
+        tree = ast.parse(app_path.read_text(encoding="utf-8"), filename=str(app_path))
+    except (UnicodeDecodeError, SyntaxError) as exc:
+        errors.append(f"app.py is not valid UTF-8 Python: {exc}")
+        return
+
+    literals: dict[str, Any] = {}
+    for node in tree.body:
+        target = node.target if isinstance(node, ast.AnnAssign) else None
+        if isinstance(target, ast.Name) and target.id in {"THEMES", "CANONICAL_WORLD_IDS"}:
+            try:
+                literals[target.id] = ast.literal_eval(node.value)
+            except (TypeError, ValueError):
+                errors.append(f"app.py {target.id} must remain a literal registry")
+
+    themes = literals.get("THEMES")
+    world_ids = literals.get("CANONICAL_WORLD_IDS")
+    if not isinstance(themes, dict) or not isinstance(world_ids, dict):
+        errors.append("app.py must define literal THEMES and CANONICAL_WORLD_IDS registries")
+        return
+
+    theme_ids = {str(label).lower() for label in themes}
+    if theme_ids != set(world_ids):
+        errors.append("Streamlit theme labels and canonical world IDs must match")
+
+    calm = themes.get("Calm")
+    if not isinstance(calm, dict):
+        errors.append("Streamlit theme registry is missing Calm")
+        return
+    if calm.get("asset") != "world-calm.png":
+        errors.append("Calm must use its dedicated world-calm.png asset")
+    if calm.get("layout") != "wetland":
+        errors.append("Calm must use the dedicated wetland layout")
+    if calm.get("world") != "차분한 새벽 습지의 세계" or not str(calm.get("detail", "")).strip():
+        errors.append("Calm must provide its Korean dawn-wetland world description")
+    if world_ids.get("calm") != "calm-wetland-world":
+        errors.append("Calm must propagate with world ID calm-wetland-world")
+
+    calm_asset = ROOT / "ui" / "public" / "world-calm.png"
+    if not calm_asset.is_file():
+        errors.append("missing dedicated Calm world asset: ui/public/world-calm.png")
+        return
+    data = calm_asset.read_bytes()
+    if len(data) < 24 or data[:8] != b"\x89PNG\r\n\x1a\n":
+        errors.append("Calm world asset must be a valid PNG")
+        return
+    dimensions = (int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big"))
+    if dimensions != (1672, 941):
+        errors.append(f"Calm world asset must be 1672x941, found {dimensions[0]}x{dimensions[1]}")
 
 
 def validate_registries(errors: list[str]) -> None:
@@ -744,6 +806,7 @@ def validate_personal_secretary_core(errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
     validate_required_artifacts(errors)
+    validate_streamlit_world_themes(errors)
     validate_registries(errors)
     validate_os_ecosystem_integration(errors)
     validate_schemas(errors)
@@ -756,12 +819,12 @@ def main() -> int:
     validate_personal_secretary_core(errors)
 
     if errors:
-        print("Ultra Brain v0.97 release validation: FAILED")
+        print(f"Ultra Brain v{CURRENT_VERSION} release validation: FAILED")
         for error in errors:
             print(f"- {error}")
         return 1
 
-    print("Ultra Brain v0.97 release validation: PASSED")
+    print(f"Ultra Brain v{CURRENT_VERSION} release validation: PASSED")
     print(f"- Required documents: {len(REQUIRED_DOCUMENTS)}")
     print(f"- Registry files: {len(REGISTRY_FILES)}")
     print(f"- Schema files: {len(SCHEMA_FILES)}")

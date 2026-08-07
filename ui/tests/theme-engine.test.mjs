@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyPreference, applyThemePreset, defaultPreference, HIERARCHY, PROPAGATION_TARGETS, resolvePropagation, resolveThemeProfile, THEME_ADJUSTMENT_KEYS, UI_LOCK_KEYS, themeNames, themePackageRegistry, themePresets, themeRegistry, validatePreference } from "../lib/theme-engine.js";
+import { applyPreference, applyThemePreset, defaultPreference, HIERARCHY, PROPAGATION_TARGETS, resolvePropagation, resolveThemeProfile, THEME_ADJUSTMENT_KEYS, THEME_WORLD_ASSETS, UI_LOCK_KEYS, themeNames, themePackageRegistry, themePresets, themeRegistry, validatePreference } from "../lib/theme-engine.js";
 
 test("invalid preferences fall back to the official profile", () => {
   const safe = validatePreference({ theme: "unknown", accent: "javascript:bad", density: "tiny" });
@@ -23,8 +23,8 @@ test("save creates a rollback point and increments revision", () => {
 });
 
 test("official theme studio exposes the complete v0.93 registry", () => {
-  assert.equal(themeNames.length, 12);
-  assert.deepEqual(themeNames, ["official", "light", "dark", "universe", "galaxy", "ecosystem", "ocean", "grassland", "lava", "minimal", "paper", "archive"]);
+  assert.equal(themeNames.length, 13);
+  assert.deepEqual(themeNames, ["official", "light", "dark", "universe", "galaxy", "ecosystem", "ocean", "grassland", "lava", "minimal", "paper", "archive", "calm"]);
   for (const name of themeNames) {
     assert.ok(themeRegistry[name].accent);
     assert.ok(themeRegistry[name].description);
@@ -115,6 +115,20 @@ test("resolved theme profile carries package, preset, and adjustment payload", (
   assert.equal(profile.package.id, "ultra-brain-theme-universe");
   assert.equal(profile.themePreset, "cinematic");
   assert.equal(profile.adjustments.contrast, themePresets.cinematic.adjustments.contrast);
+});
+
+test("Calm is a dedicated low-contrast mist wetland world package", () => {
+  const profile = resolveThemeProfile({ ...defaultPreference, theme: "calm" });
+  assert.equal(profile.worldEngine.assetSource, "/world-calm.png");
+  assert.equal(THEME_WORLD_ASSETS.calm, "/world-calm.png");
+  assert.notEqual(profile.worldEngine.assetSource, THEME_WORLD_ASSETS.official);
+  assert.equal(profile.worldEngine.id, "calm-wetland-world");
+  assert.equal(profile.worldEngine.layout, "wetland");
+  assert.equal(profile.worldEngine.motion, "still");
+  assert.match(profile.worldEngine.description, /안개.*물가.*물방울.*낮은 대비/);
+  assert.equal(profile.package.worldAsset.source, "/world-calm.png");
+  assert.equal(profile.package.componentSkin, "calm-world-skin");
+  assert.equal(themeRegistry.calm.contrast, ".92");
 });
 
 test("official themes resolve a complete visual world engine", () => {

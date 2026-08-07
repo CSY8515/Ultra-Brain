@@ -1,6 +1,9 @@
 "use client";
 
-import type { CSSProperties, ChangeEvent, PointerEvent as ReactPointerEvent, MouseEvent as ReactMouseEvent } from "react";
+/* User-imported data URLs intentionally bypass Next image processing. */
+/* eslint-disable @next/next/no-img-element */
+
+import type { CSSProperties, ChangeEvent, PointerEvent as ReactPointerEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const CANVAS_WIDTH = 1200;
@@ -91,8 +94,8 @@ export function CanvasEditor({ baseTheme, onUseTheme, onToast }: CanvasEditorPro
   const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
   const [previewMode] = useState<"desktop" | "tablet" | "mobile" | "full">("desktop");
   const [previewing, setPreviewing] = useState(false);
-  const [textValue, setTextValue] = useState("Ultra Brain");
-  const [assetName, setAssetName] = useState("가져온 이미지");
+  const textValue = "Ultra Brain";
+  const assetName = "가져온 이미지";
   const [customName, setCustomName] = useState("나의 UI 세계");
   const [customThemes, setCustomThemes] = useState<UserCustomTheme[]>([]);
   const [assets, setAssets] = useState<AssetRecord[]>([]);
@@ -240,14 +243,16 @@ export function CanvasEditor({ baseTheme, onUseTheme, onToast }: CanvasEditorPro
   function createCustomTheme() { const canvas = canvasRef.current; if (!canvas) return; const preview = canvas.toDataURL("image/png"); const item: UserCustomTheme = { id: makeId("custom"), name: customName || "나의 UI 세계", baseTheme, preview, createdAt: new Date().toISOString(), status: "draft" }; const next = [item, ...customThemes].slice(0, 12); setCustomThemes(next); window.localStorage.setItem(CUSTOM_REGISTRY_KEY, JSON.stringify(next)); const drawingAsset: AssetRecord = { id: makeId("drawing"), name: item.name, type: "drawing", src: preview, tags: ["사용자", "직접 제작", "배경"], favorite: false, createdAt: item.createdAt, role: "asset" }; const nextAssets = [drawingAsset, ...assets].slice(0, 80); setAssets(nextAssets); window.localStorage.setItem(`${CUSTOM_REGISTRY_KEY}/assets`, JSON.stringify(nextAssets)); onUseTheme(preview, item.name); onToast("사용자 UI를 테마 에셋으로 저장했습니다"); }
 
   useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) { const command = event.ctrlKey || event.metaKey; if (command && event.key.toLowerCase() === "z") { event.preventDefault(); event.shiftKey ? redo() : undo(); } if (command && event.key.toLowerCase() === "y") { event.preventDefault(); redo(); } if (command && event.key.toLowerCase() === "c") copyRef.current = selectedNodes().map((node) => ({ ...node })); if (command && event.key.toLowerCase() === "v" && copyRef.current.length) { event.preventDefault(); const copies = copyRef.current.map((node) => ({ ...node, id: makeId("paste"), x: (node.x || 0) + 24, y: (node.y || 0) + 24, locked: false })); commitNodes([...nodesRef.current, ...copies]); setSelectedIds(copies.map((node) => node.id)); } if (event.key === "Delete" || event.key === "Backspace") { if (selectedIds.length) { event.preventDefault(); deleteSelected(); } } }
+    function onKeyDown(event: KeyboardEvent) { const command = event.ctrlKey || event.metaKey; if (command && event.key.toLowerCase() === "z") { event.preventDefault(); if (event.shiftKey) redo(); else undo(); } if (command && event.key.toLowerCase() === "y") { event.preventDefault(); redo(); } if (command && event.key.toLowerCase() === "c") copyRef.current = selectedNodes().map((node) => ({ ...node })); if (command && event.key.toLowerCase() === "v" && copyRef.current.length) { event.preventDefault(); const copies = copyRef.current.map((node) => ({ ...node, id: makeId("paste"), x: (node.x || 0) + 24, y: (node.y || 0) + 24, locked: false })); commitNodes([...nodesRef.current, ...copies]); setSelectedIds(copies.map((node) => node.id)); } if (event.key === "Delete" || event.key === "Backspace") { if (selectedIds.length) { event.preventDefault(); deleteSelected(); } } }
     window.addEventListener("keydown", onKeyDown); return () => window.removeEventListener("keydown", onKeyDown);
+    // The handler must close over the current history and selection snapshot.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds, history, redoStack]);
 
   const selectedNode = nodes.find((node) => selectedIds.includes(node.id));
   const filteredAssets = assets.filter((asset) => `${asset.name} ${asset.tags.join(" ")}`.toLowerCase().includes(assetSearch.toLowerCase()));
   const shellStyle = { "--canvas-zoom": zoom, "--canvas-offset-x": `${canvasOffset.x}px`, "--canvas-offset-y": `${canvasOffset.y}px`, "--canvas-rotation": `${canvasRotation}deg` } as CSSProperties;
-  const section = (key: ToolboxKey, title: string, subtitle: string, content: JSX.Element) => <section className={`toolbox-section ${openToolboxes[key] ? "is-open" : ""}`}><button type="button" className="toolbox-heading" aria-expanded={openToolboxes[key]} onClick={() => toggleToolbox(key)}><strong><span aria-hidden="true">{openToolboxes[key] ? "▼" : "▶"}</span>{title}</strong><small>{subtitle}</small></button>{openToolboxes[key] && <div className="toolbox-content">{content}</div>}</section>;
+  const section = (key: ToolboxKey, title: string, subtitle: string, content: ReactNode) => <section className={`toolbox-section ${openToolboxes[key] ? "is-open" : ""}`}><button type="button" className="toolbox-heading" aria-expanded={openToolboxes[key]} onClick={() => toggleToolbox(key)}><strong><span aria-hidden="true">{openToolboxes[key] ? "▼" : "▶"}</span>{title}</strong><small>{subtitle}</small></button>{openToolboxes[key] && <div className="toolbox-content">{content}</div>}</section>;
 
   return <div className={`canvas-editor preview-${previewMode} builder-${builderMode} ${previewing ? "is-previewing" : ""}`} style={shellStyle} onClick={() => contextMenu && setContextMenu(null)}>
     <div className="canvas-editor-header"><div><small>UI 스튜디오 · {draftSavedAt ? `저장 ${new Date(draftSavedAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}` : "아직 저장하지 않음"}</small><h3>내 화면 만들기</h3><p>왼쪽에서 도구를 고르고, 가운데 화면에서 바로 배치하세요. 선택한 도구를 다시 누르면 선택이 풀립니다.</p></div><div className="canvas-header-actions"><div className="canvas-mode-row"><button type="button" className={builderMode === "builder" ? "is-selected" : ""} onClick={() => setBuilderMode("builder")}>배치하기</button><button type="button" className={builderMode === "drawing" ? "is-selected" : ""} onClick={() => setBuilderMode("drawing")}>그리기</button></div><div className="canvas-value-row"><button type="button" onClick={undo} disabled={!history.length}>되돌리기</button><button type="button" onClick={redo} disabled={!redoStack.length}>다시 실행</button><button type="button" onClick={() => setPreviewing((current) => !current)}>{previewing ? "편집으로 돌아가기" : "미리보기"}</button><button type="button" onClick={saveDraft}>저장</button><button type="button" className="canvas-primary-action" onClick={() => saveRevision("applied")}>적용</button></div></div></div>

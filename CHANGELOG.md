@@ -3,6 +3,21 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.984] - 2026-08-07
+
+### Corrected
+
+- Rebuilt official theme worlds as subject-specific visual hierarchies instead of palette changes while preserving the Ultra Brain → OS Ecosystem → downstream meaning.
+- Added matching local child-world assets and complete theme/adjustment/layout/lock propagation for OS Ecosystem.
+- Normalized all production world images to a shared widescreen stage and removed stray default-screen status/navigation elements.
+- Simplified UI Studio to two collapsible Korean-first toolboxes with reversible tool selection and working canvas actions.
+- Added Calm as a dedicated dawn-wetland world package with its own artwork, atmosphere, lighting, layout, Korean description, and propagation identity.
+
+### Added
+
+- Added pressure-, tilt-, and coalesced-pointer-aware drawing for mouse, touch, and automatically detected stylus input.
+- Added release and regression checks for world image dimensions, theme ownership, propagation contracts, and the v0.984 production entry.
+
 ## [v0.97] - 2026-08-06
 
 ### Added

@@ -1,4 +1,4 @@
-"""Ultra Brain v0.983 Streamlit production entry point.
+"""Ultra Brain v0.984 Streamlit production entry point.
 
 The Streamlit surface mirrors the official Ultra Brain world view.  The
 default screen stays quiet and world-first; the only visible control is the
@@ -19,7 +19,7 @@ from urllib.parse import urlencode
 import streamlit as st
 
 
-VERSION: Final = "0.983"
+VERSION: Final = "0.984"
 REPOSITORY_ROOT: Final = Path(__file__).resolve().parent
 EXISTING_UI_ENTRY: Final = REPOSITORY_ROOT / "ui" / "app" / "page.tsx"
 PUBLIC_ROOT: Final = REPOSITORY_ROOT / "ui" / "public"
@@ -69,6 +69,20 @@ THEMES: Final = {
         "world": "고요한 어둠 속 생명의 세계",
         "detail": "깊은 숲과 낮은 빛, 집중을 돕는 대비",
         "layout": "canopy",
+    },
+    "Calm": {
+        "asset": "world-calm.png",
+        "accent": "#82aaa8",
+        "accent_bright": "#edf7f5",
+        "surface": "rgba(13, 31, 38, .82)",
+        "surface_strong": "rgba(17, 40, 47, .96)",
+        "text": "#f3f8f7",
+        "text_soft": "#b8cecc",
+        "line": "rgba(151, 190, 187, .4)",
+        "filter": "brightness(.96) saturate(.84) contrast(.96)",
+        "world": "차분한 새벽 습지의 세계",
+        "detail": "잔잔한 물길과 얕은 안개, 갈대와 새벽빛이 이어지는 고요한 생태 돔",
+        "layout": "wetland",
     },
     "Universe": {
         "asset": "world-universe.png",
@@ -199,6 +213,60 @@ THEMES: Final = {
 }
 
 
+# The Sites UI and the Streamlit entry use these stable registry identifiers
+# when they hand a saved Ultra Brain world to OS Ecosystem. Display labels and
+# layout names remain separate from this public propagation contract.
+CANONICAL_WORLD_IDS: Final = {
+    "official": "sun-world",
+    "light": "paper-daylight-world",
+    "dark": "quiet-canopy-world",
+    "calm": "calm-wetland-world",
+    "universe": "indigo-orbit-world",
+    "galaxy": "rose-nebula-world",
+    "ecosystem": "living-canopy-world",
+    "ocean": "deep-tide-world",
+    "grassland": "sunlit-field-world",
+    "lava": "molten-core-world",
+    "minimal": "signal-world",
+    "paper": "archive-paper-world",
+    "archive": "bronze-record-world",
+}
+
+CANONICAL_ADJUSTMENT_KEYS: Final = {
+    "밝기": "brightness",
+    "명암": "contrast",
+    "채도": "saturation",
+    "색조": "hue",
+    "광원": "lighting",
+    "그림자": "shadow",
+    "발광": "glow",
+    "질감": "texture",
+    "흐림": "blur",
+    "투명도": "transparency",
+}
+
+CANONICAL_PROPAGATION_TARGETS: Final = (
+    "theme",
+    "background",
+    "color",
+    "brightness",
+    "contrast",
+    "saturation",
+    "hue",
+    "texture",
+    "lighting",
+    "shadow",
+    "glow",
+    "transparency",
+    "blur",
+    "layout",
+    "componentPosition",
+    "componentSize",
+    "visibility",
+    "animation",
+)
+
+
 ADJUSTMENTS: Final = {
     "밝기": (0.7, 1.3, 1.0),
     "명암": (0.7, 1.4, 1.0),
@@ -230,6 +298,80 @@ LAYOUT_DEFAULTS: Final = {
     "brain": {"x": 0, "y": 0, "scale": 1.0, "visible": True, "pinned": False},
     "ecosystem": {"x": 0, "y": 0, "scale": 1.0, "visible": True, "pinned": False},
 }
+
+
+def canonical_theme_id(theme_name: str) -> str:
+    """Return the lowercase registry id shared with the Sites UI."""
+
+    candidate = str(theme_name).strip().lower()
+    return candidate if candidate in CANONICAL_WORLD_IDS else "official"
+
+
+def build_ecosystem_url(
+    theme_name: str,
+    adjustments: dict[str, float],
+    revision: int,
+    ecosystem_locked: bool = False,
+    propagation_override: bool = False,
+    base_url: str = OS_ECOSYSTEM_URL,
+) -> str:
+    """Build the canonical, URL-encoded Ultra Brain propagation link."""
+
+    theme_id = canonical_theme_id(theme_name)
+    try:
+        safe_revision = max(1, int(revision))
+    except (TypeError, ValueError):
+        safe_revision = 1
+
+    locked = bool(ecosystem_locked)
+    overridden = bool(propagation_override)
+    all_targets = ",".join(CANONICAL_PROPAGATION_TARGETS)
+    if locked and overridden:
+        propagation_status = "locked-override"
+    elif locked:
+        propagation_status = "locked"
+    elif overridden:
+        propagation_status = "override"
+    else:
+        propagation_status = "automatic"
+
+    payload: dict[str, str | int | float] = {
+        "source": "ultra-brain",
+        "theme": theme_id,
+        "world": CANONICAL_WORLD_IDS[theme_id],
+        "revision": safe_revision,
+    }
+    defaults = adjustment_defaults()
+    for display_name, query_name in CANONICAL_ADJUSTMENT_KEYS.items():
+        payload[query_name] = float(adjustments.get(display_name, defaults[display_name]))
+    payload.update(
+        {
+            "contract": "ultra-brain.ui/v1",
+            "interface": "1.0",
+            "scope": "global",
+            "target": "os-ecosystem",
+            "propagation": propagation_status,
+            "os_locked": str(locked).lower(),
+            "os_override": str(overridden).lower(),
+            "applied_targets": "" if locked or overridden else all_targets,
+            "locked_targets": all_targets if locked else "",
+            "overridden_targets": all_targets if overridden else "",
+        }
+    )
+    separator = "&" if "?" in base_url else "?"
+    return f"{base_url}{separator}{urlencode(payload)}"
+
+
+def current_ecosystem_url() -> str:
+    """Build a link from the currently saved Streamlit UI state."""
+
+    return build_ecosystem_url(
+        theme_name=st.session_state.get("theme", "Official"),
+        adjustments=st.session_state.get("applied_adjustments", adjustment_defaults()),
+        revision=st.session_state.get("ui_revision", 1),
+        ecosystem_locked=st.session_state.get("ecosystem_locked", False),
+        propagation_override=st.session_state.get("propagation_override", False),
+    )
 
 
 def load_existing_ui() -> None:
@@ -273,6 +415,7 @@ def snapshot_applied_state() -> dict:
         "locks": deepcopy(st.session_state["locks"]),
         "ecosystem_locked": st.session_state.get("ecosystem_locked", False),
         "propagation_override": st.session_state.get("propagation_override", False),
+        "revision": st.session_state.get("ui_revision", 1),
     }
 
 
@@ -283,6 +426,8 @@ def sync_draft_from_applied() -> None:
     st.session_state["draft_custom_background"] = st.session_state.get("custom_background")
     st.session_state["draft_layout"] = deepcopy(st.session_state["layout"])
     st.session_state["draft_locks"] = deepcopy(st.session_state["locks"])
+    st.session_state["draft_ecosystem_locked"] = st.session_state.get("ecosystem_locked", False)
+    st.session_state["draft_propagation_override"] = st.session_state.get("propagation_override", False)
 
 
 def reset_adjustments() -> None:
@@ -298,6 +443,9 @@ def save_studio() -> None:
     st.session_state["custom_background"] = st.session_state.get("draft_custom_background")
     st.session_state["layout"] = deepcopy(st.session_state["draft_layout"])
     st.session_state["locks"] = deepcopy(st.session_state["draft_locks"])
+    st.session_state["ecosystem_locked"] = st.session_state.get("draft_ecosystem_locked", False)
+    st.session_state["propagation_override"] = st.session_state.get("draft_propagation_override", False)
+    st.session_state["ui_revision"] = max(1, int(st.session_state.get("ui_revision", 1))) + 1
     st.session_state["studio_open"] = False
     st.session_state["status_message"] = f"UI 저장 완료 · {st.session_state['theme']} 세계 적용"
 
@@ -322,6 +470,7 @@ def rollback_last() -> None:
     st.session_state["locks"] = previous["locks"]
     st.session_state["ecosystem_locked"] = previous.get("ecosystem_locked", False)
     st.session_state["propagation_override"] = previous.get("propagation_override", False)
+    st.session_state["ui_revision"] = max(1, int(st.session_state.get("ui_revision", 1))) + 1
     sync_draft_from_applied()
     st.session_state["status_message"] = "이전 UI로 되돌렸습니다"
 
@@ -335,6 +484,7 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
         "solar": ("37%", "12.5%"),
         "cosmic": ("39%", "15%"),
         "canopy": ("34%", "12%"),
+        "wetland": ("24%", "7%"),
         "oceanic": ("35%", "11%"),
         "field": ("40%", "9%"),
         "molten": ("38%", "12%"),
@@ -398,8 +548,6 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
       .ub-ecosystem span {{ position:relative; color:var(--ub-text); font:500 clamp(14px,1.45vw,19px)/1.1 Georgia,serif; text-shadow:0 2px 12px #000,0 2px 22px #000; }}
       .ub-ecosystem:hover, .ub-ecosystem:focus-visible {{ transform:translateX(-50%) scale(1.055); filter:brightness(1.08); outline:none; }}
       .ub-ecosystem:hover::before, .ub-ecosystem:focus-visible::before {{ opacity:1; border-color:var(--ub-accent); box-shadow:0 0 44px color-mix(in srgb,var(--ub-accent) 20%,transparent),inset 0 0 25px color-mix(in srgb,var(--ub-accent) 12%,transparent); }}
-      .ub-status {{ position:absolute; z-index:7; left:24px; bottom:20px; display:flex; gap:10px; align-items:center; padding:8px 12px; border:1px solid var(--ub-line); background:var(--ub-surface); color:var(--ub-text-soft); font-size:9px; }}
-      .ub-dot {{ width:6px; height:6px; border-radius:50%; background:#94b67a; box-shadow:0 0 9px #94b67a; }}
       .ub-studio-panel {{ position:fixed; z-index:30; top:20px; right:20px; width:min(520px,calc(100vw - 40px)); max-height:calc(100vh - 40px); overflow:auto; padding:20px; border:1px solid var(--ub-line); background:linear-gradient(145deg,var(--ub-surface-strong),rgba(2,8,9,.96)); box-shadow:0 24px 80px rgba(0,0,0,.55); backdrop-filter:blur(18px); }}
       .ub-studio-panel h2 {{ margin:0 0 6px; font:500 20px Georgia,serif; color:var(--ub-accent-bright); }}
       .ub-studio-panel p {{ margin:0 0 14px; color:var(--ub-text-soft); font-size:11px; line-height:1.6; }}
@@ -408,7 +556,7 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
       .ub-world-note {{ margin:12px 0 16px; padding:11px; border:1px solid var(--ub-line); background:color-mix(in srgb,var(--ub-accent) 7%,transparent); color:var(--ub-text-soft); font-size:10px; line-height:1.55; }}
       .ub-divider {{ height:1px; margin:16px 0; background:var(--ub-line); opacity:.65; }}
       .ub-help {{ color:var(--ub-text-soft); font-size:10px; line-height:1.5; }}
-      @media (max-width:760px) {{ .ub-world-art {{ background-size:cover; }} .ub-world-center {{ top:35%; width:76vw; }} .ub-world-center h1 {{ font-size:28px; }} .ub-ecosystem {{ bottom:15%; width:220px; }} .ub-status {{ left:12px; right:12px; justify-content:center; }} .ub-launch-slot {{ top:12px; left:12px; }} }}
+      @media (max-width:760px) {{ .ub-world-art {{ background-size:cover; }} .ub-world-center {{ top:35%; width:76vw; }} .ub-world-center h1 {{ font-size:28px; }} .ub-ecosystem {{ bottom:15%; width:220px; }} .ub-launch-slot {{ top:12px; left:12px; }} }}
     </style>
     """
 
@@ -468,8 +616,17 @@ def render_studio(theme: dict[str, str]) -> None:
             item["pinned"] = st.checkbox("고정", value=item["pinned"], key=f"layout_pinned_{item_key}", disabled=st.session_state["draft_locks"]["layout"])
     with tab_apply:
         st.markdown('<div class="ub-world-note"><strong>자동 적용 범위</strong><br />잠금하지 않은 설정은 OS Ecosystem과 하위 계층으로 전달됩니다.<br />잠금한 대상은 현재 모습을 유지합니다.</div>', unsafe_allow_html=True)
-        st.session_state["ecosystem_locked"] = st.checkbox("OS Ecosystem 잠금", value=st.session_state.get("ecosystem_locked", False), key="ecosystem_lock_control")
-        st.session_state["propagation_override"] = st.checkbox("OS Ecosystem 예외 적용", value=st.session_state.get("propagation_override", False), key="propagation_override_control")
+        edit_session = st.session_state.get("studio_edit_session", 0)
+        st.session_state["draft_ecosystem_locked"] = st.checkbox(
+            "OS Ecosystem 잠금",
+            value=st.session_state.get("draft_ecosystem_locked", False),
+            key=f"ecosystem_lock_control_{edit_session}",
+        )
+        st.session_state["draft_propagation_override"] = st.checkbox(
+            "OS Ecosystem 예외 적용",
+            value=st.session_state.get("draft_propagation_override", False),
+            key=f"propagation_override_control_{edit_session}",
+        )
         st.markdown('<div class="ub-help">현재 연결된 범위: OS Ecosystem. 하위 전용 편집기는 만들지 않고, Ultra Brain 기준 설정을 자동 적용합니다.</div>', unsafe_allow_html=True)
     st.divider()
     save_col, cancel_col, rollback_col = st.columns(3)
@@ -490,6 +647,7 @@ def render_studio(theme: dict[str, str]) -> None:
 
 def _render_world_legacy(theme: dict[str, str]) -> None:
     art = st.session_state.get("custom_background") or world_art_data_uri(theme["asset"])
+    ecosystem_url = current_ecosystem_url()
     st.markdown(build_css(theme, art), unsafe_allow_html=True)
     st.markdown('<div class="ub-shell">', unsafe_allow_html=True)
     st.markdown(f'<div class="ub-world-art" style="background-image:url(\'{art}\')"></div><div class="ub-vignette"></div><div class="ub-world-light"></div><div class="ub-world-texture"></div>', unsafe_allow_html=True)
@@ -499,7 +657,7 @@ def _render_world_legacy(theme: dict[str, str]) -> None:
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<section class="ub-world-center" aria-label="Ultra Brain"><span class="ub-rule"></span><h1>Ultra Brain</h1><span class="ub-rule"></span></section>', unsafe_allow_html=True)
-    st.markdown(f'<a class="ub-ecosystem" href="{OS_ECOSYSTEM_URL}" target="_blank" rel="noreferrer" aria-label="OS Ecosystem 열기"><span>OS Ecosystem</span></a><div class="ub-status"><span class="ub-dot"></span><strong>정상</strong><span>OS Ecosystem 연결됨</span><span>v{VERSION}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<a class="ub-ecosystem" href="{ecosystem_url}" target="_blank" rel="noreferrer" aria-label="OS Ecosystem 열기"><span>OS Ecosystem</span></a>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     if st.session_state["studio_open"]:
         render_studio(theme)
@@ -509,21 +667,23 @@ def render_world(theme: dict[str, str]) -> None:
     """Render the world in one HTML block so absolute layers share one viewport."""
     art = st.session_state.get("custom_background") or world_art_data_uri(theme["asset"])
     st.markdown(build_css(theme, art), unsafe_allow_html=True)
-    theme_name = st.session_state.get("theme", "Official")
-    ecosystem_url = f"{OS_ECOSYSTEM_URL}?{urlencode({'source': 'ultra-brain', 'theme': theme_name, 'world': theme.get('layout', 'solar'), 'revision': VERSION})}"
+    ecosystem_url = current_ecosystem_url()
     st.markdown(
         f'''<main class="ub-shell" aria-label="Ultra Brain">
           <div class="ub-world-art" style="background-image:url('{art}')"></div>
           <div class="ub-vignette"></div><div class="ub-world-light"></div><div class="ub-world-texture"></div>
           <section class="ub-world-center" aria-label="Ultra Brain"><span class="ub-rule"></span><h1>Ultra Brain</h1><span class="ub-rule"></span></section>
           <a class="ub-ecosystem" href="{ecosystem_url}" target="_blank" rel="noreferrer" aria-label="OS Ecosystem 열기"><span>OS Ecosystem</span></a>
-          <div class="ub-status"><span class="ub-dot"></span><strong>정상</strong><span>OS Ecosystem 연결됨</span><span>v{VERSION}</span></div>
         </main>''',
         unsafe_allow_html=True,
     )
     with st.container(key="studio-launch-container"):
         if st.button("✦ UI 스튜디오", key="studio_launch"):
-            st.session_state["studio_open"] = not st.session_state["studio_open"]
+            opening = not st.session_state["studio_open"]
+            if opening:
+                sync_draft_from_applied()
+                st.session_state["studio_edit_session"] += 1
+            st.session_state["studio_open"] = opening
             st.rerun()
     if st.session_state["studio_open"]:
         render_studio(theme)
@@ -548,6 +708,10 @@ def main() -> None:
     st.session_state.setdefault("revision_stack", [])
     st.session_state.setdefault("ecosystem_locked", False)
     st.session_state.setdefault("propagation_override", False)
+    st.session_state.setdefault("draft_ecosystem_locked", st.session_state["ecosystem_locked"])
+    st.session_state.setdefault("draft_propagation_override", st.session_state["propagation_override"])
+    st.session_state.setdefault("ui_revision", 1)
+    st.session_state.setdefault("studio_edit_session", 0)
     st.session_state.setdefault("status_message", "")
     theme = THEMES[st.session_state["theme"]]
     render_world(theme)
