@@ -23,7 +23,7 @@ import {
 } from "../lib/theme-engine";
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
-const CURRENT_UI_VERSION = "0.981";
+const CURRENT_UI_VERSION = "0.982";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
 const LAYOUT_LABELS = { topbar: "상단 바", center: "중앙 타이틀", seed: "OS Ecosystem", rail: "탐색 레일" } as const;
 const PROPAGATION_TARGET_LABELS: Record<string, string> = {
@@ -490,7 +490,7 @@ export function UltraBrainShell() {
       </nav>
 
       <aside className="status-dock" style={statusStyle} aria-label="System status">
-        <div><span className="health-dot" /> <strong>정상</strong></div><i /><span>OS Ecosystem 연결됨</span><i /><span>v0.981</span><button type="button" onClick={() => openStudio("adjustments")}>기본 조정</button>
+        <div><span className="health-dot" /> <strong>정상</strong></div><i /><span>OS Ecosystem 연결됨</span><i /><span>v0.982</span><button type="button" onClick={() => openStudio("adjustments")}>기본 조정</button>
       </aside>
 
       {panel === "notifications" && <section className="notice-panel floating-panel" aria-label="Notifications">

@@ -1,4 +1,4 @@
-"""Ultra Brain v0.981 Streamlit production entry point.
+"""Ultra Brain v0.982 Streamlit production entry point.
 
 The Streamlit surface mirrors the official Ultra Brain world view.  The
 default screen stays quiet and world-first; the only visible control is the
@@ -19,7 +19,7 @@ from urllib.parse import urlencode
 import streamlit as st
 
 
-VERSION: Final = "0.981"
+VERSION: Final = "0.982"
 REPOSITORY_ROOT: Final = Path(__file__).resolve().parent
 EXISTING_UI_ENTRY: Final = REPOSITORY_ROOT / "ui" / "app" / "page.tsx"
 PUBLIC_ROOT: Final = REPOSITORY_ROOT / "ui" / "public"
