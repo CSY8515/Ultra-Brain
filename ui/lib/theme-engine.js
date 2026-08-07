@@ -84,16 +84,16 @@ export const themeWorldRegistry = Object.freeze({
 // changes (ocean, meadow, volcano, nebula, archive, and living ecosystem).
 export const THEME_WORLD_ASSETS = Object.freeze({
   official: "/ultra-brain-world.png",
-  light: "/ultra-brain-world.png",
-  dark: "/ultra-brain-world.png",
+  light: "/world-light.png",
+  dark: "/world-dark.png",
   universe: "/world-universe.png",
   ecosystem: "/world-ecosystem.png",
   ocean: "/world-ocean.png",
   grassland: "/world-grassland.png",
   lava: "/world-lava.png",
   galaxy: "/world-galaxy.png",
-  minimal: "/world-universe.png",
-  paper: "/world-archive.png",
+  minimal: "/world-minimal.png",
+  paper: "/world-paper.png",
   archive: "/world-archive.png",
 });
 

@@ -1,4 +1,4 @@
-"""Ultra Brain v0.98 Streamlit production entry point.
+"""Ultra Brain v0.981 Streamlit production entry point.
 
 The Streamlit surface mirrors the official Ultra Brain world view.  The
 default screen stays quiet and world-first; the only visible control is the
@@ -14,11 +14,12 @@ from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
 from typing import Final
+from urllib.parse import urlencode
 
 import streamlit as st
 
 
-VERSION: Final = "0.98"
+VERSION: Final = "0.981"
 REPOSITORY_ROOT: Final = Path(__file__).resolve().parent
 EXISTING_UI_ENTRY: Final = REPOSITORY_ROOT / "ui" / "app" / "page.tsx"
 PUBLIC_ROOT: Final = REPOSITORY_ROOT / "ui" / "public"
@@ -316,18 +317,22 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
         --ub-ecosystem-scale: {ecosystem['scale']};
       }}
       html, body, [data-testid="stAppViewContainer"], [data-testid="stMainBlockContainer"] {{
-        background:#020707 !important; color:var(--ub-text) !important;
+        min-height:100% !important; background:#020707 !important; color:var(--ub-text) !important;
       }}
       [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], footer {{ display:none !important; }}
       [data-testid="stMainBlockContainer"] {{ max-width:none !important; padding:0 !important; }}
       [data-testid="stMainBlockContainer"] > div {{ padding:0 !important; }}
-      .ub-shell {{ position:relative; min-height:calc(100vh - 1px); width:100%; overflow:hidden; isolation:isolate; background:#020707; }}
-      .ub-world-art {{ position:absolute; inset:0; z-index:0; width:100%; height:100%; background-image:url('{art_uri}'); background-position:center; background-repeat:no-repeat; background-size:contain; filter:{theme['filter']} brightness(var(--ub-brightness)) contrast(var(--ub-contrast)) saturate(var(--ub-saturation)) hue-rotate(var(--ub-hue)); opacity:var(--ub-transparency); transform:scale(1.002); }}
+      .ub-shell {{ position:relative; min-height:100dvh; height:100dvh; width:100vw; overflow:hidden; isolation:isolate; background:#020707; }}
+      .ub-world-art {{ position:absolute; inset:0; z-index:0; width:100%; height:100%; background-image:url('{art_uri}'); background-position:center; background-repeat:no-repeat; background-size:cover; filter:{theme['filter']} brightness(var(--ub-brightness)) contrast(var(--ub-contrast)) saturate(var(--ub-saturation)) hue-rotate(var(--ub-hue)); opacity:var(--ub-transparency); transform:scale(1.002); }}
       .ub-world-art::after {{ content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 44%, transparent 38%, rgba(0,3,4,calc(.34 * var(--ub-shadow))) 100%); pointer-events:none; }}
       .ub-vignette {{ position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg,rgba(1,5,7,.18),transparent 18%,transparent 78%,rgba(1,3,4,.28)); }}
       .ub-world-light {{ position:absolute; inset:0; z-index:2; pointer-events:none; background:radial-gradient(circle at 50% 44%, var(--ub-accent), transparent 28%); opacity:calc(.12 * var(--ub-lighting) * var(--ub-glow)); mix-blend-mode:screen; }}
       .ub-world-texture {{ position:absolute; inset:0; z-index:2; pointer-events:none; background:repeating-radial-gradient(circle at 50% 44%, transparent 0 24px, color-mix(in srgb, var(--ub-accent) 8%, transparent) 25px 26px); opacity:calc(.18 * var(--ub-texture)); mix-blend-mode:soft-light; }}
       .ub-launch-slot {{ position:absolute; z-index:10; top:22px; left:24px; }}
+      [class*="st-key-studio-launch-container"] {{ position:fixed !important; z-index:20 !important; top:22px !important; left:24px !important; width:auto !important; margin:0 !important; }}
+      [class*="st-key-studio-launch-container"] > div {{ width:auto !important; }}
+      [class*="st-key-studio-launch-container"] button {{ min-height:38px !important; padding:0 13px !important; border:1px solid var(--ub-line) !important; border-radius:0 !important; background:var(--ub-surface) !important; color:var(--ub-text) !important; font:600 10px Arial,sans-serif !important; letter-spacing:.08em !important; }}
+      [class*="st-key-studio-launch-container"] button:hover {{ border-color:var(--ub-accent) !important; color:var(--ub-accent-bright) !important; }}
       .ub-launch-slot button {{ min-height:38px; border:1px solid var(--ub-line); background:var(--ub-surface); color:var(--ub-text); font:600 10px Arial,sans-serif; letter-spacing:.08em; }}
       .ub-launch-slot button:hover {{ border-color:var(--ub-accent); color:var(--ub-accent-bright); }}
       .ub-world-center {{ position:absolute; z-index:5; top:37%; left:50%; width:min(420px,42vw); transform:translate(calc(-50% + var(--ub-brain-x)), calc(-50% + var(--ub-brain-y))) scale(var(--ub-brain-scale)); text-align:center; pointer-events:none; text-shadow:0 2px 18px rgba(0,0,0,.98),0 0 22px rgba(0,0,0,.82); opacity:{1 if brain['visible'] else 0}; }}
@@ -354,7 +359,7 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
 
 
 def render_studio(theme: dict[str, str]) -> None:
-    """Render the complete v0.98 Studio without exposing a permanent sidebar."""
+    """Render the complete Studio without exposing a permanent sidebar."""
 
     st.markdown('<section class="ub-studio-panel" aria-label="UI 스튜디오">', unsafe_allow_html=True)
     st.markdown('<div class="ub-panel-title"><h2>UI 스튜디오</h2><small>Ultra Brain 기준 화면</small></div>', unsafe_allow_html=True)
@@ -428,7 +433,7 @@ def render_studio(theme: dict[str, str]) -> None:
     st.markdown('</section>', unsafe_allow_html=True)
 
 
-def render_world(theme: dict[str, str]) -> None:
+def _render_world_legacy(theme: dict[str, str]) -> None:
     art = st.session_state.get("custom_background") or world_art_data_uri(theme["asset"])
     st.markdown(build_css(theme, art), unsafe_allow_html=True)
     st.markdown('<div class="ub-shell">', unsafe_allow_html=True)
@@ -441,6 +446,30 @@ def render_world(theme: dict[str, str]) -> None:
     st.markdown('<section class="ub-world-center" aria-label="Ultra Brain"><span class="ub-rule"></span><h1>Ultra Brain</h1><span class="ub-rule"></span></section>', unsafe_allow_html=True)
     st.markdown(f'<a class="ub-ecosystem" href="{OS_ECOSYSTEM_URL}" target="_blank" rel="noreferrer" aria-label="OS Ecosystem 열기"><span>OS Ecosystem</span></a><div class="ub-status"><span class="ub-dot"></span><strong>정상</strong><span>OS Ecosystem 연결됨</span><span>v{VERSION}</span></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
+    if st.session_state["studio_open"]:
+        render_studio(theme)
+
+
+def render_world(theme: dict[str, str]) -> None:
+    """Render the world in one HTML block so absolute layers share one viewport."""
+    art = st.session_state.get("custom_background") or world_art_data_uri(theme["asset"])
+    st.markdown(build_css(theme, art), unsafe_allow_html=True)
+    theme_name = st.session_state.get("theme", "Official")
+    ecosystem_url = f"{OS_ECOSYSTEM_URL}?{urlencode({'source': 'ultra-brain', 'theme': theme_name, 'world': theme.get('layout', 'solar'), 'revision': VERSION})}"
+    st.markdown(
+        f'''<main class="ub-shell" aria-label="Ultra Brain">
+          <div class="ub-world-art" style="background-image:url('{art}')"></div>
+          <div class="ub-vignette"></div><div class="ub-world-light"></div><div class="ub-world-texture"></div>
+          <section class="ub-world-center" aria-label="Ultra Brain"><span class="ub-rule"></span><h1>Ultra Brain</h1><span class="ub-rule"></span></section>
+          <a class="ub-ecosystem" href="{ecosystem_url}" target="_blank" rel="noreferrer" aria-label="OS Ecosystem 열기"><span>OS Ecosystem</span></a>
+          <div class="ub-status"><span class="ub-dot"></span><strong>정상</strong><span>OS Ecosystem 연결됨</span><span>v{VERSION}</span></div>
+        </main>''',
+        unsafe_allow_html=True,
+    )
+    with st.container(key="studio-launch-container"):
+        if st.button("✦ UI 스튜디오", key="studio_launch"):
+            st.session_state["studio_open"] = not st.session_state["studio_open"]
+            st.rerun()
     if st.session_state["studio_open"]:
         render_studio(theme)
 

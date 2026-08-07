@@ -23,7 +23,7 @@ import {
 } from "../lib/theme-engine";
 
 const OS_ECOSYSTEM_URL = "https://8javbq85jtappi6tkdhkt7g.streamlit.app/";
-const CURRENT_UI_VERSION = "0.98";
+const CURRENT_UI_VERSION = "0.981";
 const ACCENT_SWATCHES = ["#c8a55d", "#83aa8c", "#56b8cf", "#9d91e8", "#df86b8", "#e87943", "#d2d7d0"];
 const LAYOUT_LABELS = { topbar: "상단 바", center: "중앙 타이틀", seed: "OS Ecosystem", rail: "탐색 레일" } as const;
 const PROPAGATION_TARGET_LABELS: Record<string, string> = {
@@ -110,6 +110,17 @@ function hexFromRgb(r: number, g: number, b: number) {
   return `#${[r, g, b].map((value) => Math.round(value).toString(16).padStart(2, "0")).join("")}`;
 }
 
+function buildEcosystemUrl(preference: Preference, worldId: string) {
+  const url = new URL(OS_ECOSYSTEM_URL);
+  const params = url.searchParams;
+  params.set("source", "ultra-brain");
+  params.set("theme", preference.theme);
+  params.set("world", worldId);
+  params.set("revision", String(preference.revision));
+  for (const key of THEME_ADJUSTMENT_KEYS) params.set(key, String(preference.themeAdjustments[key]));
+  return url.toString();
+}
+
 export function UltraBrainShell() {
   const [loaded, setLoaded] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -142,6 +153,7 @@ export function UltraBrainShell() {
   const activePreference = panel === "studio" ? draftPreference : preference;
   const locks = activePreference.uiLocks;
   const profile = useMemo(() => resolveThemeProfile(activePreference), [activePreference]);
+  const ecosystemUrl = useMemo(() => buildEcosystemUrl(preference, resolveThemeProfile(preference).worldEngine.id), [preference]);
   const propagation = useMemo(() => resolvePropagation(activePreference), [activePreference]);
   const selectedPropagationNode = propagation.hierarchy.find((node: { id: string }) => node.id === propagationSelection) || propagation.hierarchy[1];
 
@@ -465,20 +477,20 @@ export function UltraBrainShell() {
         <span className="title-rule" aria-hidden="true" />
       </section>
 
-      <a className="ecosystem-seed" style={seedStyle} href={OS_ECOSYSTEM_URL} target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem in a new tab">
+      <a className="ecosystem-seed" style={seedStyle} href={ecosystemUrl} target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem in a new tab">
         <span className="seed-aura" aria-hidden="true" />
         <span className="seed-copy"><strong>OS Ecosystem</strong></span>
       </a>
       <img className="world-focus-art" src={profile.worldEngine.assetSource || "/ultra-brain-world.png"} alt="" aria-hidden="true" />
 
       <nav className="world-rail" style={railStyle} aria-label="System navigation">
-        <a className="rail-item is-current" href={OS_ECOSYSTEM_URL} target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem"><b>⌂</b><span>OS Ecosystem</span></a>
+        <a className="rail-item is-current" href={ecosystemUrl} target="_blank" rel="noreferrer" aria-label="Open OS Ecosystem"><b>⌂</b><span>OS Ecosystem</span></a>
         <span className="rail-line" aria-hidden="true" />
         <button className="rail-item rail-studio" type="button" onClick={() => openStudio("propagation")} aria-label="Open propagation controls"><b>↯</b><span>Propagation</span></button>
       </nav>
 
       <aside className="status-dock" style={statusStyle} aria-label="System status">
-        <div><span className="health-dot" /> <strong>정상</strong></div><i /><span>OS Ecosystem 연결됨</span><i /><span>v0.98</span><button type="button" onClick={() => openStudio("adjustments")}>기본 조정</button>
+        <div><span className="health-dot" /> <strong>정상</strong></div><i /><span>OS Ecosystem 연결됨</span><i /><span>v0.981</span><button type="button" onClick={() => openStudio("adjustments")}>기본 조정</button>
       </aside>
 
       {panel === "notifications" && <section className="notice-panel floating-panel" aria-label="Notifications">
