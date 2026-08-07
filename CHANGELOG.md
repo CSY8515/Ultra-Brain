@@ -3,6 +3,20 @@
 All notable changes to Ultra Brain are recorded in this file. The project uses
 milestone versions that correspond to the roadmap and Git release tags.
 
+## [v0.985] - 2026-08-07
+
+### Corrected
+
+- Applied inherited World Themes to every Living OS functional scene and every Universal Learning Engine world instead of forwarding URL parameters only.
+- Preserved each downstream app's existing presentation when its Theme, Background, Color, Layout, or component target is locked or overridden.
+- Made home and functional screens share the same brightness, contrast, saturation, hue, lighting, shadow, glow, texture, blur, transparency, layout, size, position, and visibility contract.
+- Removed inherited filter/animation conflicts and unintended line textures, and tightened propagation source, contract, interface, and target validation.
+
+### Validated
+
+- Regressed Ultra Brain, OS Ecosystem, Living OS, and Universal Learning Engine before production deployment.
+- Added full-screen and per-function inheritance coverage for the v0.985 production contract.
+
 ## [v0.984] - 2026-08-07
 
 ### Corrected

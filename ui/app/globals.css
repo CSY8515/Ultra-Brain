@@ -503,7 +503,7 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .topbar-left { gap: 0; }
 .studio-launch { min-height: 40px; }
 
-/* v0.984: two clear, task-first toolboxes. */
+/* v0.985: two clear, task-first toolboxes with downstream world propagation. */
 .v983-canvas-editor { display: grid; gap: 14px; min-height: 0; color: var(--text); }
 .v983-device-status { display: flex; align-items: center; gap: 8px; color: var(--text-soft); font-size: 12px; }
 .v983-device-status strong { color: var(--accent); }
