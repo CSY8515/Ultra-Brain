@@ -16,12 +16,12 @@ async function render() {
   );
 }
 
-test("server renders the Ultra Brain v0.97 Professional UI Studio world UI", async () => {
+test("server renders the Ultra Brain v0.98 UI Studio world UI", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, /<title>Ultra Brain v0\.97 .* Ultra Brain<\/title>/i);
+  assert.match(html, /<title>Ultra Brain v0\.98 .* Ultra Brain<\/title>/i);
   assert.match(html, /Ultra Brain/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site|codex-preview|react-loading-skeleton/i);
 });
@@ -37,22 +37,22 @@ test("the production entry has no disposable starter surface", async () => {
   ]);
   assert.match(page, /<UltraBrainShell \/>/);
   assert.match(shell, /ultra-brain-world\.png/);
-  assert.match(shell, /Open UI Studio/);
+  assert.match(shell, /UI 스튜디오 열기/);
   assert.match(shell, /worldEngine/);
   assert.match(shell, /CanvasEditor/);
   assert.match(shell, /PROPAGATION_TARGET_LABELS/);
   assert.match(shell, /THEME_ADJUSTMENT_LABELS/);
   assert.match(shell, /UI_LOCK_KEYS/);
-  assert.match(canvas, /UI Builder/);
+  assert.match(canvas, /사용자 지정 UI/);
   assert.match(canvas, /초보자용 UI 제작/);
   assert.match(canvas, /터치펜 도구함/);
   assert.match(canvas, /마우스 도구함/);
-  assert.match(canvas, /AI 이미지 가져오기/);
+  assert.match(canvas, /가져오기/);
   assert.doesNotMatch(styles, /ecosystem-seed:hover ~ \.world-focus-art/);
-  assert.match(canvas, /Asset Library/);
-  assert.match(canvas, /Revision History/);
+  assert.match(canvas, /보관한 그림/);
+  assert.match(canvas, /변경 기록/);
   assert.match(canvas, /rollbackRevision/);
-  assert.match(layout, /Ultra Brain v0\.97/);
+  assert.match(layout, /Ultra Brain v0\.98/);
   assert.doesNotMatch(layout, /codex-preview|_sites-preview|Starter Project/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(new URL("public/_sites-preview", templateRoot)));

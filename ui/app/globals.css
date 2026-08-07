@@ -91,7 +91,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright);
 
 .world-center { position: absolute; z-index: 3; top: 37%; left: 50%; width: min(390px, 42vw); translate: -50% -50%; text-align: center; pointer-events: none; text-shadow: 0 2px 18px rgba(0,0,0,.98), 0 0 22px rgba(0,0,0,.82); }
 .eyebrow { margin: 0 0 8px; color: var(--accent-bright); }
-.world-center h1 { margin: 10px 0; color: var(--accent-bright); font: 500 clamp(26px, 2.7vw, 40px)/1 Georgia, "Times New Roman", serif; letter-spacing: .045em; }
+.world-center h1 { margin: 10px 0; color: var(--accent-bright); font: 500 clamp(22px, 2.15vw, 32px)/1 Georgia, "Times New Roman", serif; letter-spacing: .045em; }
 .title-rule { display: block; width: 76%; height: 1px; margin: 0 auto; background: linear-gradient(90deg, transparent, var(--accent), transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 42%, transparent); }
 .title-rule-top { width: 52%; }
 .world-status { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 0; color: var(--text-soft); font-size: 11px; letter-spacing: .08em; }
@@ -104,7 +104,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright);
 .seed-aura { position: absolute; inset: 2% 8% 5%; border: 1px solid transparent; border-radius: 50%; background: radial-gradient(circle, transparent 45%, color-mix(in srgb, var(--accent) 15%, transparent) 72%, transparent 73%); opacity: 0; scale: .88; transition: .38s ease; }
 .seed-copy { position: absolute; left: 50%; top: 50%; display: grid; justify-items: center; gap: 3px; width: 100%; translate: -50% -50%; text-shadow: 0 2px 12px #000, 0 2px 22px #000; transition: transform .35s ease; }
 .seed-copy small { color: #c1c7bc; font-size: 9px; letter-spacing: .12em; }
-.seed-copy strong { font: 500 clamp(16px, 1.8vw, 24px)/1.1 Georgia, "Times New Roman", serif; letter-spacing: .035em; }
+.seed-copy strong { font: 500 clamp(14px, 1.45vw, 19px)/1.1 Georgia, "Times New Roman", serif; letter-spacing: .035em; }
 .seed-copy em { color: var(--accent-bright); font: normal 10px/1.4 Georgia, serif; letter-spacing: .12em; }
 .seed-action { margin-top: 5px; padding: 5px 10px; border: 0; background: transparent; color: var(--text); font-size: 10px; letter-spacing: .05em; opacity: 0; transform: translateY(4px); transition: .25s ease; }
 .seed-action b { margin-left: 6px; color: var(--accent-bright); }
@@ -148,6 +148,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright);
 .studio-tabs button { min-height: 34px; border: 0; background: transparent; color: var(--text-soft); cursor: pointer; font-size: 10px; letter-spacing: .04em; }
 .studio-tabs button[aria-selected="true"] { color: var(--accent-bright); }
 .studio-tabs button:hover, .studio-tabs button.is-selected { background: color-mix(in srgb, var(--accent) 17%, transparent); color: var(--text); }
+.studio-section-intro { display: grid; gap: 5px; margin: 0 0 18px; padding: 14px; border: 1px solid var(--line); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.studio-section-intro strong { font-size: 14px; }
+.studio-section-intro span { color: var(--text-soft); font-size: 10px; line-height: 1.5; }
+.studio-action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.studio-action-row button { min-height: 36px; padding: 8px 12px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; font-size: 10px; }
+.studio-action-row button:hover { border-color: var(--accent); color: var(--accent-bright); }
 .theme-mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 3px; border: 1px solid var(--line); background: rgba(0,0,0,.12); }
 .theme-mode-switch button { min-height: 34px; border: 0; background: transparent; color: var(--text-soft); cursor: pointer; font-size: 10px; }
 .theme-mode-switch button:hover, .theme-mode-switch button.is-selected { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--text); }
@@ -346,7 +352,7 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .canvas-value-row output, .canvas-option-row output { color: var(--text); font-variant-numeric: tabular-nums; }
 .zoom-control { margin-left: auto; }
 .canvas-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; min-height: 0; }
-.canvas-stage { min-height: 360px; overflow: auto; display: grid; place-items: center; padding: 18px; border: 1px solid var(--line); background: #020707; }
+.canvas-stage { position: relative; min-height: 360px; overflow: auto; display: grid; place-items: center; padding: 18px; border: 1px solid var(--line); background: #020707; }
 .canvas-stage canvas { width: min(100%, 1200px); height: auto; transform-origin: center; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); box-shadow: 0 20px 70px rgba(0,0,0,.42); cursor: crosshair; touch-action: none; }
 .builder-builder .canvas-stage canvas { cursor: default; }
 .preview-mobile .canvas-stage canvas { width: min(390px, 100%); }
@@ -371,6 +377,8 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .canvas-inspector-inline label { display: inline-flex; align-items: center; gap: 4px; }
 .canvas-inspector-inline input[type="range"] { width: 86px; accent-color: var(--accent); }
 .canvas-primary-action { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.canvas-editor.is-previewing .canvas-toolbar, .canvas-editor.is-previewing .builder-tool-panel, .canvas-editor.is-previewing .builder-property-panel, .canvas-editor.is-previewing .builder-bottom-panels { opacity: .45; pointer-events: none; }
+.canvas-preview-badge { position: absolute; top: 14px; left: 50%; translate: -50%; z-index: 4; padding: 7px 12px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--surface-strong) 88%, transparent); color: var(--accent-bright); font-size: 10px; letter-spacing: .04em; }
 .canvas-layer-actions button:disabled { opacity: .35; cursor: not-allowed; }
 .custom-theme-list button { display: grid; grid-template-columns: 40px 1fr; gap: 4px 7px; align-items: center; padding: 4px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; text-align: left; }
 .custom-theme-list button:hover { border-color: var(--accent); }

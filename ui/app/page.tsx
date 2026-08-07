@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { UltraBrainShell } from "./ultra-brain-shell";
 
 export const metadata: Metadata = {
-  title: "Ultra Brain v0.97",
-  description: "Ultra Brain Advanced Theme and Visual World Engine",
+  title: "Ultra Brain v0.98",
+  description: "Ultra Brain UI Studio and Official World System",
 };
 
 export default function Home() {

@@ -29,6 +29,7 @@ export const defaultLocks: Record<UILockKey, boolean>;
 export const THEME_ADJUSTMENT_RANGES: Record<ThemeAdjustmentKey, { min: number; max: number; step: number; unit: string }>;
 export const themePresets: Record<string, { id: string; label: string; description: string; adjustments: Record<ThemeAdjustmentKey, number> }>;
 export const themePackageRegistry: Record<ThemeName, Record<string, any>>;
+export const THEME_WORLD_ASSETS: Record<ThemeName, string>;
 export const themeNames: readonly ThemeName[];
 export const themeRegistry: Record<ThemeName, Record<string, string>>;
 export const defaultPreference: ThemePreference;

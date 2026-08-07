@@ -79,8 +79,27 @@ export const themeWorldRegistry = Object.freeze({
   archive: { id: "bronze-record-world", label: "청동 기록 세계", description: "컨셉아트를 청동 장치와 보관 기록의 분위기로 압축", layout: "archive", motion: "orbit", background: "radial-gradient(circle at 50% 42%, rgba(190,153,92,.2), transparent 28%), linear-gradient(180deg, rgba(28,20,12,.62), rgba(8,7,5,.8))", overlay: "repeating-radial-gradient(circle at 50% 42%, transparent 0 34px, rgba(204,167,107,.09) 35px 36px)", texture: "repeating-linear-gradient(0deg, rgba(215,186,137,.06) 0 1px, transparent 1px 6px)", lighting: "rgba(230,215,184,.22)", assetLabel: "청동 기록 컨셉아트" },
 });
 
-// Official themes share the approved concept-art source while each world
-// package supplies its own composition, atmosphere, layout and component skin.
+// Official themes use their own visual world asset. The default solar world
+// remains the approved Ultra Brain concept art; other worlds are true subject
+// changes (ocean, meadow, volcano, nebula, archive, and living ecosystem).
+export const THEME_WORLD_ASSETS = Object.freeze({
+  official: "/ultra-brain-world.png",
+  light: "/ultra-brain-world.png",
+  dark: "/ultra-brain-world.png",
+  universe: "/world-universe.png",
+  ecosystem: "/world-ecosystem.png",
+  ocean: "/world-ocean.png",
+  grassland: "/world-grassland.png",
+  lava: "/world-lava.png",
+  galaxy: "/world-galaxy.png",
+  minimal: "/world-universe.png",
+  paper: "/world-archive.png",
+  archive: "/world-archive.png",
+});
+
+// Official keeps the approved solar concept art. Every other world package
+// owns a subject-specific concept image while preserving the same hierarchy,
+// composition slots, atmosphere, layout language and component skin.
 export const OFFICIAL_WORLD_ASSET = Object.freeze({
   id: "ultra-brain-official-concept-art",
   source: "/ultra-brain-world.png",
@@ -121,8 +140,8 @@ export const themePackageRegistry = Object.freeze(Object.fromEntries(Object.entr
   category: name === "official" || name === "light" || name === "dark" ? "foundation" : "official",
   worldStyle: themeWorldRegistry[name]?.description || item.description,
   world: themeWorldRegistry[name] || themeWorldRegistry.official,
-  worldAsset: { ...OFFICIAL_WORLD_ASSET, worldId: (themeWorldRegistry[name] || themeWorldRegistry.official).id },
-  assetIds: [OFFICIAL_WORLD_ASSET.id],
+  worldAsset: { ...OFFICIAL_WORLD_ASSET, source: THEME_WORLD_ASSETS[name] || OFFICIAL_WORLD_ASSET.source, worldId: (themeWorldRegistry[name] || themeWorldRegistry.official).id },
+  assetIds: [THEME_WORLD_ASSETS[name] || OFFICIAL_WORLD_ASSET.source],
   layoutPreset: (themeWorldRegistry[name] || themeWorldRegistry.official).layout,
   navigationStyle: (themeWorldRegistry[name] || themeWorldRegistry.official).layout,
   componentSkin: `${name}-world-skin`,
@@ -297,7 +316,12 @@ export function resolveThemeProfile(preference) {
   const ecosystemNode = propagation.hierarchy.find((node) => node.id === "os-ecosystem");
   return {
     ...profile,
-    worldEngine: themeWorldRegistry[safe.theme] || themeWorldRegistry.official,
+    worldEngine: {
+      ...(themeWorldRegistry[safe.theme] || themeWorldRegistry.official),
+      // 현재 승인된 컨셉아트를 월드 엔진의 기준 에셋으로 연결한다.
+      assetSource: THEME_WORLD_ASSETS[safe.theme] || OFFICIAL_WORLD_ASSET.source,
+      alt: (themeWorldRegistry[safe.theme] || themeWorldRegistry.official).assetLabel,
+    },
     accent: safe.accent,
     accentBright: safe.accent,
     density: safe.density,
