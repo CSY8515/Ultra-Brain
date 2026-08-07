@@ -497,3 +497,45 @@ legend { margin-bottom: 11px; color: var(--text-soft); font-size: 10px; letter-s
 .orientation-bar::after, .brand { display: none; }
 .topbar-left { gap: 0; }
 .studio-launch { min-height: 40px; }
+
+/* v0.983: two clear, task-first toolboxes. */
+.v983-canvas-editor { display: grid; gap: 14px; min-height: 0; color: var(--text); }
+.v983-device-status { display: flex; align-items: center; gap: 8px; color: var(--text-soft); font-size: 12px; }
+.v983-device-status strong { color: var(--accent); }
+.v983-workspace { display: grid; grid-template-columns: minmax(210px, 250px) minmax(0, 1fr) minmax(240px, 280px); gap: 14px; min-height: 0; align-items: start; }
+.v983-tool-panels { display: grid; gap: 10px; align-content: start; }
+.v983-toolbox { border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, transparent); overflow: hidden; }
+.v983-toolbox.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent); }
+.v983-toolbox > button { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 13px 14px; border: 0; color: var(--text); background: transparent; text-align: left; font: 600 13px/1.2 inherit; cursor: pointer; }
+.v983-toolbox > button:hover, .v983-toolbox > button:focus-visible { background: color-mix(in srgb, var(--accent) 12%, transparent); outline: none; }
+.v983-toolbox > button span:last-child { color: var(--text-soft); font-size: 16px; }
+.v983-toolbox .toolbox-content { display: grid; gap: 8px; padding: 0 10px 12px; }
+.v983-toolbox .toolbox-content button, .v983-quick-settings button { min-height: 34px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface-strong) 82%, transparent); color: var(--text); cursor: pointer; }
+.v983-toolbox .toolbox-content button:hover, .v983-toolbox .toolbox-content button.is-active, .v983-quick-settings button:hover, .v983-quick-settings button.is-active { border-color: var(--accent); color: var(--accent); }
+.v983-toolbox .toolbox-content button:disabled { opacity: .38; cursor: not-allowed; }
+.v983-toolbox .toolbox-chip-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.v983-toolbox .drawing-tools { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.v983-toolbox .drawing-tools button { min-height: 38px; font-size: 11px; }
+.toolbox-inline-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.v983-quick-settings { display: grid; gap: 8px; border: 1px solid var(--line); padding: 12px; background: color-mix(in srgb, var(--surface) 88%, transparent); }
+.v983-quick-settings label { display: grid; gap: 5px; color: var(--text-soft); font-size: 11px; }
+.v983-quick-settings input[type="range"] { width: 100%; accent-color: var(--accent); }
+.v983-quick-settings input[type="color"] { width: 100%; height: 30px; padding: 0; border: 1px solid var(--line); background: transparent; }
+.v983-canvas-stage { position: relative; min-width: 0; min-height: 520px; border: 1px solid var(--line); background: #07100f; overflow: hidden; }
+.v983-canvas-stage canvas { display: block; width: 100%; height: auto; min-height: 520px; touch-action: none; cursor: crosshair; }
+.v983-canvas-stage.is-selecting canvas { cursor: default; }
+.v983-canvas-stage.is-panning canvas { cursor: grab; }
+.v983-canvas-stage .canvas-empty { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; color: rgba(255,255,255,.42); font-size: 12px; }
+.v983-side-panel { display: grid; gap: 10px; align-content: start; }
+.v983-side-panel section { border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 88%, transparent); padding: 12px; }
+.v983-side-panel h4 { margin: 0 0 10px; font-size: 13px; }
+.v983-side-panel p { margin: 0; color: var(--text-soft); font-size: 11px; line-height: 1.5; }
+.v983-node-list { display: grid; gap: 6px; max-height: 260px; overflow: auto; }
+.v983-node-list button { display: flex; justify-content: space-between; gap: 8px; width: 100%; padding: 8px; border: 1px solid transparent; background: transparent; color: var(--text-soft); text-align: left; cursor: pointer; }
+.v983-node-list button:hover, .v983-node-list button.is-selected { border-color: var(--accent); color: var(--text); }
+.v983-node-list small { color: var(--text-soft); }
+.v983-footer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.v983-footer-actions button { min-height: 42px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; }
+.v983-footer-actions button:last-child { background: color-mix(in srgb, var(--accent) 20%, var(--surface)); border-color: var(--accent); }
+@media (max-width: 1050px) { .v983-workspace { grid-template-columns: 200px minmax(0, 1fr); } .v983-side-panel { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .v983-workspace { grid-template-columns: 1fr; } .v983-side-panel { grid-column: auto; grid-template-columns: 1fr; } .v983-canvas-stage, .v983-canvas-stage canvas { min-height: 360px; } .v983-toolbox .drawing-tools { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

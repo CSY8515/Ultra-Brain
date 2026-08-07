@@ -1,4 +1,4 @@
-"""Ultra Brain v0.982 Streamlit production entry point.
+"""Ultra Brain v0.983 Streamlit production entry point.
 
 The Streamlit surface mirrors the official Ultra Brain world view.  The
 default screen stays quiet and world-first; the only visible control is the
@@ -19,7 +19,7 @@ from urllib.parse import urlencode
 import streamlit as st
 
 
-VERSION: Final = "0.982"
+VERSION: Final = "0.983"
 REPOSITORY_ROOT: Final = Path(__file__).resolve().parent
 EXISTING_UI_ENTRY: Final = REPOSITORY_ROOT / "ui" / "app" / "page.tsx"
 PUBLIC_ROOT: Final = REPOSITORY_ROOT / "ui" / "public"
@@ -41,6 +41,34 @@ THEMES: Final = {
         "world": "태양 중심 생명의 나무 세계",
         "detail": "중앙 태양 구체와 나무, 아래쪽 생태계 돔",
         "layout": "solar",
+    },
+    "Light": {
+        "asset": "world-light.png",
+        "accent": "#b8914b",
+        "accent_bright": "#fff5d4",
+        "surface": "rgba(45, 42, 31, .74)",
+        "surface_strong": "rgba(61, 55, 38, .92)",
+        "text": "#fffaf0",
+        "text_soft": "#e7dcc1",
+        "line": "rgba(255, 232, 169, .42)",
+        "filter": "brightness(1.04) saturate(.85)",
+        "world": "따뜻한 빛이 감싸는 밝은 세계",
+        "detail": "햇살과 안개, 부드러운 입자와 열린 공간",
+        "layout": "solar",
+    },
+    "Dark": {
+        "asset": "world-dark.png",
+        "accent": "#9bb59c",
+        "accent_bright": "#e2f0df",
+        "surface": "rgba(3, 10, 10, .84)",
+        "surface_strong": "rgba(7, 19, 18, .96)",
+        "text": "#edf5ed",
+        "text_soft": "#9eafa2",
+        "line": "rgba(142, 185, 153, .34)",
+        "filter": "brightness(.78) saturate(.78)",
+        "world": "고요한 어둠 속 생명의 세계",
+        "detail": "깊은 숲과 낮은 빛, 집중을 돕는 대비",
+        "layout": "canopy",
     },
     "Universe": {
         "asset": "world-universe.png",
@@ -127,7 +155,7 @@ THEMES: Final = {
         "layout": "nebula",
     },
     "Minimal": {
-        "asset": "world-universe.png",
+        "asset": "world-minimal.png",
         "accent": "#d2d7d0",
         "accent_bright": "#ffffff",
         "surface": "rgba(14, 17, 17, .86)",
@@ -139,6 +167,20 @@ THEMES: Final = {
         "world": "핵심 구조만 남긴 절제된 세계",
         "detail": "중앙 구조와 궤도만 남기고 장식을 정돈한 표현",
         "layout": "minimal",
+    },
+    "Paper": {
+        "asset": "world-paper.png",
+        "accent": "#9b6b3d",
+        "accent_bright": "#5e3e23",
+        "surface": "rgba(245, 235, 211, .88)",
+        "surface_strong": "rgba(255, 248, 230, .96)",
+        "text": "#3c2c20",
+        "text_soft": "#765f4c",
+        "line": "rgba(123, 87, 53, .34)",
+        "filter": "brightness(1.02) saturate(.68) sepia(.08)",
+        "world": "종이 질감 위에 펼쳐지는 기록의 세계",
+        "detail": "따뜻한 종이결, 잉크 선, 차분한 여백",
+        "layout": "editorial",
     },
     "Archive": {
         "asset": "world-archive.png",
@@ -289,6 +331,19 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
     layout = st.session_state.get("layout", LAYOUT_DEFAULTS)
     brain = layout["brain"]
     ecosystem = layout["ecosystem"]
+    anchors = {
+        "solar": ("37%", "12.5%"),
+        "cosmic": ("39%", "15%"),
+        "canopy": ("34%", "12%"),
+        "oceanic": ("35%", "11%"),
+        "field": ("40%", "9%"),
+        "molten": ("38%", "12%"),
+        "nebula": ("39%", "14%"),
+        "minimal": ("39%", "13%"),
+        "editorial": ("40%", "12%"),
+        "archive": ("39%", "12%"),
+    }
+    brain_top, ecosystem_bottom = anchors.get(theme.get("layout", "solar"), anchors["solar"])
     return f"""
     <style>
       :root {{
@@ -327,7 +382,7 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
       .ub-world-art::after {{ content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 44%, transparent 38%, rgba(0,3,4,calc(.34 * var(--ub-shadow))) 100%); pointer-events:none; }}
       .ub-vignette {{ position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg,rgba(1,5,7,.18),transparent 18%,transparent 78%,rgba(1,3,4,.28)); }}
       .ub-world-light {{ position:absolute; inset:0; z-index:2; pointer-events:none; background:radial-gradient(circle at 50% 44%, var(--ub-accent), transparent 28%); opacity:calc(.12 * var(--ub-lighting) * var(--ub-glow)); mix-blend-mode:screen; }}
-      .ub-world-texture {{ position:absolute; inset:0; z-index:2; pointer-events:none; background:repeating-radial-gradient(circle at 50% 44%, transparent 0 24px, color-mix(in srgb, var(--ub-accent) 8%, transparent) 25px 26px); opacity:calc(.18 * var(--ub-texture)); mix-blend-mode:soft-light; }}
+      .ub-world-texture {{ position:absolute; inset:0; z-index:2; pointer-events:none; background:repeating-radial-gradient(circle at 50% 44%, transparent 0 24px, color-mix(in srgb, var(--ub-accent) 8%, transparent) 25px 26px); opacity:0; mix-blend-mode:soft-light; }}
       .ub-launch-slot {{ position:absolute; z-index:10; top:22px; left:24px; }}
       [class*="st-key-studio-launch-container"] {{ position:fixed !important; z-index:20 !important; top:22px !important; left:24px !important; width:auto !important; margin:0 !important; }}
       [class*="st-key-studio-launch-container"] > div {{ width:auto !important; }}
@@ -335,10 +390,10 @@ def build_css(theme: dict[str, str], art_uri: str) -> str:
       [class*="st-key-studio-launch-container"] button:hover {{ border-color:var(--ub-accent) !important; color:var(--ub-accent-bright) !important; }}
       .ub-launch-slot button {{ min-height:38px; border:1px solid var(--ub-line); background:var(--ub-surface); color:var(--ub-text); font:600 10px Arial,sans-serif; letter-spacing:.08em; }}
       .ub-launch-slot button:hover {{ border-color:var(--ub-accent); color:var(--ub-accent-bright); }}
-      .ub-world-center {{ position:absolute; z-index:5; top:37%; left:50%; width:min(420px,42vw); transform:translate(calc(-50% + var(--ub-brain-x)), calc(-50% + var(--ub-brain-y))) scale(var(--ub-brain-scale)); text-align:center; pointer-events:none; text-shadow:0 2px 18px rgba(0,0,0,.98),0 0 22px rgba(0,0,0,.82); opacity:{1 if brain['visible'] else 0}; }}
+      .ub-world-center {{ position:absolute; z-index:5; top:{brain_top}; left:50%; width:min(420px,42vw); transform:translate(calc(-50% + var(--ub-brain-x)), calc(-50% + var(--ub-brain-y))) scale(var(--ub-brain-scale)); text-align:center; pointer-events:none; text-shadow:0 2px 18px rgba(0,0,0,.98),0 0 22px rgba(0,0,0,.82); opacity:{1 if brain['visible'] else 0}; }}
       .ub-world-center h1 {{ margin:10px 0; color:var(--ub-accent-bright); font:500 clamp(27px,2.8vw,38px)/1 Georgia,serif; letter-spacing:.045em; }}
       .ub-rule {{ display:block; width:72%; height:1px; margin:0 auto; background:linear-gradient(90deg,transparent,var(--ub-accent),transparent); box-shadow:0 0 calc(12px * var(--ub-glow)) var(--ub-accent); }}
-      .ub-ecosystem {{ position:absolute; z-index:6; left:50%; bottom:12.5%; width:clamp(190px,18vw,280px); min-height:150px; transform:translate(calc(-50% + var(--ub-ecosystem-x)), var(--ub-ecosystem-y)) scale(var(--ub-ecosystem-scale)); display:grid; place-items:center; color:var(--ub-text); text-decoration:none; border-radius:50%; transition:transform .35s ease, filter .35s ease; opacity:{1 if ecosystem['visible'] else 0}; pointer-events:{'auto' if ecosystem['visible'] else 'none'}; }}
+      .ub-ecosystem {{ position:absolute; z-index:6; left:50%; bottom:{ecosystem_bottom}; width:clamp(190px,18vw,280px); min-height:150px; transform:translate(calc(-50% + var(--ub-ecosystem-x)), var(--ub-ecosystem-y)) scale(var(--ub-ecosystem-scale)); display:grid; place-items:center; color:var(--ub-text); text-decoration:none; border-radius:50%; transition:transform .35s ease, filter .35s ease; opacity:{1 if ecosystem['visible'] else 0}; pointer-events:{'auto' if ecosystem['visible'] else 'none'}; }}
       .ub-ecosystem::before {{ content:""; position:absolute; inset:0; border:1px solid transparent; border-radius:50%; background:radial-gradient(circle,transparent 45%,color-mix(in srgb,var(--ub-accent) 15%,transparent) 72%,transparent 73%); opacity:0; transition:.35s ease; }}
       .ub-ecosystem span {{ position:relative; color:var(--ub-text); font:500 clamp(14px,1.45vw,19px)/1.1 Georgia,serif; text-shadow:0 2px 12px #000,0 2px 22px #000; }}
       .ub-ecosystem:hover, .ub-ecosystem:focus-visible {{ transform:translateX(-50%) scale(1.055); filter:brightness(1.08); outline:none; }}

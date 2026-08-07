@@ -132,7 +132,7 @@ test("official themes resolve a complete visual world engine", () => {
 test("v0.96 theme packages retain concept art and builder metadata", () => {
   for (const name of themeNames) {
     const themePackage = themePackageRegistry[name];
-    assert.equal(themePackage.worldAsset.source, "/ultra-brain-world.png");
+    assert.match(themePackage.worldAsset.source, /^\/world-[a-z-]+\.png$|^\/ultra-brain-world\.png$/);
     assert.ok(themePackage.layoutPreset);
     assert.ok(themePackage.componentSkin);
     assert.deepEqual(themePackage.responsive, ["desktop", "tablet", "mobile"]);

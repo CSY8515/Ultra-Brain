@@ -16,12 +16,12 @@ async function render() {
   );
 }
 
-test("server renders the Ultra Brain v0.982 UI Studio world UI", async () => {
+test("server renders the Ultra Brain v0.983 UI Studio world UI", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, /<title>Ultra Brain v0\.982 .* Ultra Brain<\/title>/i);
+  assert.match(html, /<title>Ultra Brain v0\.983 .* Ultra Brain<\/title>/i);
   assert.match(html, /Ultra Brain/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site|codex-preview|react-loading-skeleton/i);
 });
@@ -32,7 +32,7 @@ test("the production entry has no disposable starter surface", async () => {
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
     readFile(new URL("../app/ultra-brain-shell.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/canvas-editor.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/canvas-editor-v983.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
   assert.match(page, /<UltraBrainShell \/>/);
@@ -43,16 +43,16 @@ test("the production entry has no disposable starter surface", async () => {
   assert.match(shell, /PROPAGATION_TARGET_LABELS/);
   assert.match(shell, /THEME_ADJUSTMENT_LABELS/);
   assert.match(shell, /UI_LOCK_KEYS/);
-  assert.match(canvas, /내 화면 만들기/);
-  assert.match(canvas, /기본 도구/);
-  assert.match(canvas, /그리기 도구/);
-  assert.match(canvas, /마우스 도구/);
+  assert.match(canvas, /UI\/UX 도구함/);
+  assert.match(canvas, /그리기용 도구함/);
+  assert.match(canvas, /터치펜/);
+  assert.match(canvas, /되돌리기/);
   assert.match(canvas, /그림 가져오기/);
   assert.doesNotMatch(styles, /ecosystem-seed:hover ~ \.world-focus-art/);
-  assert.match(canvas, /보관한 그림/);
+  assert.match(canvas, /사용자 UI로 저장/);
   assert.match(canvas, /변경 기록/);
-  assert.match(canvas, /rollbackRevision/);
-  assert.match(layout, /Ultra Brain v0\.982/);
+  assert.match(canvas, /rollback/);
+  assert.match(layout, /Ultra Brain v0\.983/);
   assert.doesNotMatch(layout, /codex-preview|_sites-preview|Starter Project/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(new URL("public/_sites-preview", templateRoot)));
